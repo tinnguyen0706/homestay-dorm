@@ -4,7 +4,7 @@ Project này sử dụng:
 
 * **Frontend:** React + TypeScript + TailwindCSS
 * **Backend:** Node.js + TypeScript + Express (MVC)
-* **Database:** Oracle
+* **Database:** PostgreSQL (Neon)
 * **Kiến trúc:** MVC (áp dụng cho backend)
 
 ---
@@ -33,7 +33,7 @@ project-root/
 ├── backend/                 # Backend (Node.js + TS)
 │   ├── src/
 │   │   ├── config/          # Cấu hình (DB, env,...)
-│   │   │   └── db.ts        # Kết nối Oracle
+│   │   │   └── db.ts        # Kết nối PostgreSQL (Neon)
 │   │   │
 │   │   ├── models/          # Định nghĩa dữ liệu (type/interface)
 │   │   │   └── user.model.ts
@@ -60,46 +60,54 @@ project-root/
 │   ├── package.json         # Dependencies backend
 │   └── tsconfig.json        # Config TypeScript
 │
-├── database/
-│   ├── scripts/             # File SQL (tạo bảng, insert,...)
-│   │   └── init.sql
-│   ├── migrations/          # Thay đổi schema (optional)
-│   └── seeds/               # Dữ liệu mẫu (optional)
-│
-├── .env                     # Biến môi trường
+├── .env                     # Biến môi trường (DATABASE_URL,...)
 └── README.md
 ```
 
 ---
 
-# 3. Database (Oracle)
+# 3. Database (PostgreSQL + Neon)
 
-`database/scripts/init.sql`
+## Setup Neon
 
-Nơi viết:
+1. Tạo tài khoản tại [neon.tech](https://neon.tech) (free)
+2. Tạo project mới
+3. Vào **Dashboard → Connection Details** → copy **Connection string**
 
-* CREATE TABLE
-* INSERT DATA
-* PROCEDURE / FUNCTION
+## Tạo file .env
+
+Tạo file `.env` ở root project, **không commit file này lên git**:
+
+```env
+DATABASE_URL="postgresql://user:password@host/dbname?sslmode=require"
+```
+
+Thêm vào `.gitignore`:
+
+```
+.env
+```
+
+## Cài đặt thư viện
+
+```bash
+cd backend
+npm install pg dotenv
+npm install -D @types/pg
+```
+
+## Tạo bảng
+
+Chạy SQL sau trên Neon dashboard (tab **SQL Editor**):
 
 ```sql
-CREATE TABLE USERS (
-    ID NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    NAME VARCHAR2(100),
-    EMAIL VARCHAR2(100)
+CREATE TABLE users (
+    id   SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100)
 );
 
-INSERT INTO USERS (NAME, EMAIL) VALUES ('Tin', 'tin@gmail.com');
-
--- PROCEDURE: trả về danh sách user
-CREATE OR REPLACE PROCEDURE GET_ALL_USERS (
-    p_cursor OUT SYS_REFCURSOR
-) AS
-BEGIN
-    OPEN p_cursor FOR
-    SELECT * FROM USERS;
-END;
-/
+INSERT INTO users (name, email) VALUES ('Tin', 'tin@gmail.com');
 ```
 
 ---
@@ -110,26 +118,26 @@ END;
 
 ## config/
 
-Cấu hình hệ thống (DB, env)
+Cấu hình kết nối database
 
 ```ts
 // db.ts
-import oracledb from "oracledb";
+import { Pool } from "pg";
+import dotenv from "dotenv";
 
-export const getConnection = async () => {
-  return await oracledb.getConnection({
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    connectString: process.env.DB_CONNECTION_STRING,
-  });
-};
+dotenv.config();
+
+export const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+});
 ```
 
 ---
 
 ## models/
 
-👉 Định nghĩa kiểu dữ liệu
+Định nghĩa kiểu dữ liệu
 
 ```ts
 export interface User {
@@ -146,26 +154,11 @@ export interface User {
 Nơi DUY NHẤT làm việc với DB
 
 ```ts
-import oracledb from "oracledb";
-import { getConnection } from "../config/db";
+import { pool } from "../config/db";
 
 export const getAllUsers = async () => {
-  const conn = await getConnection();
-
-  const result = await conn.execute(
-    `BEGIN GET_ALL_USERS(:cursor); END;`,
-    {
-      cursor: { dir: oracledb.BIND_OUT, type: oracledb.CURSOR },
-    }
-  );
-
-  const rs = (result.outBinds as any).cursor;
-  const rows = await rs.getRows(100);
-
-  await rs.close();
-  await conn.close();
-
-  return rows;
+  const result = await pool.query("SELECT * FROM users");
+  return result.rows;
 };
 ```
 
@@ -187,7 +180,7 @@ export const fetchUsers = async () => {
 
 ## controllers/
 
-👉 Nhận request → trả response
+Nhận request → trả response
 
 ```ts
 import { Request, Response } from "express";
@@ -203,7 +196,7 @@ export const getUsers = async (req: Request, res: Response) => {
 
 ## routes/
 
-👉 Định nghĩa API
+Định nghĩa API
 
 ```ts
 import { Router } from "express";
@@ -219,7 +212,7 @@ export default router;
 
 ## app.ts
 
-👉 Entry server
+Entry server
 
 ```ts
 import express from "express";
@@ -275,9 +268,9 @@ Kiểu dữ liệu từ backend
 
 ```ts
 export interface User {
-  ID: number;
-  NAME: string;
-  EMAIL: string;
+  id: number;
+  name: string;
+  email: string;
 }
 ```
 
@@ -285,14 +278,15 @@ export interface User {
 
 ## pages/
 
-👉 UI chính
+UI chính
 
 ```tsx
 import { useEffect, useState } from "react";
 import { getUsers } from "../services/user.service";
+import { User } from "../types";
 
 export default function Home() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
     getUsers().then(setUsers);
@@ -301,8 +295,8 @@ export default function Home() {
   return (
     <div>
       {users.map((u) => (
-        <div key={u.ID}>
-          {u.NAME} - {u.EMAIL}
+        <div key={u.id}>
+          {u.name} - {u.email}
         </div>
       ))}
     </div>
