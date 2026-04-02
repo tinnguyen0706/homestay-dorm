@@ -57,8 +57,8 @@ src/
 ├── routes/             ← Định nghĩa URL endpoint, map vào Controller
 ├── controllers/        ← Nhận Request → gọi Service → trả Response
 ├── services/           ← Xử lý business logic
-├── repositories/       ← Truy vấn SQL trực tiếp với database
 ├── models/             ← Định nghĩa kiểu dữ liệu (TypeScript interfaces)
+├── repositories/       ← Truy vấn SQL trực tiếp với database
 ├── middlewares/        ← Xử lý xác thực, lỗi, logging...
 ├── types/              ← Type/interface dùng chung toàn project
 ├── utils/              ← Hàm tiện ích (hash, format, validate...)
@@ -233,6 +233,39 @@ export class RoomService {
 
 ---
 
+### `src/models/` — Định nghĩa kiểu dữ liệu
+
+Khai báo `interface` hoặc `type` đại diện cho từng bảng/thực thể trong database.
+Dùng để TypeScript kiểm tra kiểu xuyên suốt các tầng.
+
+```typescript
+// src/models/Room.ts
+export interface Room {
+    id: number;
+    name: string;
+    capacity: number;
+    price: number;
+    status: "available" | "occupied" | "maintenance";
+    created_at: Date;
+}
+```
+
+```typescript
+// src/models/User.ts
+export interface User {
+    id: number;
+    full_name: string;
+    email: string;
+    password_hash: string;
+    role: "admin" | "student";
+    created_at: Date;
+}
+```
+
+**Quy tắc đặt tên file:** `<TênTàiNguyên>.ts` (PascalCase)
+
+---
+
 ### `src/repositories/` — Truy vấn Database
 
 Tầng duy nhất được phép viết SQL.
@@ -268,39 +301,6 @@ export class RoomRepository {
 ```
 
 **Quy tắc đặt tên file:** `<tên tài nguyên>Repository.ts`
-
----
-
-### `src/models/` — Định nghĩa kiểu dữ liệu
-
-Khai báo `interface` hoặc `type` đại diện cho từng bảng/thực thể trong database.
-Dùng để TypeScript kiểm tra kiểu xuyên suốt các tầng.
-
-```typescript
-// src/models/Room.ts
-export interface Room {
-    id: number;
-    name: string;
-    capacity: number;
-    price: number;
-    status: "available" | "occupied" | "maintenance";
-    created_at: Date;
-}
-```
-
-```typescript
-// src/models/User.ts
-export interface User {
-    id: number;
-    full_name: string;
-    email: string;
-    password_hash: string;
-    role: "admin" | "student";
-    created_at: Date;
-}
-```
-
-**Quy tắc đặt tên file:** `<TênTàiNguyên>.ts` (PascalCase)
 
 ---
 
@@ -350,29 +350,64 @@ app.use(errorHandler);
 ### `src/types/` — Shared Types
 
 Chứa các TypeScript type/interface dùng chung, **không** gắn với tầng cụ thể nào.
-Ví dụ: kiểu request có auth, kiểu phản hồi chuẩn, kiểu pagination...
 
+Khác với `models/` (đại diện cho bảng database), `types/` chứa các kiểu phục vụ cấu trúc code như format response, pagination, v.v.
+
+**Ví dụ: Chuẩn hóa format response cho toàn bộ API**
+
+Không có `types/`, mỗi controller tự trả về format khác nhau:
 ```typescript
-// src/types/express.d.ts — Mở rộng kiểu Request của Express
-import type { User } from "../models/User.ts";
+// controller A trả kiểu này
+res.json({ data: rooms });
 
-declare global {
-    namespace Express {
-        interface Request {
-            user?: User;
-        }
-    }
-}
+// controller B trả kiểu khác
+res.json({ result: user, ok: true });
 ```
 
+Có `types/`, tất cả dùng chung một kiểu:
 ```typescript
-// src/types/api.ts — Kiểu response chuẩn cho toàn API
+// src/types/api.ts
 export interface ApiResponse<T> {
     success: boolean;
     data?: T;
     message?: string;
 }
 ```
+
+Dùng trong `roomController.ts`:
+```typescript
+import type { ApiResponse } from "../types/api.ts";
+import type { Room } from "../models/Room.ts";
+
+export async function getAllRooms(req: Request, res: Response) {
+    const rooms = await roomService.getAll();
+    const response: ApiResponse<Room[]> = { success: true, data: rooms };
+    res.json(response);
+    // → { "success": true, "data": [...] }
+}
+```
+
+Dùng trong `userController.ts`:
+```typescript
+import type { ApiResponse } from "../types/api.ts";
+import type { User } from "../models/User.ts";
+
+export async function getUserById(req: Request, res: Response) {
+    const user = await userService.getById(Number(req.params.id));
+    if (!user) {
+        const response: ApiResponse<null> = { success: false, message: "User not found" };
+        res.status(404).json(response);
+        return;
+    }
+    const response: ApiResponse<User> = { success: true, data: user };
+    res.json(response);
+    // → { "success": true, "data": { id: 1, full_name: "Dat", ... } }
+}
+```
+
+`ApiResponse<T>` không thuộc về `models/` (không phải bảng database) và không thuộc về `controllers/` hay `services/` (dùng ở cả 2) — nên đặt vào `types/` để dùng chung.
+
+**Quy tắc đặt tên file:** `<mục đích>.ts`, ví dụ: `api.ts`, `pagination.ts`
 
 ---
 
