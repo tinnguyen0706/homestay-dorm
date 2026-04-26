@@ -1,8 +1,8 @@
 import TaiKhoanNVBUS from "../BUS/TaiKhoanNVBUS.ts";
-import type { ITaiKhoanNV, ITaiKhoanUsername } from "../types/ITaiKhoanNV.ts";
 
-const TaiKhoanNV: ITaiKhoanNV = { Username: "admin", Password: "@Admin12" };
-const result = await TaiKhoanNVBUS.KTraTK(TaiKhoanNV);
+const TaiKhoanNV = { Username: "admin", Password: "@Admin12" };
+const bus = new TaiKhoanNVBUS(TaiKhoanNV);
+const result = await bus.KTraTK();
 
 console.log("-----------KET QUA: ", result);
 
