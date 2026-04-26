@@ -1,7 +1,7 @@
 export const MH_DSPhong = () => {
   return (
-    <>
-      <div>MH_DSPhong</div>
-    </>
+    <div className="p-8">
+      {/* Nội dung trang danh sách phòng */}
+    </div>
   );
 };

@@ -1,10 +1,16 @@
-import type { ITaiKhoanNV } from "../types/ITaiKhoanNV.ts";
 import TaiKhoanNVDAO from "../DAO/TaiKhoanNVDAO.ts";
 
 export default class TaiKhoanNVBUS {
-  static async KTraTK(TaiKhoanNV: ITaiKhoanNV): Promise<boolean> {
-    let result = await TaiKhoanNVDAO.LayTTTK(TaiKhoanNV);
-    if (result?.length === 1) return true;
-    return false;
+  Username: string;
+  Password: string;
+
+  constructor(TaiKhoanNV: { Username: string; Password: string }) {
+    this.Username = TaiKhoanNV.Username;
+    this.Password = TaiKhoanNV.Password;
+  }
+
+  async KTraTK(): Promise<boolean> {
+    const result = await TaiKhoanNVDAO.LayTTTK(this);
+    return result?.length === 1;
   }
 }

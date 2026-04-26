@@ -1,10 +1,9 @@
 import TaiKhoanNVBUS from "../BUS/TaiKhoanNVBUS.ts";
 import type { Request, Response } from "express";
-import type { ITaiKhoanNV } from "../types/ITaiKhoanNV.ts";
 
 export async function KTraTK(req: Request, res: Response) {
   try {
-    const TaiKhoanNV: ITaiKhoanNV = {
+    const TaiKhoanNV = {
       Username: String(req.query.Username),
       Password: String(req.query.Password),
     };
@@ -12,7 +11,8 @@ export async function KTraTK(req: Request, res: Response) {
     if (!TaiKhoanNV.Username || !TaiKhoanNV.Password) {
       return res.status(400).json({ message: "Thiếu tham số!" });
     }
-    const result = await TaiKhoanNVBUS.KTraTK(TaiKhoanNV);
+    const bus = new TaiKhoanNVBUS(TaiKhoanNV);
+    const result = await bus.KTraTK();
     res.json(result);
   } catch (error) {
     console.log("--------------Lỗi: ", error);

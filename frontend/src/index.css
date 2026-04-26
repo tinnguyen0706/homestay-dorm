@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Manrope:wght@800&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -127,4 +128,22 @@
   html {
     @apply font-sans;
     }
+}
+
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.animate-page-enter {
+  animation: page-fade-in 0.22s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.18s ease-out both;
 }

@@ -1,7 +1,6 @@
 import TaiKhoanNVDAO from "../DAO/TaiKhoanNVDAO.ts";
-import type { ITaiKhoanNV, ITaiKhoanUsername } from "../types/ITaiKhoanNV.ts";
 
-const dataTest: ITaiKhoanNV = {
+const dataTest = {
   Username: "admin",
   Password: "@Admin123",
 };
