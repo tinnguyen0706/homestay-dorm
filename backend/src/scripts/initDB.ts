@@ -1,4 +1,4 @@
-import { pool } from "../config/db.ts";
+import pool from "../config/db.ts";
 import fs from "fs";
 import path from "path";
 

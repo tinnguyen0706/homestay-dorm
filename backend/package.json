@@ -5,7 +5,12 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/app.ts",
-    "db:init": "tsx src/scripts/initDB.ts"
+    "db:init": "tsx src/scripts/initDB.ts",
+    "db:drop": "tsx src/scripts/dropDB.ts",
+    "db:insert": "tsx src/scripts/insertData.ts",
+    "db:dropRecords": "tsx src/scripts/dropRecords.ts",
+    "testDAO": "tsx src/scripts/testDAO.ts",
+    "testBUS": "tsx src/scripts/testBUS.ts"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +23,7 @@
     "pg": "^8.20.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^25.5.0",
     "@types/pg": "^8.20.0",
