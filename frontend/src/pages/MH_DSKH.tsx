@@ -17,86 +17,44 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import apiClient from "@/apiClient";
 
-// TODO: Call API to fetch real data
-const customers = [
-  {
-    id: "#KH-9021",
-    initials: "NL",
-    name: "Nguyen Van Lam",
-    gender: "NAM",
-    email: "lam.nguyen@email.com",
-    phone: "+84 901 234 567",
-    nationality: "Vietnam",
-    group: "GRP_A1",
-  },
-  {
-    id: "#KH-8842",
-    initials: "TH",
-    name: "Tran Thi Hoa",
-    gender: "NỮ",
-    email: "hoa.tran@provider.vn",
-    phone: "+84 988 776 554",
-    nationality: "Vietnam",
-    group: "GRP_B2",
-  },
-  {
-    id: "#KH-7719",
-    initials: "SJ",
-    name: "Sarah Jenkins",
-    gender: "NỮ",
-    email: "s.jenkins@global.com",
-    phone: "+1 415 555 0192",
-    nationality: "USA",
-    group: "GRP_A1",
-  },
-  {
-    id: "#KH-6650",
-    initials: "LK",
-    name: "Lee Kwang-ho",
-    gender: "NAM",
-    email: "lee.kh@kmail.co.kr",
-    phone: "+82 10 1234 5678",
-    nationality: "South Korea",
-    group: "GRP_C3",
-  },
-  {
-    id: "#KH-5543",
-    initials: "AM",
-    name: "Aarav Mehta",
-    gender: "NAM",
-    email: "aarav.m@email.in",
-    phone: "+91 987 654 3210",
-    nationality: "India",
-    group: "GRP_B2",
-  },
-  {
-    id: "#KH-4432",
-    initials: "EC",
-    name: "Elena Petrova",
-    gender: "NỮ",
-    email: "elena.p@mail.ru",
-    phone: "+7 916 123 45 67",
-    nationality: "Russia",
-    group: "GRP_C3",
-  },
-  {
-    id: "#KH-3321",
-    initials: "MS",
-    name: "Mohammed Al-Farsi",
-    gender: "NAM",
-    email: "m.alfarsi@email.sa",
-    phone: "+966 50 123 4567",
-    nationality: "Saudi Arabia",
-    group: "GRP_A1",
-  },
-];
+const ITEMS_PER_PAGE = 5;
 
-const ITEMS_PER_PAGE = 4;
+type APICustomer = {
+  MaKH: string;
+  HoTen: string;
+  GioiTinh: string;
+  Email: string;
+  SDT: string;
+  QuocTich: string;
+  MaNhomThue: string;
+};
+
+type SearchField = "MaKH" | "HoTen" | "SDT";
+
+type SearchParams = {
+  MaKH?: string;
+  HoTen?: string;
+  SDT?: string;
+};
+
+const HienThi = async (searchParams?: SearchParams) => {
+  try {
+    const response = await apiClient.get<APICustomer[]>("/KhachHang/LayDSKH", {
+      params: searchParams,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching customers:", error);
+    return [];
+  }
+};
 
 const GenderBadge = ({ gender }: { gender: string }) => {
-  const isMale = gender === "NAM";
+  const normalizedGender = (gender ?? "").trim().toLowerCase();
+  const isMale = normalizedGender === "nam";
   return (
     <span
       className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-sm ${
@@ -111,15 +69,17 @@ const GenderBadge = ({ gender }: { gender: string }) => {
 };
 
 const Avatar = ({ initials, gender }: { initials: string; gender: string }) => {
+  const normalizedGender = (gender ?? "").trim().toLowerCase();
+
   let bgColor = "bg-green-100";
-  if (gender === "NỮ") {
+  if (normalizedGender === "nữ" || normalizedGender === "nu") {
     bgColor = "bg-orange-100";
   } else {
     bgColor = "bg-indigo-100";
   }
 
   let textColor = "text-green-800";
-  if (gender === "NỮ") {
+  if (normalizedGender === "nữ" || normalizedGender === "nu") {
     textColor = "text-orange-800";
   } else {
     textColor = "text-indigo-800";
@@ -135,20 +95,83 @@ const Avatar = ({ initials, gender }: { initials: string; gender: string }) => {
 };
 
 export const MH_DSKH = () => {
+  const [danhSachKhachHang, setDanhSachKhachHang] = useState<APICustomer[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchField, setSearchField] = useState<SearchField>("HoTen");
+  const [searchValue, setSearchValue] = useState("");
 
-  const currentCustomers = useMemo(() => {
+  const taoThamSoTimKiem = (
+    field: SearchField,
+    term: string
+  ): SearchParams | undefined => {
+    const keyword = term.trim();
+    if (!keyword) {
+      return undefined;
+    }
+
+    if (field === "MaKH") {
+      return { MaKH: keyword };
+    }
+
+    if (field === "HoTen") {
+      return { HoTen: keyword };
+    }
+
+    return { SDT: keyword };
+  };
+
+  useEffect(() => {
+    const load = async () => {
+      const data = await HienThi();
+      setDanhSachKhachHang(data);
+    };
+
+    load();
+  }, []);
+
+  useEffect(() => {
+    const maxPage = Math.max(
+      1,
+      Math.ceil(danhSachKhachHang.length / ITEMS_PER_PAGE)
+    );
+    if (currentPage > maxPage) {
+      setCurrentPage(maxPage);
+    }
+  }, [danhSachKhachHang.length, currentPage]);
+
+  const khachHangHienTai = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
-    return customers.slice(startIndex, endIndex);
-  }, [currentPage]);
+    return danhSachKhachHang.slice(startIndex, endIndex);
+  }, [danhSachKhachHang, currentPage]);
+
+  const handleSearch = async (
+    field: SearchField = searchField,
+    value: string = searchValue
+  ) => {
+    const searchParams = taoThamSoTimKiem(field, value);
+    const data = await HienThi(searchParams);
+    setDanhSachKhachHang(data);
+    setCurrentPage(1);
+  };
 
   const handlePageChange = (page: number) => {
-    const maxPage = Math.max(1, Math.ceil(customers.length / ITEMS_PER_PAGE));
+    const maxPage = Math.max(
+      1,
+      Math.ceil(danhSachKhachHang.length / ITEMS_PER_PAGE)
+    );
     if (page >= 1 && page <= maxPage) {
       setCurrentPage(page);
     }
   };
+
+  const getInitials = (HoTen?: string) =>
+    (HoTen ?? "")
+      .trim()
+      .split(/\s+/)
+      .slice(-2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join("");
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen font-inter">
@@ -163,17 +186,27 @@ export const MH_DSKH = () => {
             <Input
               placeholder="Tìm kiếm theo tên, số điện thoại hoặc ID khách hàng..."
               className="pl-10 h-11 rounded-lg bg-white border-gray-200 shadow-sm font-inter"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  void handleSearch();
+                }
+              }}
             />
           </div>
-          <Select>
+          <Select
+            value={searchField}
+            onValueChange={(value) => setSearchField(value as SearchField)}
+          >
             <SelectTrigger className="w-55">
               <SelectValue placeholder="Tìm kiếm theo tên" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="name">Tìm kiếm theo tên</SelectItem>
-                <SelectItem value="id">Tìm kiếm theo ID</SelectItem>
-                <SelectItem value="phone">Tìm kiếm theo SĐT</SelectItem>
+                <SelectItem value="HoTen">Tìm kiếm theo tên</SelectItem>
+                <SelectItem value="MaKH">Tìm kiếm theo ID</SelectItem>
+                <SelectItem value="SDT">Tìm kiếm theo SĐT</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -204,47 +237,47 @@ export const MH_DSKH = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {currentCustomers.map((customer) => (
-                <TableRow key={customer.id} className="border-b-gray-100">
+              {khachHangHienTai.map((khachHang) => (
+                <TableRow key={khachHang.MaKH} className="border-b-gray-100">
                   <TableCell className="px-6 py-4 font-mono text-sm text-gray-500">
-                    {customer.id}
+                    {khachHang.MaKH}
                   </TableCell>
                   <TableCell className="px-6 py-4">
                     <div className="flex items-center space-x-3">
                       <Avatar
-                        initials={customer.initials}
-                        gender={customer.gender}
+                        initials={getInitials(khachHang.HoTen)}
+                        gender={khachHang.GioiTinh}
                       />
-                      <span className="font-semibold text-emerald-800">
-                        {customer.name}
+                      <span className="font-semibold text-emerald-800 font-inter">
+                        {khachHang.HoTen}
                       </span>
                     </div>
                   </TableCell>
                   <TableCell className="px-6 py-4">
-                    <GenderBadge gender={customer.gender} />
+                    <GenderBadge gender={khachHang.GioiTinh} />
                   </TableCell>
                   <TableCell className="px-6 py-4">
-                    <div className="font-medium text-emerald-800">
-                      {customer.email}
+                    <div className="font-medium text-emerald-800 font-inter">
+                      {khachHang.Email}
                     </div>
-                    <div className="text-sm text-gray-500">
-                      {customer.phone}
+                    <div className="text-sm text-gray-500 font-inter">
+                      {khachHang.SDT}
                     </div>
                   </TableCell>
-                  <TableCell className="px-6 py-4 text-gray-600">
-                    {customer.nationality}
+                  <TableCell className="px-6 py-4 text-gray-600 font-inter">
+                    {khachHang.QuocTich}
                   </TableCell>
                   <TableCell className="px-6 py-4 font-mono text-sm text-gray-500">
-                    {customer.group}
+                    {khachHang.MaNhomThue}
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
             <TablePagination
               currentPage={currentPage}
-              totalItems={customers.length}
+              totalItems={danhSachKhachHang.length}
               itemsPerPage={ITEMS_PER_PAGE}
-              currentItemsCount={currentCustomers.length}
+              currentItemsCount={khachHangHienTai.length}
               colSpan={6}
               onPageChange={handlePageChange}
             />
