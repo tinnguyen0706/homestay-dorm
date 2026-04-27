@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import TaiKhoanNVRoute from "./routes/TaiKhoanNV.routes.ts";
-
+import KhachHangRoute from "./routes/KhachHang.route.ts";
 dotenv.config();
 
 const app = express();
@@ -12,7 +12,7 @@ app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 
 app.use("/TaiKhoanNV", TaiKhoanNVRoute);
-
+app.use("/KhachHang", KhachHangRoute);
 app.listen(port, () => {
   console.log(`Server running: http://localhost:${port}`);
 });
