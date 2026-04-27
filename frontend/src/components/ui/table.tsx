@@ -1,5 +1,7 @@
 import * as React from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
@@ -102,6 +104,81 @@ function TableCaption({
   )
 }
 
+type TablePaginationProps = {
+  currentPage: number
+  totalItems: number
+  itemsPerPage: number
+  currentItemsCount: number
+  colSpan: number
+  onPageChange: (page: number) => void
+}
+
+function TablePagination({
+  currentPage,
+  totalItems,
+  itemsPerPage,
+  currentItemsCount,
+  colSpan,
+  onPageChange,
+}: TablePaginationProps) {
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage))
+  const startItem = totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1
+  const endItem =
+    totalItems === 0
+      ? 0
+      : (currentPage - 1) * itemsPerPage + currentItemsCount
+  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
+
+  return (
+    <TableFooter>
+      <TableRow>
+        <TableCell colSpan={colSpan} className="px-6 py-4">
+          <div className="flex items-center justify-between">
+            <span className="font-inter text-sm text-gray-600">
+              Hiển thị {startItem} đến {endItem} trong tổng số {totalItems} kết quả
+            </span>
+            <div className="flex items-center space-x-1">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9"
+                onClick={() => onPageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              {pageNumbers.map((page) => (
+                <Button
+                  key={page}
+                  variant={currentPage === page ? "default" : "outline"}
+                  onClick={() => onPageChange(page)}
+                  className={cn(
+                    "h-9 w-9",
+                    currentPage === page
+                      ? "bg-emerald-800 hover:bg-emerald-900"
+                      : "bg-white"
+                  )}
+                >
+                  {page}
+                </Button>
+              ))}
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9"
+                onClick={() => onPageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </TableCell>
+      </TableRow>
+    </TableFooter>
+  )
+}
+
 export {
   Table,
   TableHeader,
@@ -111,4 +188,5 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  TablePagination,
 }
