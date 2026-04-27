@@ -39,9 +39,6 @@ export const MH_TaoKH = () => {
 
         {/* Card Form */}
         <div className="relative bg-white rounded-[16px] shadow-[0px_4px_40px_-15px_rgba(13,99,27,0.08)] p-10 overflow-hidden">
-          {/* Decorative Circle */}
-          <div className="absolute -top-32 -right-32 w-64 h-64 bg-[rgba(13,99,27,0.05)] rounded-full" />
-
           <div className="grid grid-cols-2 gap-x-10 gap-y-6">
             {/* Họ và tên - Full width */}
             <div className="col-span-2 flex flex-col gap-2">
