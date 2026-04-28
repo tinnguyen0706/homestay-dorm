@@ -3,16 +3,15 @@ import type { Request, Response } from "express";
 
 export async function KTraTK(req: Request, res: Response) {
   try {
-    const TaiKhoanNV = {
-      Username: String(req.query.Username),
-      Password: String(req.query.Password),
-    };
+    const TaiKhoanNV = new TaiKhoanNVBUS(
+      String(req.query.Username),
+      String(req.query.Password),
+    );
 
     if (!TaiKhoanNV.Username || !TaiKhoanNV.Password) {
       return res.status(400).json({ message: "Thiếu tham số!" });
     }
-    const bus = new TaiKhoanNVBUS(TaiKhoanNV);
-    const result = await bus.KTraTK();
+    const result = await TaiKhoanNV.KTraTK();
     res.json(result);
   } catch (error) {
     console.log("--------------Lỗi: ", error);
