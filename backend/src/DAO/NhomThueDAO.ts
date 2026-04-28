@@ -2,7 +2,7 @@ import NhuCauThueBUS from "../BUS/NhuCauThueBUS.ts";
 import pool from "../config/db.ts";
 
 export default class NhomThueDAO {
-  static async ThemNhom(NCT: NhuCauThueBUS): Promise<void> {
+  static async ThemNhom(NCT: NhuCauThueBUS): Promise<string> {
     try {
       const result = await pool.query(
         "INSERT INTO NHOMTHUE (MaKH_DaiDien) VALUES ($1) RETURNING MaNhomThue",
@@ -15,8 +15,10 @@ export default class NhomThueDAO {
           [MaNhomThue, KH.MaKH],
         );
       }
+      return MaNhomThue;
     } catch (error) {
       console.log("-----Lỗi thêm nhóm: ", error);
+      throw error;
     }
   }
 }

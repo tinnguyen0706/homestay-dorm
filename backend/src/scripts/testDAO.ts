@@ -7,7 +7,7 @@
 
 // process.exit(0);
 
-import KhachHangDAO from "../DAO/KhachHangDAO.ts";
+import LoaiPhongDAO from "../DAO/LoaiPhongDAO.ts";
 
-const result = await KhachHangDAO.LayDSKH();
-console.log("----------Kết quả: \n", result);
+const result = await LoaiPhongDAO.LayDSLoaiPhong();
+console.log("---------KET QUA: \n", result)

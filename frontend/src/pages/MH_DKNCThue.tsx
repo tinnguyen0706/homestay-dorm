@@ -6,11 +6,6 @@ import {
   CalendarDays,
   Timer,
   Star,
-  VolumeX,
-  Car,
-  Snowflake,
-  Clock,
-  Shield,
   Users,
   Search,
   Plus,
@@ -18,27 +13,17 @@ import {
   Send,
   CreditCard,
   ChevronDown,
+  Sofa,
 } from "lucide-react";
+import { toast } from "sonner";
 
 const inter = { fontFamily: "Inter, sans-serif" };
+const API = import.meta.env.VITE_API_URL as string;
 
 type Customer = { id: string; name: string; sdt: string };
+type LoaiPhong = { MaLoai: string; TenLoai: string };
+type TieuChi = { MaTieuChi: string; TenTieuChi: string };
 
-const MOCK_CUSTOMERS: Customer[] = [
-  { id: "KH-9021", name: "Nguyễn Văn A", sdt: "0903123456" },
-  { id: "KH-8842", name: "Trần Thị Thu Thảo", sdt: "0912345678" },
-  { id: "KH-7731", name: "Lê Minh Khoa", sdt: "0987654321" },
-  { id: "KH-6620", name: "Phạm Thị Hoa", sdt: "0971234567" },
-  { id: "KH-5510", name: "Đặng Quốc Bảo", sdt: "0961234567" },
-];
-
-const TIEU_CHI = [
-  { label: "Yên tĩnh", icon: <VolumeX size={14} strokeWidth={2} /> },
-  { label: "Gửi xe", icon: <Car size={14} strokeWidth={2} /> },
-  { label: "Điều hòa", icon: <Snowflake size={14} strokeWidth={2} /> },
-  { label: "Giờ giấc tự do", icon: <Clock size={14} strokeWidth={2} /> },
-  { label: "An ninh 24/7", icon: <Shield size={14} strokeWidth={2} /> },
-];
 
 function getInitials(name: string) {
   const parts = name.trim().split(" ");
@@ -78,53 +63,80 @@ export const MH_DKNCThue = () => {
   const [thoiDiemVao, setThoiDiemVao] = useState("");
   const [thoiHanThue, setThoiHanThue] = useState("");
   const [tieuChi, setTieuChi] = useState<string[]>([]);
+  const [loaiPhong, setLoaiPhong] = useState("");
+  const [dsLoaiPhong, setDsLoaiPhong] = useState<LoaiPhong[]>([]);
+  const [dsTieuChi, setDsTieuChi] = useState<TieuChi[]>([]);
 
   // Cá nhân
   const [khachHang, setKhachHang] = useState("");
+  const [selectedKHId, setSelectedKHId] = useState("");
+  const [khachHangSuggestions, setKhachHangSuggestions] = useState<Customer[]>([]);
 
   // Nhóm
   const [members, setMembers] = useState<Customer[]>([]);
   const [representativeId, setRepresentativeId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState<Customer[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const [showKHDropdown, setShowKHDropdown] = useState(false);
   const khachHangRef = useRef<HTMLDivElement>(null);
+  const [searchTypeKH, setSearchTypeKH] = useState<"HoTen" | "MaKH" | "SDT">("HoTen");
+  const [searchTypeNhom, setSearchTypeNhom] = useState<"HoTen" | "MaKH" | "SDT">("HoTen");
 
+  // Load danh sách loại phòng và tiêu chí khi mount
+  useEffect(() => {
+    fetch(`${API}/LoaiPhong/LayDSLoaiPhong`)
+      .then((r) => r.json())
+      .then(setDsLoaiPhong)
+      .catch(console.error);
+    fetch(`${API}/TieuChi/LayDSTC`)
+      .then((r) => r.json())
+      .then(setDsTieuChi)
+      .catch(console.error);
+  }, []);
+
+  // Debounce tìm kiếm khách hàng (cá nhân)
+  useEffect(() => {
+    if (!khachHang.trim()) { setKhachHangSuggestions([]); return; }
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(`${API}/KhachHang/LayDSKH?${searchTypeKH}=${encodeURIComponent(khachHang)}`);
+        const data = await res.json();
+        setKhachHangSuggestions(data.map((c: { MaKH: string; HoTen: string; SDT: string }) => ({ id: c.MaKH, name: c.HoTen, sdt: c.SDT })));
+      } catch { setKhachHangSuggestions([]); }
+    }, 300);
+    return () => clearTimeout(t);
+  }, [khachHang, searchTypeKH]);
+
+  // Debounce tìm kiếm khách hàng (nhóm)
+  useEffect(() => {
+    if (!searchQuery.trim()) { setSuggestions([]); return; }
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(`${API}/KhachHang/LayDSKH?${searchTypeNhom}=${encodeURIComponent(searchQuery)}`);
+        const data = await res.json();
+        setSuggestions(
+          data
+            .map((c: { MaKH: string; HoTen: string; SDT: string }) => ({ id: c.MaKH, name: c.HoTen, sdt: c.SDT }))
+            .filter((c: Customer) => !members.find((m) => m.id === c.id))
+        );
+      } catch { setSuggestions([]); }
+    }, 300);
+    return () => clearTimeout(t);
+  }, [searchQuery, searchTypeNhom, members]);
+
+  // Đóng dropdown khi click ngoài
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node))
         setShowDropdown(false);
-      }
-      if (khachHangRef.current && !khachHangRef.current.contains(e.target as Node)) {
+      if (khachHangRef.current && !khachHangRef.current.contains(e.target as Node))
         setShowKHDropdown(false);
-      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
-
-  const khachHangSuggestions = khachHang.trim()
-    ? MOCK_CUSTOMERS.filter((c) => {
-        const q = khachHang.toLowerCase();
-        return (
-          c.id.toLowerCase().includes(q) ||
-          c.name.toLowerCase().includes(q) ||
-          c.sdt.includes(q)
-        );
-      })
-    : [];
-
-  const suggestions = searchQuery.trim()
-    ? MOCK_CUSTOMERS.filter((c) => {
-      const q = searchQuery.toLowerCase();
-      return (
-        c.id.toLowerCase().includes(q) ||
-        c.name.toLowerCase().includes(q) ||
-        c.sdt.includes(q)
-      );
-    }).filter((c) => !members.find((m) => m.id === c.id))
-    : [];
 
   const addMember = (c: Customer) => {
     setMembers((prev) => {
@@ -146,36 +158,54 @@ export const MH_DKNCThue = () => {
     });
   };
 
-  const toggleTieuChi = (label: string) => {
+  const toggleTieuChi = (maTieuChi: string) => {
     setTieuChi((prev) =>
-      prev.includes(label) ? prev.filter((t) => t !== label) : [...prev, label]
+      prev.includes(maTieuChi) ? prev.filter((t) => t !== maTieuChi) : [...prev, maTieuChi]
     );
   };
 
-  const handleSubmit = () => {
-    if (tab === "ca-nhan") {
-      console.log("Đăng ký cá nhân:", {
-        khachHang,
-        khuVuc,
-        hinhThucThue,
-        giaMin,
-        giaMax,
-        thoiDiemVao,
-        thoiHanThue,
-        tieuChi,
+  const handleSubmit = async () => {
+    try {
+      const body = tab === "ca-nhan"
+        ? {
+            MaKH_DaiDien: selectedKHId,
+            DanhSachKH: [selectedKHId],
+            LoaiPhong: loaiPhong,
+            SoNguoiDuKien: 1,
+            HinhThucThue: hinhThucThue,
+            GiaMin: Number(giaMin),
+            GiaMax: Number(giaMax),
+            ThoiDiemVao: thoiDiemVao,
+            ThoiHanThue: Number(thoiHanThue),
+            KhuVuc: khuVuc,
+            TrangThai: "Chờ duyệt",
+            TieuChi: tieuChi,
+          }
+        : {
+            MaKH_DaiDien: representativeId,
+            DanhSachKH: members.map((m) => m.id),
+            LoaiPhong: loaiPhong,
+            SoNguoiDuKien: members.length,
+            HinhThucThue: hinhThucThue,
+            GiaMin: Number(giaMin),
+            GiaMax: Number(giaMax),
+            ThoiDiemVao: thoiDiemVao,
+            ThoiHanThue: Number(thoiHanThue),
+            KhuVuc: khuVuc,
+            TrangThai: "Chờ duyệt",
+            TieuChi: tieuChi,
+          };
+
+      const res = await fetch(`${API}/NhuCauThue/ThemNCThue`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
-    } else {
-      console.log("Đăng ký nhóm:", {
-        members,
-        representativeId,
-        khuVuc,
-        hinhThucThue,
-        giaMin,
-        giaMax,
-        thoiDiemVao,
-        thoiHanThue,
-        tieuChi,
-      });
+
+      if (!res.ok) throw new Error("Thêm thất bại");
+      toast.success("Đăng ký nhu cầu thuê thành công!");
+    } catch (error) {
+      toast.error("Đăng ký thất bại: " + error);
     }
   };
 
@@ -219,25 +249,47 @@ export const MH_DKNCThue = () => {
           <div className="flex flex-col gap-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
               {/* Khách hàng */}
-              <div>
+              <div className="md:col-span-2">
                 <FieldLabel icon={<CreditCard size={15} strokeWidth={2} />} label="Khách hàng" />
                 <div className="relative" ref={khachHangRef}>
-                  <Search
-                    size={15}
-                    strokeWidth={2}
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                  />
-                  <input
-                    className={inputCls + " pl-9"}
-                    style={inter}
-                    placeholder="Nhập mã hoặc tên hoặc SDT khách hàng"
-                    value={khachHang}
-                    onChange={(e) => {
-                      setKhachHang(e.target.value);
-                      setShowKHDropdown(true);
-                    }}
-                    onFocus={() => khachHang.trim() && setShowKHDropdown(true)}
-                  />
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Search
+                        size={15}
+                        strokeWidth={2}
+                        className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                      />
+                      <input
+                        className={inputCls + " pl-9"}
+                        style={inter}
+                        placeholder={
+                          searchTypeKH === "HoTen" ? "Nhập tên khách hàng..." :
+                          searchTypeKH === "MaKH"  ? "Nhập mã khách hàng..." :
+                                                     "Nhập số điện thoại..."
+                        }
+                        value={khachHang}
+                        onChange={(e) => { setKhachHang(e.target.value); setShowKHDropdown(true); }}
+                        onFocus={() => khachHang.trim() && setShowKHDropdown(true)}
+                      />
+                    </div>
+                    <div className="relative shrink-0">
+                      <select
+                        className="h-full rounded-2xl border border-slate-200 bg-slate-50 pl-3 pr-8 text-sm text-slate-700 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 appearance-none cursor-pointer transition"
+                        style={inter}
+                        value={searchTypeKH}
+                        onChange={(e) => {
+                          setSearchTypeKH(e.target.value as "HoTen" | "MaKH" | "SDT");
+                          setKhachHang("");
+                          setKhachHangSuggestions([]);
+                        }}
+                      >
+                        <option value="HoTen">Tìm theo tên</option>
+                        <option value="MaKH">Tìm theo mã KH</option>
+                        <option value="SDT">Tìm theo SDT</option>
+                      </select>
+                      <ChevronDown size={14} strokeWidth={2} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                    </div>
+                  </div>
                   {showKHDropdown && khachHang.trim() && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden">
                       {khachHangSuggestions.length > 0 ? (
@@ -245,6 +297,7 @@ export const MH_DKNCThue = () => {
                           <button
                             key={c.id}
                             onMouseDown={() => {
+                              setSelectedKHId(c.id);
                               setKhachHang(`${c.id} - ${c.name} - ${c.sdt}`);
                               setShowKHDropdown(false);
                             }}
@@ -326,6 +379,29 @@ export const MH_DKNCThue = () => {
                 </div>
               </div>
 
+              {/* Loại phòng */}
+              <div>
+                <FieldLabel icon={<Sofa size={15} strokeWidth={2} />} label="Loại phòng" />
+                <div className="relative">
+                  <select
+                    className={inputCls + " appearance-none pr-10 cursor-pointer"}
+                    style={inter}
+                    value={loaiPhong}
+                    onChange={(e) => setLoaiPhong(e.target.value)}
+                  >
+                    <option value="">Chọn loại phòng</option>
+                    {dsLoaiPhong.map((lp) => (
+                      <option key={lp.MaLoai} value={lp.MaLoai}>{lp.TenLoai}</option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    size={16}
+                    strokeWidth={2}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  />
+                </div>
+              </div>
+
               {/* Ngày vào ở */}
               <div>
                 <FieldLabel icon={<CalendarDays size={15} strokeWidth={2} />} label="Thời điểm vào ở" />
@@ -357,12 +433,12 @@ export const MH_DKNCThue = () => {
             <div>
               <FieldLabel icon={<Star size={15} strokeWidth={2} />} label="Tiêu chí Ưu tiên" />
               <div className="flex flex-wrap gap-2 mt-1">
-                {TIEU_CHI.map(({ label, icon }) => {
-                  const active = tieuChi.includes(label);
+                {dsTieuChi.map(({ MaTieuChi, TenTieuChi }) => {
+                  const active = tieuChi.includes(MaTieuChi);
                   return (
                     <button
-                      key={label}
-                      onClick={() => toggleTieuChi(label)}
+                      key={MaTieuChi}
+                      onClick={() => toggleTieuChi(MaTieuChi)}
                       className={[
                         "flex items-center gap-1.5 px-4 py-2 rounded-full border text-sm font-medium transition-all duration-150",
                         active
@@ -371,8 +447,7 @@ export const MH_DKNCThue = () => {
                       ].join(" ")}
                       style={inter}
                     >
-                      {icon}
-                      {label}
+                      {TenTieuChi}
                     </button>
                   );
                 })}
@@ -402,12 +477,13 @@ export const MH_DKNCThue = () => {
                   <input
                     className={inputCls + " pl-9"}
                     style={inter}
-                    placeholder="Nhập mã hoặc tên hoặc SDT khách hàng"
+                    placeholder={
+                      searchTypeNhom === "HoTen" ? "Nhập tên khách hàng..." :
+                      searchTypeNhom === "MaKH"  ? "Nhập mã khách hàng..." :
+                                                   "Nhập số điện thoại..."
+                    }
                     value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setShowDropdown(true);
-                    }}
+                    onChange={(e) => { setSearchQuery(e.target.value); setShowDropdown(true); }}
                     onFocus={() => searchQuery.trim() && setShowDropdown(true)}
                   />
 
@@ -435,6 +511,25 @@ export const MH_DKNCThue = () => {
                       )}
                     </div>
                   )}
+                </div>
+
+                {/* Combobox loại tìm kiếm nhóm */}
+                <div className="relative shrink-0">
+                  <select
+                    className="h-full rounded-2xl border border-slate-200 bg-slate-50 pl-3 pr-8 text-sm text-slate-700 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 appearance-none cursor-pointer transition"
+                    style={inter}
+                    value={searchTypeNhom}
+                    onChange={(e) => {
+                      setSearchTypeNhom(e.target.value as "HoTen" | "MaKH" | "SDT");
+                      setSearchQuery("");
+                      setSuggestions([]);
+                    }}
+                  >
+                    <option value="HoTen">Tìm theo tên</option>
+                    <option value="MaKH">Tìm theo mã KH</option>
+                    <option value="SDT">Tìm theo SDT</option>
+                  </select>
+                  <ChevronDown size={14} strokeWidth={2} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 </div>
 
                 {/* Thêm button */}
@@ -573,6 +668,29 @@ export const MH_DKNCThue = () => {
                 </div>
               </div>
 
+              {/* Loại phòng */}
+              <div>
+                <FieldLabel icon={<Sofa size={15} strokeWidth={2} />} label="Loại phòng" />
+                <div className="relative">
+                  <select
+                    className={inputCls + " appearance-none pr-10 cursor-pointer"}
+                    style={inter}
+                    value={loaiPhong}
+                    onChange={(e) => setLoaiPhong(e.target.value)}
+                  >
+                    <option value="">Chọn loại phòng</option>
+                    {dsLoaiPhong.map((lp) => (
+                      <option key={lp.MaLoai} value={lp.MaLoai}>{lp.TenLoai}</option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    size={16}
+                    strokeWidth={2}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  />
+                </div>
+              </div>
+
               {/* Ngày + thời hạn */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -604,12 +722,12 @@ export const MH_DKNCThue = () => {
             <div>
               <FieldLabel icon={<Star size={15} strokeWidth={2} />} label="Tiêu chí Ưu tiên" />
               <div className="flex flex-wrap gap-2 mt-1">
-                {TIEU_CHI.map(({ label, icon }) => {
-                  const active = tieuChi.includes(label);
+                {dsTieuChi.map(({ MaTieuChi, TenTieuChi }) => {
+                  const active = tieuChi.includes(MaTieuChi);
                   return (
                     <button
-                      key={label}
-                      onClick={() => toggleTieuChi(label)}
+                      key={MaTieuChi}
+                      onClick={() => toggleTieuChi(MaTieuChi)}
                       className={[
                         "flex items-center gap-1.5 px-4 py-2 rounded-full border text-sm font-medium transition-all duration-150",
                         active
@@ -618,8 +736,7 @@ export const MH_DKNCThue = () => {
                       ].join(" ")}
                       style={inter}
                     >
-                      {icon}
-                      {label}
+                      {TenTieuChi}
                     </button>
                   );
                 })}

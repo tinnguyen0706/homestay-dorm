@@ -1,4 +1,7 @@
 import NhomThueBUS from "./NhomThueBUS.ts";
+import NhomThueDAO from "../DAO/NhomThueDAO.ts";
+import NhuCauThueDAO from "../DAO/NhuCauThueDAO.ts";
+import TieuChiDAO from "../DAO/TieuChiDAO.ts";
 
 export default class NhuCauThueBUS {
   private _MaNCT: string;
@@ -147,5 +150,12 @@ export default class NhuCauThueBUS {
 
   set TieuChi(value: string[]) {
     this._TieuChi = value;
+  }
+
+  static async ThemNCThue(NCT: NhuCauThueBUS): Promise<void> {
+    const MaNhomThue = await NhomThueDAO.ThemNhom(NCT);
+    NCT.NhomThue.MaNhomThue = MaNhomThue;
+    const MaNCT = await NhuCauThueDAO.ThemNCT(NCT);
+    await TieuChiDAO.ThemTieuChi_NCT(NCT.TieuChi, MaNCT);
   }
 }
