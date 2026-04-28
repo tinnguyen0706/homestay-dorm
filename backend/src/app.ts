@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import TaiKhoanNVRoute from "./routes/TaiKhoanNV.routes.ts";
+import KhachHangRoute from "./routes/KhachHang.route.ts";
+import PhongRoute from "./routes/phong.routes.ts";
 
 dotenv.config();
 
@@ -12,6 +14,8 @@ app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 
 app.use("/TaiKhoanNV", TaiKhoanNVRoute);
+app.use("/KhachHang", KhachHangRoute);
+app.use("/api/phong", PhongRoute);
 
 app.listen(port, () => {
   console.log(`Server running: http://localhost:${port}`);

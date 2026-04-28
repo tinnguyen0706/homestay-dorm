@@ -1,55 +1,27 @@
-import KhachHangBUS from "../BUS/KhachHangBUS.ts";
 import pool from "../config/db.ts";
+import KhachHangBUS from "../BUS/KhachHangBUS.ts";
 
 export default class KhachHangDAO {
   static async LayDSKH(
-    MaKH: string | null = null,
-    HoTen: string | null = null,
-    SDT: string | null = null,
-  ): Promise<KhachHangBUS[]> {
-    const conditions: string[] = [];
-    const values: string[] = [];
+    MaKH?: string,
+    HoTen?: string,
+    SDT?: string,
+  ): Promise<Array<KhachHangBUS>> {
+    let query =
+      'SELECT makh as "MaKH", hoten as "HoTen", gioitinh as "GioiTinh", email as "Email", sdt as "SDT", quoctich as "QuocTich", manhomthue as "MaNhomThue" FROM khachhang';
+    const params: string[] = [];
 
-    if (MaKH !== null && MaKH !== "") {
-      values.push(MaKH);
-      conditions.push(`MaKH = $${values.length}`);
+    if (MaKH) {
+      query += " WHERE makh ILIKE $1";
+      params.push("%" + MaKH + "%");
+    } else if (HoTen) {
+      query += " WHERE hoten ILIKE $1";
+      params.push("%" + HoTen + "%");
+    } else if (SDT) {
+      query += " WHERE sdt ILIKE $1";
+      params.push("%" + SDT + "%");
     }
-
-    if (HoTen !== null && HoTen !== "") {
-      values.push(HoTen);
-      conditions.push(`HoTen ILIKE $${values.length}`);
-    }
-
-    if (SDT !== null && SDT !== "") {
-      values.push(SDT);
-      conditions.push(`SDT = $${values.length}`);
-    }
-
-    const whereClause =
-      conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
-
-    const result = await pool.query(
-      `
-                SELECT MaKH, HoTen, GioiTinh, Email, QuocTich, SDT, MaNhomThue
-                FROM KHACHHANG
-                ${whereClause}
-                ORDER BY MaKH
-            `,
-      values,
-    );
-
-    return result.rows.map(
-      (row) =>
-        new KhachHangBUS(
-          row.makh,
-          row.hoten,
-          row.gioitinh,
-          row.email,
-          row.quoctich,
-          row.sdt,
-          row.manhomthue,
-          "",
-        ),
-    );
+    const result = await pool.query(query, params);
+    return result.rows.map((row) => new KhachHangBUS(row));
   }
 }
