@@ -7,6 +7,7 @@ import { MH_DKNCThue } from "./pages/MH_DKNCThue.tsx";
 import { MH_DSNhuCauThue } from "./pages/MH_DSNhuCauThue.tsx";
 import { MH_DSKH } from "./pages/MH_DSKH.tsx";
 import { MH_TaoKH } from "./pages/MH_TaoKH.tsx";
+import { MH_ChiTietPhong } from "./pages/MH_ChiTietPhong.tsx";
 import { MainLayout } from "./layouts/MainLayout.tsx";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           <Route path="/" element={<MH_DangNhap />} />
           <Route element={<MainLayout />}>
             <Route path="/DSPhong"      element={<MH_DSPhong />} />
+            <Route path="/ChiTietPhong/:id" element={<MH_ChiTietPhong />} />
             <Route path="/DSKH"         element={<MH_DSKH />} />
             <Route path="/TaoKH"        element={<MH_TaoKH />} />
             <Route path="/DKNCThue"     element={<MH_DKNCThue />} />
