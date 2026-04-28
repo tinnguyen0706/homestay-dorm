@@ -1,8 +1,11 @@
-import TaiKhoanNVBUS from "../BUS/TaiKhoanNVBUS.ts";
+// import TaiKhoanNVBUS from "../BUS/TaiKhoanNVBUS.ts";
 
-const TaiKhoanNV = { Username: "admin", Password: "@Admin12" };
-const bus = new TaiKhoanNVBUS(TaiKhoanNV);
-const result = await bus.KTraTK();
+// const bus = new TaiKhoanNVBUS("admin", "@Admin12");
+// const result = await bus.KTraTK();
+import LoaiPhongBUS from "../BUS/LoaiPhongBUS.ts";
+import { PhongBUS } from "../BUS/PhongBUS.ts";
+
+const result = await LoaiPhongBUS.LayDSLoaiPhong();
 
 console.log("-----------KET QUA: ", result);
 
