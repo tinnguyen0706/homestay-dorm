@@ -18,27 +18,27 @@
             this.SDT = KhachHang.SDT;
             this.MaNhomThue = KhachHang.MaNhomThue;
         }
-        async ThemKH(): Promise<{ MaKH: string }> {
-        // Gọi hàm kiểm tra trước (theo bước 2.1 trong sơ đồ)
-        if (this.KTraTTKH()) {
-            // Nếu hợp lệ -> Gọi xuống DAO (bước 2.3 trong sơ đồ)
-            return await KhachHangDAO.ThemKH(this);
+        static async ThemKH(kh: {
+            HoTen: string;
+            GioiTinh: string;
+            Email: string;
+            SDT: string;
+            QuocTich: string;
+        }): Promise<{ MaKH: string }> {
+                return await KhachHangDAO.ThemKH(kh);
         }
-        throw new Error("Thông tin không hợp lệ");
-    }
-        
-        KTraTTKH(): boolean {
-        if (!this.HoTen || this.HoTen.trim().length < 2) {
-            throw new Error("Họ tên không hợp lệ");
+        static KTraTTKH(kh: { HoTen: string; SDT: string; Email: string; }): boolean {
+            if (!kh.HoTen || kh.HoTen.trim().length < 2) {
+                throw new Error("Họ tên không hợp lệ (tối thiểu 2 ký tự)");
+            }
+            if (!/^\d{10,11}$/.test(kh.SDT)) {
+                throw new Error("Số điện thoại không đúng định dạng (10-11 số)");
+            }
+            if (kh.Email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(kh.Email)) {
+                throw new Error("Email không đúng định dạng");
+            }
+            return true; 
         }
-        if (!/^\d{10,11}$/.test(this.SDT)) {
-            throw new Error("Số điện thoại phải có 10-11 chữ số");
-        }
-        if (this.Email && !this.Email.includes("@")) {
-            throw new Error("Email không đúng định dạng");
-        }
-        return true; // Trả về true nếu mọi thứ hợp lệ
-    }
 
         static async LayDSKH(MaKH?: string, HoTen?: string, SDT?: string): Promise<Array<KhachHangBUS>> {
             const result = await KhachHangDAO.LayDSKH(MaKH, HoTen, SDT);

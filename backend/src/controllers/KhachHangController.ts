@@ -16,10 +16,17 @@ export async function LayDSKH(req: Request, res: Response) {
 
 export async function ThemKH(req: Request, res: Response) {
     try {
-        const bus = new KhachHangBUS(req.body);
-        const result = await bus.ThemKH();
-        res.status(201).json(result);
+        const formData = req.body;
+
+        // BƯỚC 1: Gọi kiểm tra trước
+        KhachHangBUS.KTraTTKH(formData);
+
+        // BƯỚC 2: Nếu bước 1 không ném lỗi (throw error), thực hiện thêm
+        const result = await KhachHangBUS.ThemKH(formData);
+
+        res.status(200).json(result);
     } catch (error: any) {
+        // Trả về lỗi từ KTraTTKH hoặc từ Database
         res.status(400).json({ message: error.message });
     }
 }
