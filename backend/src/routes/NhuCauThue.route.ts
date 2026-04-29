@@ -1,11 +1,11 @@
-// src/routes/nhuCauThueRoutes.ts
 import { Router } from "express";
-import { getChiTietNhuCauThue, getDanhSachNhuCauThue, getFilterOptions } from "../controllers/NhuCauThueController.ts";
+import NhuCauThueController from "../controllers/NhuCauThueController.ts";
 
 const router = Router();
 
-router.get("/", getDanhSachNhuCauThue);
-router.get("/filter-options", getFilterOptions);
-router.get("/:id", getChiTietNhuCauThue);
+router.post("/ThemNCThue", NhuCauThueController.ThemNCThue);
+router.get("/", NhuCauThueController.getDanhSachNhuCauThue);
+router.get("/filter-options", NhuCauThueController.getFilterOptions);
+router.get("/:id", NhuCauThueController.getChiTietNhuCauThue);
 
 export default router;

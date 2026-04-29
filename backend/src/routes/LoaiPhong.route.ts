@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { getDanhSachLoaiPhong } from "../controllers/LoaiPhongController.ts";
+import LoaiPhongController from "../controllers/LoaiPhongController.ts";
 
 const router = Router();
 
-router.get("/", getDanhSachLoaiPhong);
+router.get("/LayDSLoaiPhong", LoaiPhongController.LayDSLoaiPhong);
 
 export default router;
