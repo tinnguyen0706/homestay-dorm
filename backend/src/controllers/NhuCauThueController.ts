@@ -19,6 +19,7 @@ export default class NhuCauThueController {
                 KhuVuc,
                 TrangThai,
                 TieuChi,
+                LoaiDangKy,
             } = req.body;
 
             const nhomThue = new NhomThueBUS(
@@ -43,6 +44,11 @@ export default class NhuCauThueController {
                 TrangThai,
                 TieuChi,
             );
+
+            const errors = NhuCauThueBUS.KiemTraThongTin(NCT, LoaiDangKy);
+            if (errors.length > 0) {
+                return res.status(422).json({ errors });
+            }
 
             await NhuCauThueBUS.ThemNCThue(NCT);
             res.status(201).json({ message: "Thêm nhu cầu thuê thành công" });
