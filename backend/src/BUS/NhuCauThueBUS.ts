@@ -18,6 +18,9 @@ export default class NhuCauThueBUS {
   private _TrangThai: string;
   private _TieuChi: string[];
 
+  private _TenKhachHang: string;
+  private _TenLoaiPhong: string;
+
   constructor(
     MaNCT: string = "",
     MaKH_DaiDien: string = "",
@@ -32,6 +35,8 @@ export default class NhuCauThueBUS {
     KhuVuc: string = "",
     TrangThai: string = "",
     TieuChi: string[] = [],
+    TenKhachHang: string,
+    TenLoaiPhong: string,
   ) {
     this._MaNCT = MaNCT;
     this._MaKH_DaiDien = MaKH_DaiDien;
@@ -46,6 +51,8 @@ export default class NhuCauThueBUS {
     this._KhuVuc = KhuVuc;
     this._TrangThai = TrangThai;
     this._TieuChi = TieuChi;
+    this._TenKhachHang = TenKhachHang;
+    this._TenLoaiPhong = TenLoaiPhong;
   }
 
   get MaNCT(): string {

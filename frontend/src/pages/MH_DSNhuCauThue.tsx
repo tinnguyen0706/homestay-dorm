@@ -15,21 +15,21 @@ import { NCTDetailModal } from "@/components/NCTDetailModal.tsx";
 
 // Update Interface chuẩn khớp với backend
 export interface INhuCauThue {
-  MaNhuCau: string;
+  MaNCT: string;
+  MaKH_DaiDien: string;
+  NhomThue: any;
+  LoaiPhong: string;
   SoNguoiDuKien: number;
   HinhThucThue: string;
   GiaMin: number;
   GiaMax: number;
-  ThoiDiemVao: string;
+  ThoiDiemVao: Date;
   ThoiHanThue: number;
   KhuVuc: string;
   TrangThai: string;
-  MaKH: string;
-  MaLoai: string;
-  MaNhomThue?: string;
-  // Các trường join thêm để UI hiển thị
-  TenKhachHang?: string;
-  TenLoaiPhong?: string;
+  TieuChi: string[];
+  TenKhachHang: string;
+  TenLoaiPhong: string;
 }
 
 // Map màu trạng thái theo đúng DB Check Constraint ('Chờ duyệt', 'Đang tìm', 'Đã khớp', 'Đã hủy', 'Hết hạn')
@@ -160,17 +160,17 @@ export const MH_DSNhuCauThue = () => {
                     ) : (
                       currentItems.map((item) => (
                         <TableRow
-                          key={item.MaNhuCau}
+                          key={item.MaNCT}
                           className="border-b border-[#BFCAba]/10 h-[81px] hover:bg-gray-50/50 transition-colors"
                         >
                           <TableCell className="font-manrope font-bold text-[16px] text-[#00490E] px-6">
-                            #{item.MaNhuCau}
+                            #{item.MaNCT}
                           </TableCell>
                           <TableCell className="font-semibold text-[16px] text-[#181C22]">
                             {item.TenKhachHang || "N/A"}
                           </TableCell>
                           <TableCell className="text-[14px] text-[#40493D]">
-                            {item.TenLoaiPhong || item.MaLoai}
+                            {item.TenLoaiPhong || item.LoaiPhong}
                           </TableCell>
                           <TableCell className="text-[14px] text-[#40493D] text-center font-medium">
                             {item.SoNguoiDuKien}
@@ -193,7 +193,7 @@ export const MH_DSNhuCauThue = () => {
                           </TableCell>
                           <TableCell className="text-center px-6">
                             <button
-                              onClick={() => handleOpenDetail(item.MaNhuCau)}
+                              onClick={() => handleOpenDetail(item.MaNCT)}
                               className="text-[14px] font-bold text-[#047857] hover:text-[#0D631B] hover:underline underline-offset-2 transition-colors whitespace-nowrap"
                             >
                               Xem chi tiết

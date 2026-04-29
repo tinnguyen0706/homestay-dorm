@@ -53,6 +53,8 @@ export default class NhuCauThueController {
         KhuVuc,
         TrangThai,
         TieuChi,
+        "", // TenKhachHang sẽ được lấy từ DB sau khi có MaKH_DaiDien
+        "", // TenLoaiPhong sẽ được lấy từ DB sau khi có LoaiPhong
       );
 
       const errors = NhuCauThueBUS.KiemTraThongTin(NCT, LoaiDangKy);

@@ -83,6 +83,8 @@ export default class NhuCauThueDAO {
           row.khuvuc,
           row.trangthai,
           [], // Cần truy vấn thêm nếu có bảng liên quan
+          row.tenkhachhang,
+          row.tenloaiphong,
         ),
     );
   }
@@ -117,6 +119,8 @@ export default class NhuCauThueDAO {
       row.khuvuc,
       row.trangthai,
       [], // Cần truy vấn thêm nếu có bảng liên quan
+      row.tenkhachhang,
+      row.tenloaiphong,
     );
   }
 }
