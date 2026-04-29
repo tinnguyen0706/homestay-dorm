@@ -23,7 +23,7 @@ export default class KhachHangDAO {
         const result = await pool.query(query, params);
         return result.rows.map((row) => new KhachHangBUS(row));
     }
-    static async insert(data: {
+    static async ThemKH(data: {
         HoTen: string;
         GioiTinh: string;
         Email: string;

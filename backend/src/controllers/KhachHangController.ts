@@ -14,10 +14,10 @@ export async function LayDSKH(req: Request, res: Response) {
     }
 }
 
-export async function TaoKH(req: Request, res: Response) {
+export async function ThemKH(req: Request, res: Response) {
     try {
         const bus = new KhachHangBUS(req.body);
-        const result = await bus.TaoKhachHang();
+        const result = await bus.ThemKH();
         res.status(201).json(result);
     } catch (error: any) {
         res.status(400).json({ message: error.message });

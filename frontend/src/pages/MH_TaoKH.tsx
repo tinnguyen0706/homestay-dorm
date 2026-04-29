@@ -1,26 +1,32 @@
 // frontend/src/pages/MH_TaoKH.tsx
 import { useState } from "react";
-import { ChevronDown, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import apiClient from "@/apiClient";
-import { toast } from "sonner"; 
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/combobox"; 
 
 export const MH_TaoKH = () => {
   const [formData, setFormData] = useState({
-    HoTen: "",
-    GioiTinh: "Nam",
-    QuocTich: "Việt Nam",
-    Email: "",
-    SDT: "",
+    HoTen: "", GioiTinh: "Nam", QuocTich: "Việt Nam", Email: "", SDT: ""
   });
-
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
+  // Bước 1.0: NhapThongTin() - Cập nhật dữ liệu từ các TextBox/ComboBox
+  const NhapThongTin = (truong: string, giaTri: string) => {
+    setFormData(prev => ({ ...prev, [truong]: giaTri }));
+  };
+
+  // Bước 2.0: btnTaoKH() - Khi nhân viên nhấn nút Tạo
+  const btn_TaoKH_click = async () => {
     try {
       setLoading(true);
-      const res = await apiClient.post("/KhachHang/TaoKH", formData);
+      // Gửi yêu cầu sang hệ thống (bước 2.1, 2.2, 2.3 diễn ra ở Backend)
+      const res = await apiClient.post("/KhachHang/ThemKH", formData);
       alert(`Tạo thành công khách hàng mã: ${res.data.MaKH}`);
-      // Reset form
       setFormData({ HoTen: "", GioiTinh: "Nam", QuocTich: "Việt Nam", Email: "", SDT: "" });
     } catch (error: any) {
       alert(error.response?.data?.message || "Có lỗi xảy ra");
@@ -30,108 +36,75 @@ export const MH_TaoKH = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#F9F9FF] p-10 font-inter">
-      <div className="max-w-[896px] mx-auto">
-        {/* Title */}
-        <h1 className="text-[#064E3B] text-[30px] font-extrabold font-manrope mb-10">
-          Tạo khách hàng mới
-        </h1>
-
-        {/* Card Form */}
-        <div className="relative bg-white rounded-[16px] shadow-[0px_4px_40px_-15px_rgba(13,99,27,0.08)] p-10 overflow-hidden">
-          <div className="grid grid-cols-2 gap-x-10 gap-y-6">
-            {/* Họ và tên - Full width */}
+    <div className="w-full min-h-screen bg-slate-50 p-10 font-inter">
+      <div className="max-w-[896px] mx-auto mt-12">
+        <h1 className="text-emerald-900 text-3xl font-extrabold font-manrope leading-9 mb-10">Tạo khách hàng mới</h1>
+        <Card className="relative border-none bg-white rounded-2xl shadow-[0px_4px_40px_-15px_rgba(13,99,27,0.08)] p-10 overflow-hidden">
+          <div className="w-64 h-64 -right-32 -top-32 absolute bg-green-900/5 rounded-full pointer-events-none" />
+          <div className="grid grid-cols-2 gap-x-10 gap-y-8 relative z-10">
+            
             <div className="col-span-2 flex flex-col gap-2">
-              <label className="text-[rgba(6,78,59,0.80)] text-sm font-semibold">Họ và tên</label>
-              <input
-                type="text"
+              <Label className="text-emerald-900/80 text-sm font-semibold">Họ và tên</Label>
+              <Input
                 placeholder="Nguyễn Văn A"
-                className="w-full bg-[#F1F3FC] rounded-[16px] px-5 py-4 outline-none text-[#181C22] placeholder:text-[#94A3B8]"
+                className="h-14 bg-slate-100 border-none rounded-2xl px-5"
                 value={formData.HoTen}
-                onChange={(e) => setFormData({ ...formData, HoTen: e.target.value })}
+                onChange={(e) => NhapThongTin("HoTen", e.target.value)} // Gọi NhapThongTin()
               />
             </div>
 
-            {/* Giới tính */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[rgba(6,78,59,0.80)] text-sm font-semibold">Giới tính</label>
-              <div className="flex bg-[#F1F3FC] p-1 rounded-[16px] gap-2">
-                <button
-                  onClick={() => setFormData({ ...formData, GioiTinh: "Nam" })}
-                  className={`flex-1 py-3 rounded-[6px] text-sm font-medium transition-all ${
-                    formData.GioiTinh === "Nam" 
-                    ? "bg-white text-[#064E3B] shadow-sm" 
-                    : "text-[#64748B]"
-                  }`}
-                >
-                  Nam
-                </button>
-                <button
-                  onClick={() => setFormData({ ...formData, GioiTinh: "Nữ" })}
-                  className={`flex-1 py-3 rounded-[6px] text-sm font-medium transition-all ${
-                    formData.GioiTinh === "Nữ" 
-                    ? "bg-white text-[#064E3B] shadow-sm" 
-                    : "text-[#64748B]"
-                  }`}
-                >
-                  Nữ
-                </button>
-              </div>
+            <div className="flex flex-col gap-2 w-full">
+              <Label className="text-emerald-900/80 text-sm font-semibold">Giới tính</Label>
+              <Tabs value={formData.GioiTinh} onValueChange={(v) => NhapThongTin("GioiTinh", v)} className="w-full">
+                <TabsList className="grid grid-cols-2 w-full bg-slate-100 p-1 rounded-2xl h-14 border-none">
+                  <TabsTrigger value="Nam" className="h-12 rounded-lg data-[state=active]:bg-white">Nam</TabsTrigger>
+                  <TabsTrigger value="Nữ" className="h-12 rounded-lg data-[state=active]:bg-white">Nữ</TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
 
-            {/* Quốc tịch */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[rgba(6,78,59,0.80)] text-sm font-semibold">Quốc tịch</label>
-              <div className="relative">
-                <select
-                  className="w-full bg-[#F1F3FC] rounded-[16px] px-5 py-4 outline-none text-[#181C22] appearance-none cursor-pointer"
-                  value={formData.QuocTich}
-                  onChange={(e) => setFormData({ ...formData, QuocTich: e.target.value })}
-                >
-                  <option value="Việt Nam">Việt Nam</option>
-                  <option value="Khác">Khác</option>
-                </select>
-                <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none" size={20} />
-              </div>
+            <div className="flex flex-col gap-2 w-full">
+              <Label className="text-emerald-900/80 text-sm font-semibold">Quốc tịch</Label>
+              <Select value={formData.QuocTich} onValueChange={(v) => NhapThongTin("QuocTich", v)}>
+                <SelectTrigger className="h-14 w-full bg-slate-100 border-none rounded-2xl px-5 focus:ring-0">
+                  <SelectValue placeholder="Chọn quốc tịch" />
+                </SelectTrigger>
+                <SelectContent><SelectItem value="Việt Nam">Việt Nam</SelectItem><SelectItem value="Khác">Khác</SelectItem></SelectContent>
+              </Select>
             </div>
 
-            {/* Email */}
             <div className="flex flex-col gap-2">
-              <label className="text-[rgba(6,78,59,0.80)] text-sm font-semibold">Email</label>
-              <input
-                type="email"
-                placeholder="example@homestay.com"
-                className="w-full bg-[#F1F3FC] rounded-[16px] px-5 py-4 outline-none text-[#181C22] placeholder:text-[#94A3B8]"
+              <Label className="text-emerald-900/80 text-sm font-semibold">Email</Label>
+              <Input
+                type="email" placeholder="example@homestay.com"
+                className="h-14 bg-slate-100 border-none rounded-2xl px-5"
                 value={formData.Email}
-                onChange={(e) => setFormData({ ...formData, Email: e.target.value })}
+                onChange={(e) => NhapThongTin("Email", e.target.value)} // Gọi NhapThongTin()
               />
             </div>
 
-            {/* Số điện thoại */}
             <div className="flex flex-col gap-2">
-              <label className="text-[rgba(6,78,59,0.80)] text-sm font-semibold">Số điện thoại</label>
-              <input
-                type="text"
+              <Label className="text-emerald-900/80 text-sm font-semibold">Số điện thoại</Label>
+              <Input
                 placeholder="090 1234 567"
-                className="w-full bg-[#F1F3FC] rounded-[16px] px-5 py-4 outline-none text-[#181C22] placeholder:text-[#94A3B8]"
+                className="h-14 bg-slate-100 border-none rounded-2xl px-5"
                 value={formData.SDT}
-                onChange={(e) => setFormData({ ...formData, SDT: e.target.value })}
+                onChange={(e) => NhapThongTin("SDT", e.target.value)} // Gọi NhapThongTin()
               />
             </div>
 
-            {/* Submit Button */}
-            <div className="col-span-2 flex justify-end mt-4">
-              <button
+            <div className="col-span-2 flex justify-end mt-6">
+              <Button
                 disabled={loading}
-                onClick={handleSubmit}
-                className="flex items-center gap-2 bg-[#0D631B] text-white px-10 py-4 rounded-[16px] font-bold text-base hover:bg-[#0a4d15] transition-all shadow-[0px_10px_15px_-3px_rgba(13,99,27,0.20)] active:scale-95"
+                onClick={btn_TaoKH_click} // Bước 2.0
+                className="h-14 px-10 bg-green-900 hover:bg-emerald-950 text-white rounded-2xl font-bold shadow-lg flex items-center gap-2"
               >
                 {loading ? "Đang xử lý..." : "Tạo khách hàng"}
-                <ArrowRight size={18} strokeWidth={3} />
-              </button>
+                <ArrowRight className="w-5 h-5" strokeWidth={3} />
+              </Button>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );
