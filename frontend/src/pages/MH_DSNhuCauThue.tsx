@@ -62,7 +62,7 @@ export const MH_DSNhuCauThue = () => {
   const fetchNhuCauThue = async (filters = {}) => {
     try {
       setLoading(true);
-      const res = await apiClient.get("/api/nhucauthue", { params: filters });
+      const res = await apiClient.get("/NhuCauThue", { params: filters });
       if (res.data.success) {
         setDanhSach(res.data.data);
       }

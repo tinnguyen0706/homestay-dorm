@@ -43,7 +43,7 @@ export function NCTDetailModal({ maNCT, open, onClose }: NCTDetailModalProps) {
       const fetchDetail = async () => {
         try {
           setLoading(true);
-          const res = await apiClient.get(`/api/nhucauthue/${maNCT}`);
+          const res = await apiClient.get(`/NhuCauThue/${maNCT}`);
           if (res.data.success) {
             setData(res.data.data);
           }

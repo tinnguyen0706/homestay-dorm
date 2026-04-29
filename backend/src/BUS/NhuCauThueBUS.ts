@@ -35,8 +35,8 @@ export default class NhuCauThueBUS {
     KhuVuc: string = "",
     TrangThai: string = "",
     TieuChi: string[] = [],
-    TenKhachHang: string,
-    TenLoaiPhong: string,
+    TenKhachHang: string = "",
+    TenLoaiPhong: string = "",
   ) {
     this._MaNCT = MaNCT;
     this._MaKH_DaiDien = MaKH_DaiDien;
@@ -157,6 +157,22 @@ export default class NhuCauThueBUS {
 
   set TieuChi(value: string[]) {
     this._TieuChi = value;
+  }
+
+  get TenKhachHang(): string {
+    return this._TenKhachHang;
+  }
+
+  set TenKhachHang(value: string) {
+    this._TenKhachHang = value;
+  }
+
+  get TenLoaiPhong(): string {
+    return this._TenLoaiPhong;
+  }
+
+  set TenLoaiPhong(value: string) {
+    this._TenLoaiPhong = value;
   }
 
   static KiemTraThongTin(

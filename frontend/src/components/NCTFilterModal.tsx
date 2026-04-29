@@ -51,7 +51,7 @@ export function NCTFilterModal({ onApplyFilter }: NCTFilterModalProps) {
   useEffect(() => {
     const loadOptions = async () => {
       try {
-        const res = await apiClient.get("/api/nhucauthue/filter-options");
+        const res = await apiClient.get("/NhuCauThue/filter-options");
         if (res.data.success) {
           // Chỉ lấy loaiPhongs, không lấy khuVucs nữa
           setLoaiPhongs(res.data.data.loaiPhongs);

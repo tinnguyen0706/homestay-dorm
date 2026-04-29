@@ -5,8 +5,8 @@ import cookieParser from "cookie-parser";
 import TaiKhoanNVRoute from "./routes/TaiKhoanNV.routes.ts";
 import KhachHangRoute from "./routes/KhachHang.route.ts";
 import PhongRoute from "./routes/phong.routes.ts";
-import NhuCauThueRoute from "./routes/NhuCauThue.routes.ts";
-import LoaiPhongRoute from "./routes/LoaiPhong.routes.ts";
+import NhuCauThueRoute from "./routes/NhuCauThue.route.ts";
+import LoaiPhongRoute from "./routes/LoaiPhong.route.ts";
 import TieuChiRoute from "./routes/TieuChi.routes.ts";
 import { authMiddleware } from "./middlewares/auth.middleware.ts";
 
