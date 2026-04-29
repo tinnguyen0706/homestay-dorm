@@ -34,24 +34,6 @@ type APICustomer = {
 
 type SearchField = "MaKH" | "HoTen" | "SDT";
 
-type SearchParams = {
-  MaKH?: string;
-  HoTen?: string;
-  SDT?: string;
-};
-
-const HienThi = async (searchParams?: SearchParams) => {
-  try {
-    const response = await apiClient.get<APICustomer[]>("/KhachHang/LayDSKH", {
-      params: searchParams,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching customers:", error);
-    return [];
-  }
-};
-
 const GenderBadge = ({ gender }: { gender: string }) => {
   const normalizedGender = (gender ?? "").trim().toLowerCase();
   const isMale = normalizedGender === "nam";
@@ -100,29 +82,21 @@ export const MH_DSKH = () => {
   const [searchField, setSearchField] = useState<SearchField>("HoTen");
   const [searchValue, setSearchValue] = useState("");
 
-  const taoThamSoTimKiem = (
-    field: SearchField,
-    term: string
-  ): SearchParams | undefined => {
-    const keyword = term.trim();
-    if (!keyword) {
-      return undefined;
+  const HienThi = async (field?: string, value?: string) => {
+    try {
+      const response = await apiClient.get<APICustomer[]>("/KhachHang/LayDSKH", {
+        params: field && value ? { [field]: value } : undefined,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+      return [];
     }
-
-    if (field === "MaKH") {
-      return { MaKH: keyword };
-    }
-
-    if (field === "HoTen") {
-      return { HoTen: keyword };
-    }
-
-    return { SDT: keyword };
   };
 
   useEffect(() => {
     const load = async () => {
-      const data = await HienThi();
+      const data = await HienThi(searchField, searchValue);
       setDanhSachKhachHang(data);
     };
 
@@ -146,11 +120,10 @@ export const MH_DSKH = () => {
   }, [danhSachKhachHang, currentPage]);
 
   const handleSearch = async (
-    field: SearchField = searchField,
-    value: string = searchValue
+    field: string,
+    value: string
   ) => {
-    const searchParams = taoThamSoTimKiem(field, value);
-    const data = await HienThi(searchParams);
+    const data = await HienThi(field, value);
     setDanhSachKhachHang(data);
     setCurrentPage(1);
   };
@@ -190,7 +163,7 @@ export const MH_DSKH = () => {
               onChange={(e) => setSearchValue(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  void handleSearch();
+                  void handleSearch(searchField, searchValue);
                 }
               }}
             />

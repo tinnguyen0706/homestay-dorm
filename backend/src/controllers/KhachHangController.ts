@@ -3,9 +3,9 @@ import type { Request, Response } from "express";
 
 export async function LayDSKH(req: Request, res: Response) {
     try {
-        const MaKH = String(req.query.MaKH || '');
-        const HoTen = String(req.query.HoTen || '');
-        const SDT = String(req.query.SDT || '');
+        const MaKH = req.query.MaKH ? String(req.query.MaKH) : undefined;
+        const HoTen = req.query.HoTen ? String(req.query.HoTen) : undefined;
+        const SDT = req.query.SDT ? String(req.query.SDT) : undefined;
         const result = await KhachHangBUS.LayDSKH(MaKH, HoTen, SDT);
         res.json(result);
     } catch (error) {
