@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS NHUCAUTHUE (
     GiaMin        NUMERIC(15, 2) NOT NULL CHECK (GiaMin >= 0),
     GiaMax        NUMERIC(15, 2) NOT NULL CHECK (GiaMax >= GiaMin),
     ThoiDiemVao   DATE           NOT NULL,
-    ThoiHanThue   SMALLINT       NOT NULL CHECK (ThoiHanThue > 0),
+    ThoiHanThue   SMALLINT       NOT NULL CHECK (ThoiHanThue > 2),
     KhuVuc        VARCHAR(100),
     TrangThai     VARCHAR(25)    NOT NULL
         CHECK (TrangThai IN ('Chờ duyệt', 'Đang tìm', 'Đã khớp', 'Đã hủy', 'Hết hạn')),

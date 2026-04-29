@@ -178,6 +178,7 @@ export const MH_DKNCThue = () => {
           KhuVuc: khuVuc,
           TrangThai: "Chờ duyệt",
           TieuChi: tieuChi,
+          LoaiDangKy: "ca-nhan",
         }
         : {
           MaKH_DaiDien: representativeId,
@@ -192,13 +193,18 @@ export const MH_DKNCThue = () => {
           KhuVuc: khuVuc,
           TrangThai: "Chờ duyệt",
           TieuChi: tieuChi,
+          LoaiDangKy: "nhom",
         };
 
       const res = await apiClient.post("/NhuCauThue/ThemNCThue", body);
       if (res.status !== 201) throw new Error("Thêm thất bại");
       toast.success("Đăng ký nhu cầu thuê thành công!");
-    } catch (error) {
-      toast.error("Đăng ký thất bại: " + error);
+    } catch (error: any) {
+      if (error.response?.status === 422 && Array.isArray(error.response?.data?.errors)) {
+        error.response.data.errors.forEach((msg: string) => toast.error(msg));
+      } else {
+        toast.error("Đăng ký thất bại.");
+      }
     }
   };
 
@@ -395,30 +401,30 @@ export const MH_DKNCThue = () => {
                 </div>
               </div>
 
-              {/* Ngày vào ở */}
-              <div>
-                <FieldLabel icon={<CalendarDays size={15} strokeWidth={2} />} label="Thời điểm vào ở" />
-                <input
-                  className={inputCls}
-                  style={inter}
-                  type="date"
-                  value={thoiDiemVao}
-                  onChange={(e) => setThoiDiemVao(e.target.value)}
-                />
-              </div>
-
-              {/* Thời hạn */}
-              <div>
-                <FieldLabel icon={<Timer size={15} strokeWidth={2} />} label="Thời hạn thuê (tháng)" />
-                <input
-                  className={inputCls}
-                  style={inter}
-                  type="number"
-                  min={1}
-                  placeholder="Ví dụ: 6"
-                  value={thoiHanThue}
-                  onChange={(e) => setThoiHanThue(e.target.value)}
-                />
+              {/* Ngày vào ở + Thời hạn */}
+              <div className="grid grid-cols-2 gap-3 md:col-span-2">
+                <div>
+                  <FieldLabel icon={<CalendarDays size={15} strokeWidth={2} />} label="Thời điểm vào ở" />
+                  <input
+                    className={inputCls}
+                    style={inter}
+                    type="date"
+                    value={thoiDiemVao}
+                    onChange={(e) => setThoiDiemVao(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <FieldLabel icon={<Timer size={15} strokeWidth={2} />} label="Thời hạn thuê (tháng)" />
+                  <input
+                    className={inputCls}
+                    style={inter}
+                    type="number"
+                    min={1}
+                    placeholder="Ví dụ: 6"
+                    value={thoiHanThue}
+                    onChange={(e) => setThoiHanThue(e.target.value)}
+                  />
+                </div>
               </div>
             </div>
 
@@ -685,7 +691,7 @@ export const MH_DKNCThue = () => {
               </div>
 
               {/* Ngày + thời hạn */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 md:col-span-2">
                 <div>
                   <FieldLabel icon={<CalendarDays size={15} strokeWidth={2} />} label="Thời điểm vào ở" />
                   <input

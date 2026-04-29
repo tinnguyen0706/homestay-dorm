@@ -152,6 +152,43 @@ export default class NhuCauThueBUS {
     this._TieuChi = value;
   }
 
+  static KiemTraThongTin(NCT: NhuCauThueBUS, loaiDangKy: "ca-nhan" | "nhom"): string[] {
+    const errors: string[] = [];
+
+    if (loaiDangKy === "ca-nhan" && (!NCT.MaKH_DaiDien || NCT.MaKH_DaiDien.trim() === "")) {
+      errors.push("Phải chọn khách hàng.");
+    }
+
+    if (loaiDangKy === "nhom") {
+      if (!NCT.MaKH_DaiDien || NCT.MaKH_DaiDien.trim() === "") {
+        errors.push("Phải chọn khách hàng đại diện.");
+      }
+      if (NCT.SoNguoiDuKien < 2) {
+        errors.push("Nhóm thuê phải có ít nhất 2 thành viên.");
+      }
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (isNaN(NCT.ThoiDiemVao.getTime()) || NCT.ThoiDiemVao <= today) {
+      errors.push("Thời điểm vào phải sau ngày hiện tại.");
+    }
+
+    if (!NCT.ThoiHanThue || NCT.ThoiHanThue <= 2) {
+      errors.push("Thời hạn thuê phải lớn hơn 2 tháng.");
+    }
+
+    if (!NCT.LoaiPhong || NCT.LoaiPhong.trim() === "") {
+      errors.push("Phải chọn loại phòng.");
+    }
+
+    if (NCT.GiaMin > NCT.GiaMax) {
+      errors.push("Giá tối thiểu không được lớn hơn giá tối đa.");
+    }
+
+    return errors;
+  }
+
   static async ThemNCThue(NCT: NhuCauThueBUS): Promise<void> {
     const MaNhomThue = await NhomThueDAO.ThemNhom(NCT);
     NCT.NhomThue.MaNhomThue = MaNhomThue;
