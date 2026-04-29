@@ -3,28 +3,28 @@ import { User, Lock } from "lucide-react";
 import { toast } from "sonner";
 import apiClient from "@/apiClient";
 import { useNavigate } from "react-router";
+import { useAuth } from "@/context/AuthContext";
 
 export const MH_DangNhap = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const btn_DangNhap_click = async () => {
     try {
-      const res = await apiClient.get("/TaiKhoanNV/KTraTK", {
-        params: { Username: username, Password: password },
+      const res = await apiClient.post("/TaiKhoanNV/DangNhap", {
+        Username: username,
+        Password: password,
       });
-      console.log("Kết quả: ", res.data);
-      if (res.data == true) {
-        toast.success("Đăng nhập thành công!");
-        setTimeout(() => {
-          navigate("/DSPhong");
-        }, 1000);
-      }
-      else toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.")
+      login(res.data.username);
+      toast.success("Đăng nhập thành công!");
+      setTimeout(() => {
+        navigate("/DSPhong");
+      }, 800);
     } catch (error) {
       console.log("--------Lỗi ở trang đăng nhập: ", error);
-      toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+      toast.error("Tên đăng nhập hoặc mật khẩu không đúng.");
     }
   };
 
