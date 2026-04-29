@@ -30,3 +30,18 @@ export async function ThemKH(req: Request, res: Response) {
         res.status(400).json({ message: error.message });
     }
 }
+
+export async function LayThongTinKH(req: Request, res: Response) {
+    try {
+        const MaKH = String(req.params.MaKH);
+        const result = await KhachHangBUS.LayThongTinKH(MaKH);
+        if (result) {
+            res.json(result);
+        } else {
+            res.status(404).json({ message: "Không tìm thấy khách hàng" });
+        }
+    } catch (error) {
+        console.log("--------------Lỗi: ", error);
+        return res.status(400).json({ message: error });
+    }
+}

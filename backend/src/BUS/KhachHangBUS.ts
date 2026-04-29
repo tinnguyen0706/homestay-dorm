@@ -1,13 +1,13 @@
-    import KhachHangDAO from "../DAO/KhachHangDAO.ts";
+import KhachHangDAO from "../DAO/KhachHangDAO.ts";
 
-    export default class KhachHangBUS {
-        MaKH: string;
-        HoTen: string;
-        GioiTinh: string;
-        Email: string;
-        QuocTich: string;
-        SDT: string;
-        MaNhomThue: string;
+export default class KhachHangBUS {
+  MaKH: string;
+  HoTen: string;
+  GioiTinh: string;
+  Email: string;
+  QuocTich: string;
+  SDT: string;
+  MaNhomThue: string;
 
         constructor(KhachHang: KhachHangBUS) {
             this.MaKH = KhachHang.MaKH;
@@ -40,8 +40,17 @@
             return true; 
         }
 
-        static async LayDSKH(MaKH?: string, HoTen?: string, SDT?: string): Promise<Array<KhachHangBUS>> {
-            const result = await KhachHangDAO.LayDSKH(MaKH, HoTen, SDT);
-            return result;
-        }
-    }
+  static async LayDSKH(
+    MaKH?: string,
+    HoTen?: string,
+    SDT?: string,
+  ): Promise<Array<KhachHangBUS>> {
+    const result = await KhachHangDAO.LayDSKH(MaKH, HoTen, SDT);
+    return result;
+  }
+
+  static async LayThongTinKH(MaKH: string): Promise<KhachHangBUS | null> {
+    const result = await KhachHangDAO.LayThongTinKH(MaKH);
+    return result;
+  }
+}
