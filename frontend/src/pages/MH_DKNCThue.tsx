@@ -16,9 +16,9 @@ import {
   Sofa,
 } from "lucide-react";
 import { toast } from "sonner";
+import apiClient from "@/apiClient";
 
 const inter = { fontFamily: "Inter, sans-serif" };
-const API = import.meta.env.VITE_API_URL as string;
 
 type Customer = { id: string; name: string; sdt: string };
 type LoaiPhong = { MaLoai: string; TenLoai: string };
@@ -86,13 +86,11 @@ export const MH_DKNCThue = () => {
 
   // Load danh sách loại phòng và tiêu chí khi mount
   useEffect(() => {
-    fetch(`${API}/LoaiPhong/LayDSLoaiPhong`)
-      .then((r) => r.json())
-      .then(setDsLoaiPhong)
+    apiClient.get("/LoaiPhong/LayDSLoaiPhong")
+      .then((r) => setDsLoaiPhong(r.data))
       .catch(console.error);
-    fetch(`${API}/TieuChi/LayDSTC`)
-      .then((r) => r.json())
-      .then(setDsTieuChi)
+    apiClient.get("/TieuChi/LayDSTC")
+      .then((r) => setDsTieuChi(r.data))
       .catch(console.error);
   }, []);
 
@@ -101,9 +99,8 @@ export const MH_DKNCThue = () => {
     if (!khachHang.trim()) { setKhachHangSuggestions([]); return; }
     const t = setTimeout(async () => {
       try {
-        const res = await fetch(`${API}/KhachHang/LayDSKH?${searchTypeKH}=${encodeURIComponent(khachHang)}`);
-        const data = await res.json();
-        setKhachHangSuggestions(data.map((c: { MaKH: string; HoTen: string; SDT: string }) => ({ id: c.MaKH, name: c.HoTen, sdt: c.SDT })));
+        const res = await apiClient.get(`/KhachHang/LayDSKH?${searchTypeKH}=${encodeURIComponent(khachHang)}`);
+        setKhachHangSuggestions(res.data.map((c: { MaKH: string; HoTen: string; SDT: string }) => ({ id: c.MaKH, name: c.HoTen, sdt: c.SDT })));
       } catch { setKhachHangSuggestions([]); }
     }, 300);
     return () => clearTimeout(t);
@@ -114,10 +111,9 @@ export const MH_DKNCThue = () => {
     if (!searchQuery.trim()) { setSuggestions([]); return; }
     const t = setTimeout(async () => {
       try {
-        const res = await fetch(`${API}/KhachHang/LayDSKH?${searchTypeNhom}=${encodeURIComponent(searchQuery)}`);
-        const data = await res.json();
+        const res = await apiClient.get(`/KhachHang/LayDSKH?${searchTypeNhom}=${encodeURIComponent(searchQuery)}`);
         setSuggestions(
-          data
+          res.data
             .map((c: { MaKH: string; HoTen: string; SDT: string }) => ({ id: c.MaKH, name: c.HoTen, sdt: c.SDT }))
             .filter((c: Customer) => !members.find((m) => m.id === c.id))
         );
@@ -138,7 +134,7 @@ export const MH_DKNCThue = () => {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const addMember = (c: Customer) => {
+  const btn_Them_click = (c: Customer) => {
     setMembers((prev) => {
       const next = [...prev, c];
       if (prev.length === 0) setRepresentativeId(c.id);
@@ -148,7 +144,7 @@ export const MH_DKNCThue = () => {
     setShowDropdown(false);
   };
 
-  const removeMember = (id: string) => {
+  const btn_XoaTV_click = (id: string) => {
     setMembers((prev) => {
       const next = prev.filter((m) => m.id !== id);
       if (representativeId === id && next.length > 0)
@@ -164,45 +160,42 @@ export const MH_DKNCThue = () => {
     );
   };
 
-  const handleSubmit = async () => {
+  const btn_DaiDien_click = (id: string) => setRepresentativeId(id);
+
+  const btn_TaoYeuCauDK_click = async () => {
     try {
       const body = tab === "ca-nhan"
         ? {
-            MaKH_DaiDien: selectedKHId,
-            DanhSachKH: [selectedKHId],
-            LoaiPhong: loaiPhong,
-            SoNguoiDuKien: 1,
-            HinhThucThue: hinhThucThue,
-            GiaMin: Number(giaMin),
-            GiaMax: Number(giaMax),
-            ThoiDiemVao: thoiDiemVao,
-            ThoiHanThue: Number(thoiHanThue),
-            KhuVuc: khuVuc,
-            TrangThai: "Chờ duyệt",
-            TieuChi: tieuChi,
-          }
+          MaKH_DaiDien: selectedKHId,
+          DanhSachKH: [selectedKHId],
+          LoaiPhong: loaiPhong,
+          SoNguoiDuKien: 1,
+          HinhThucThue: hinhThucThue,
+          GiaMin: Number(giaMin),
+          GiaMax: Number(giaMax),
+          ThoiDiemVao: thoiDiemVao,
+          ThoiHanThue: Number(thoiHanThue),
+          KhuVuc: khuVuc,
+          TrangThai: "Chờ duyệt",
+          TieuChi: tieuChi,
+        }
         : {
-            MaKH_DaiDien: representativeId,
-            DanhSachKH: members.map((m) => m.id),
-            LoaiPhong: loaiPhong,
-            SoNguoiDuKien: members.length,
-            HinhThucThue: hinhThucThue,
-            GiaMin: Number(giaMin),
-            GiaMax: Number(giaMax),
-            ThoiDiemVao: thoiDiemVao,
-            ThoiHanThue: Number(thoiHanThue),
-            KhuVuc: khuVuc,
-            TrangThai: "Chờ duyệt",
-            TieuChi: tieuChi,
-          };
+          MaKH_DaiDien: representativeId,
+          DanhSachKH: members.map((m) => m.id),
+          LoaiPhong: loaiPhong,
+          SoNguoiDuKien: members.length,
+          HinhThucThue: hinhThucThue,
+          GiaMin: Number(giaMin),
+          GiaMax: Number(giaMax),
+          ThoiDiemVao: thoiDiemVao,
+          ThoiHanThue: Number(thoiHanThue),
+          KhuVuc: khuVuc,
+          TrangThai: "Chờ duyệt",
+          TieuChi: tieuChi,
+        };
 
-      const res = await fetch(`${API}/NhuCauThue/ThemNCThue`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      if (!res.ok) throw new Error("Thêm thất bại");
+      const res = await apiClient.post("/NhuCauThue/ThemNCThue", body);
+      if (res.status !== 201) throw new Error("Thêm thất bại");
       toast.success("Đăng ký nhu cầu thuê thành công!");
     } catch (error) {
       toast.error("Đăng ký thất bại: " + error);
@@ -210,7 +203,7 @@ export const MH_DKNCThue = () => {
   };
 
 
-  return (
+  const HienThi = () => (
     <div className="min-h-screen bg-slate-100 flex flex-col" style={inter}>
       {/* Header */}
       <div className="px-8 pt-7 pb-4">
@@ -264,8 +257,8 @@ export const MH_DKNCThue = () => {
                         style={inter}
                         placeholder={
                           searchTypeKH === "HoTen" ? "Nhập tên khách hàng..." :
-                          searchTypeKH === "MaKH"  ? "Nhập mã khách hàng..." :
-                                                     "Nhập số điện thoại..."
+                            searchTypeKH === "MaKH" ? "Nhập mã khách hàng..." :
+                              "Nhập số điện thoại..."
                         }
                         value={khachHang}
                         onChange={(e) => { setKhachHang(e.target.value); setShowKHDropdown(true); }}
@@ -431,7 +424,7 @@ export const MH_DKNCThue = () => {
 
             {/* Tiêu chí */}
             <div>
-              <FieldLabel icon={<Star size={15} strokeWidth={2} />} label="Tiêu chí Ưu tiên" />
+              <FieldLabel icon={<Star size={15} strokeWidth={2} />} label="Tiêu chí ưu tiên" />
               <div className="flex flex-wrap gap-2 mt-1">
                 {dsTieuChi.map(({ MaTieuChi, TenTieuChi }) => {
                   const active = tieuChi.includes(MaTieuChi);
@@ -479,8 +472,8 @@ export const MH_DKNCThue = () => {
                     style={inter}
                     placeholder={
                       searchTypeNhom === "HoTen" ? "Nhập tên khách hàng..." :
-                      searchTypeNhom === "MaKH"  ? "Nhập mã khách hàng..." :
-                                                   "Nhập số điện thoại..."
+                        searchTypeNhom === "MaKH" ? "Nhập mã khách hàng..." :
+                          "Nhập số điện thoại..."
                     }
                     value={searchQuery}
                     onChange={(e) => { setSearchQuery(e.target.value); setShowDropdown(true); }}
@@ -494,7 +487,7 @@ export const MH_DKNCThue = () => {
                         suggestions.map((c) => (
                           <button
                             key={c.id}
-                            onMouseDown={() => addMember(c)}
+                            onMouseDown={() => btn_Them_click(c)}
                             className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-900 transition-colors flex items-center gap-2"
                             style={inter}
                           >
@@ -536,7 +529,7 @@ export const MH_DKNCThue = () => {
                 <button
                   onClick={() => {
                     const match = suggestions[0];
-                    if (match) addMember(match);
+                    if (match) btn_Them_click(match);
                   }}
                   className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-900 text-white text-sm font-semibold shrink-0 hover:bg-emerald-800 transition-colors"
                   style={inter}
@@ -578,7 +571,7 @@ export const MH_DKNCThue = () => {
                               type="radio"
                               name="representative"
                               checked={representativeId === m.id}
-                              onChange={() => setRepresentativeId(m.id)}
+                              onChange={() => btn_DaiDien_click(m.id)}
                               className="w-4 h-4 accent-emerald-900 cursor-pointer"
                             />
                           </td>
@@ -594,7 +587,7 @@ export const MH_DKNCThue = () => {
                           </td>
                           <td className="px-3 py-3">
                             <button
-                              onClick={() => removeMember(m.id)}
+                              onClick={() => btn_XoaTV_click(m.id)}
                               className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                             >
                               <Trash2 size={14} strokeWidth={2} />
@@ -720,7 +713,7 @@ export const MH_DKNCThue = () => {
 
             {/* Tiêu chí ưu tiên */}
             <div>
-              <FieldLabel icon={<Star size={15} strokeWidth={2} />} label="Tiêu chí Ưu tiên" />
+              <FieldLabel icon={<Star size={15} strokeWidth={2} />} label="Tiêu chí ưu tiên" />
               <div className="flex flex-wrap gap-2 mt-1">
                 {dsTieuChi.map(({ MaTieuChi, TenTieuChi }) => {
                   const active = tieuChi.includes(MaTieuChi);
@@ -750,7 +743,7 @@ export const MH_DKNCThue = () => {
 
         {/* Submit */}
         <button
-          onClick={handleSubmit}
+          onClick={btn_TaoYeuCauDK_click}
           className="w-full flex items-center justify-center gap-2 bg-emerald-900 hover:bg-emerald-800 active:scale-[0.99] text-white text-base font-semibold py-4 rounded-2xl transition-all duration-150 shadow-sm"
           style={inter}
         >
@@ -760,4 +753,6 @@ export const MH_DKNCThue = () => {
       </div>
     </div>
   );
+
+  return HienThi();
 };
