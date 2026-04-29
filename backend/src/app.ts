@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import TaiKhoanNVRoute from "./routes/TaiKhoanNV.routes.ts";
-import KhachHangRoute from "./routes/KhachHang.routes.ts";
+import KhachHangRoute from "./routes/KhachHang.route.ts";
 import PhongRoute from "./routes/phong.routes.ts";
 import NhuCauThueRoute from "./routes/NhuCauThue.routes.ts";
 import LoaiPhongRoute from "./routes/LoaiPhong.routes.ts";
