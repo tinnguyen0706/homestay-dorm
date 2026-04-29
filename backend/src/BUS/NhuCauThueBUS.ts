@@ -152,10 +152,16 @@ export default class NhuCauThueBUS {
     this._TieuChi = value;
   }
 
-  static KiemTraThongTin(NCT: NhuCauThueBUS, loaiDangKy: "ca-nhan" | "nhom"): string[] {
+  static KiemTraThongTin(
+    NCT: NhuCauThueBUS,
+    loaiDangKy: "ca-nhan" | "nhom",
+  ): string[] {
     const errors: string[] = [];
 
-    if (loaiDangKy === "ca-nhan" && (!NCT.MaKH_DaiDien || NCT.MaKH_DaiDien.trim() === "")) {
+    if (
+      loaiDangKy === "ca-nhan" &&
+      (!NCT.MaKH_DaiDien || NCT.MaKH_DaiDien.trim() === "")
+    ) {
       errors.push("Phải chọn khách hàng.");
     }
 
@@ -194,5 +200,21 @@ export default class NhuCauThueBUS {
     NCT.NhomThue.MaNhomThue = MaNhomThue;
     const MaNCT = await NhuCauThueDAO.ThemNCT(NCT);
     await TieuChiDAO.ThemTieuChi_NCT(NCT.TieuChi, MaNCT);
+  }
+
+  static async LayDSNCT(filters: any) {
+    if (
+      filters.GiaMin &&
+      filters.GiaMax &&
+      Number(filters.GiaMin) > Number(filters.GiaMax)
+    ) {
+      throw new Error("Giá tối thiểu không được lớn hơn giá tối đa.");
+    }
+    return await NhuCauThueDAO.LayDSNCT(filters);
+  }
+
+  // Bổ sung hàm này ngay dưới hàm LayDSNCT
+  static async LayTTNCT(MaNhuCau: string): Promise<NhuCauThueBUS | null> {
+    return await NhuCauThueDAO.LayTTNCT(MaNhuCau);
   }
 }
