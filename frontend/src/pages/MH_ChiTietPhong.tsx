@@ -1,7 +1,21 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import apiClient from "../apiClient.ts";
-import { ArrowLeft, MapPin, CheckCircle, Wifi, Wind, Waves, Dumbbell, BedDouble, Lamp, Box, Users, User, ConciergeBell } from "lucide-react";
+import {
+  ArrowLeft,
+  MapPin,
+  CheckCircle,
+  Wifi,
+  Wind,
+  Waves,
+  Dumbbell,
+  BedDouble,
+  Lamp,
+  Box,
+  Users,
+  User,
+  ConciergeBell,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -29,7 +43,6 @@ export const MH_ChiTietPhong = () => {
 
   return (
     <div className="p-8 flex flex-col gap-8 max-w-6xl mx-auto bg-[#F9F9FF] min-h-screen">
-      {/* Header */}
       <div className="flex items-center gap-4 pb-4">
         <Button variant="outline" size="icon" className="rounded-full shadow-sm" asChild>
           <Link to="/DSPhong">
@@ -40,14 +53,11 @@ export const MH_ChiTietPhong = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        {/* Cột trái: Thông tin chính & Sơ đồ giường */}
         <div className="lg:col-span-2 flex flex-col gap-8">
-          
-          {/* Title and Badges */}
           <div className="flex flex-col gap-4">
             <div className="flex items-end gap-3">
-              <h2 className="text-[36px] font-extrabold text-[#0D631B] leading-none">{phong.TenPhong?.replace('Phòng', 'Phòng ') || phong.TenPhong}</h2>
-              <span className="text-[20px] font-semibold text-[#40493D] leading-none pb-1">(Mã: P-{phong.MaPhong?.replace('PH', '') || phong.MaPhong})</span>
+              <h2 className="text-[36px] font-extrabold text-[#0D631B] leading-none">{phong.TenPhong}</h2>
+              <span className="text-[20px] font-semibold text-[#40493D] leading-none pb-1">(Mã: P-{phong.MaPhong?.replace("PH", "") || phong.MaPhong})</span>
             </div>
             <div className="flex flex-wrap gap-3">
               <div className="flex items-center gap-2 bg-[#0D631B]/10 px-4 py-1.5 rounded-full">
@@ -65,7 +75,6 @@ export const MH_ChiTietPhong = () => {
             </div>
           </div>
 
-          {/* Sơ đồ giường */}
           <Card className="rounded-[16px] shadow-sm border border-[#BFCAba]/30 bg-white overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between bg-white border-b px-8 py-6">
               <div className="flex flex-col gap-1">
@@ -93,7 +102,7 @@ export const MH_ChiTietPhong = () => {
                   let bgColor = "bg-[#F1F5F9]/80 border-[#E2E8F0]";
                   let textColor = "text-[#475569]";
                   let shadow = "";
-                  
+
                   if (g.TrangThai === "Đã thuê") {
                     bgColor = "bg-white border-red-100";
                     textColor = "text-red-500";
@@ -107,33 +116,31 @@ export const MH_ChiTietPhong = () => {
 
                   return (
                     <div key={index} className={`border rounded-[16px] h-[100px] flex flex-col items-center justify-center gap-3 transition-all ${bgColor} ${shadow}`}>
-                      <span className={`font-bold text-[18px] ${textColor}`}>{g.MaTaiSan?.replace('TS00', 'B') || `B${index + 1}`}</span>
+                      <span className={`font-bold text-[18px] ${textColor}`}>{g.MaTaiSan?.replace("TS00", "B") || `B${index + 1}`}</span>
                     </div>
                   );
                 })}
-                {/* Fallback nếu không có dữ liệu giường */}
-                {(!phong.Giuong || phong.Giuong.length === 0) && (
+
+                {(!phong.Giuong || phong.Giuong.length === 0) &&
                   Array.from({ length: phong.SucChuaToiDa }).map((_, i) => (
                     <div key={i} className="border rounded-[16px] h-[100px] flex flex-col items-center justify-center gap-3 bg-[#F1F5F9]/80 border-[#E2E8F0]">
                       <span className="font-bold text-[18px] text-[#475569]">B{i + 1}</span>
                     </div>
-                  ))
-                )}
+                  ))}
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Cột phải: Chi nhánh & Tiêu chí & Dịch vụ */}
         <div className="flex flex-col gap-6">
           <Card className="rounded-[16px] shadow-sm border border-[#BFCAba]/30 overflow-hidden">
             <CardHeader className="bg-emerald-50/50 pb-4">
-              <CardTitle className="text-[16px] text-emerald-800">Chi nhánh {phong.MaCN?.replace('CN00', '')}</CardTitle>
+              <CardTitle className="text-[16px] text-emerald-800">{phong.TenChiNhanh}</CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <div className="flex items-start gap-3 text-[#40493D]">
                 <MapPin className="w-5 h-5 shrink-0 text-emerald-600 mt-0.5" />
-                <span className="text-[14px] leading-relaxed font-medium">{phong.DiaChi || "123 Nguyễn Trãi, Quận 1, TP.HCM"}</span>
+                <span className="text-[14px] leading-relaxed font-medium">{phong.DiaChi || "Chưa cập nhật địa chỉ"}</span>
               </div>
             </CardContent>
           </Card>
@@ -155,13 +162,10 @@ export const MH_ChiTietPhong = () => {
               )}
             </CardContent>
           </Card>
-
         </div>
       </div>
 
-      {/* Bottom Bento Grid: Assets & Services */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-2">
-        {/* Assets List */}
         <Card className="rounded-[16px] shadow-sm border border-[#BFCAba]/30 overflow-hidden bg-white">
           <CardHeader className="px-8 pt-8 pb-4 flex flex-row items-center gap-3">
             <Box className="w-6 h-6 text-[#0D631B]" />
@@ -172,14 +176,14 @@ export const MH_ChiTietPhong = () => {
               {phong.TaiSan && phong.TaiSan.length > 0 ? (
                 phong.TaiSan.map((ts: any) => {
                   let Icon = Box;
-                  if (ts.TenTaiSan.toLowerCase().includes('đèn')) Icon = Lamp;
-                  if (ts.TenTaiSan.toLowerCase().includes('giường')) Icon = BedDouble;
+                  if (ts.TenTaiSan.toLowerCase().includes("đèn")) Icon = Lamp;
+                  if (ts.TenTaiSan.toLowerCase().includes("giường")) Icon = BedDouble;
                   return (
                     <div key={ts.MaTaiSan} className="flex items-center gap-3 bg-white border border-[#BFCAba]/30 px-5 py-4 rounded-[16px] shadow-sm">
-                      <Icon className="w-5 h-5 text-[#181C22]"/> 
+                      <Icon className="w-5 h-5 text-[#181C22]" />
                       <span className="text-[14px] text-[#181C22] font-semibold">{ts.TenTaiSan}</span>
                     </div>
-                  )
+                  );
                 })
               ) : (
                 <span className="text-[14px] text-gray-500 italic col-span-2">Chưa có tài sản được ghi nhận</span>
@@ -188,7 +192,6 @@ export const MH_ChiTietPhong = () => {
           </CardContent>
         </Card>
 
-        {/* Shared Services */}
         <Card className="rounded-[16px] shadow-sm border border-[#BFCAba]/30 overflow-hidden bg-white">
           <CardHeader className="px-8 pt-8 pb-4 flex flex-row items-center gap-3">
             <ConciergeBell className="w-6 h-6 text-[#0D631B]" />
@@ -199,16 +202,16 @@ export const MH_ChiTietPhong = () => {
               {phong.DichVu && phong.DichVu.length > 0 ? (
                 phong.DichVu.map((dv: any) => {
                   let Icon = CheckCircle;
-                  if (dv.TenDV.toLowerCase().includes('wifi')) Icon = Wifi;
-                  if (dv.TenDV.toLowerCase().includes('máy lạnh') || dv.TenDV.toLowerCase().includes('điều hòa')) Icon = Wind;
-                  if (dv.TenDV.toLowerCase().includes('giặt')) Icon = Waves;
-                  if (dv.TenDV.toLowerCase().includes('gym')) Icon = Dumbbell;
+                  if (dv.TenDV.toLowerCase().includes("wifi")) Icon = Wifi;
+                  if (dv.TenDV.toLowerCase().includes("máy lạnh") || dv.TenDV.toLowerCase().includes("điều hòa")) Icon = Wind;
+                  if (dv.TenDV.toLowerCase().includes("giặt")) Icon = Waves;
+                  if (dv.TenDV.toLowerCase().includes("gym")) Icon = Dumbbell;
                   return (
                     <div key={dv.MaDV} className="flex items-center gap-2 bg-[#F1F3FC] px-5 py-3 rounded-[16px]">
-                      <Icon className="w-5 h-5 text-[#181C22]"/> 
+                      <Icon className="w-5 h-5 text-[#181C22]" />
                       <span className="text-[14px] text-[#181C22] font-semibold">{dv.TenDV}</span>
                     </div>
-                  )
+                  );
                 })
               ) : (
                 <span className="text-[14px] text-gray-500 italic">Chưa có dịch vụ</span>

@@ -3,11 +3,52 @@ import pool from "../config/db.js";
 import { PhongBUS } from "../BUS/PhongBUS.js";
 
 export class PhongDAO {
+  static async LayFilterOptions() {
+    const [chiNhanhResult, loaiPhongResult, gioiTinhResult, trangThaiResult] = await Promise.all([
+      pool.query(`
+        SELECT machinhanh, tenchinhanh
+        FROM ChiNhanh
+        ORDER BY machinhanh ASC
+      `),
+      pool.query(`
+        SELECT maloai, tenloai
+        FROM LoaiPhong
+        ORDER BY tenloai ASC
+      `),
+      pool.query(`
+        SELECT DISTINCT gioitinhchophep
+        FROM Phong
+        WHERE gioitinhchophep IS NOT NULL AND gioitinhchophep <> ''
+        ORDER BY gioitinhchophep ASC
+      `),
+      pool.query(`
+        SELECT DISTINCT trangthai
+        FROM Phong
+        WHERE trangthai IS NOT NULL AND trangthai <> ''
+        ORDER BY trangthai ASC
+      `)
+    ]);
+
+    return {
+      ChiNhanh: chiNhanhResult.rows.map((row) => ({
+        MaCN: row.machinhanh,
+        TenCN: row.tenchinhanh ?? row.machinhanh
+      })),
+      LoaiPhong: loaiPhongResult.rows.map((row) => ({
+        MaLoai: row.maloai,
+        TenLoai: row.tenloai ?? row.maloai
+      })),
+      GioiTinh: gioiTinhResult.rows.map((row) => row.gioitinhchophep),
+      TrangThai: trangThaiResult.rows.map((row) => row.trangthai)
+    };
+  }
+
   static async LayDSPhong(filters: any): Promise<PhongBUS[]> {
     let query = `
-      SELECT p.*, l.tenloai as loai_phong_ten
+      SELECT p.*, l.tenloai as loai_phong_ten, cn.tenchinhanh
       FROM Phong p
       LEFT JOIN LoaiPhong l ON p.maloai = l.maloai
+      LEFT JOIN ChiNhanh cn ON p.machinhanh = cn.machinhanh
       WHERE 1=1
     `;
     const values: any[] = [];
@@ -42,13 +83,14 @@ export class PhongDAO {
       SucChuaToiDa: row.succhuatoida,
       GioiTinhChoPhep: row.gioitinhchophep,
       TrangThai: row.trangthai,
-      MaCN: row.machinhanh
+      MaCN: row.machinhanh,
+      TenChiNhanh: row.tenchinhanh
     }));
   }
 
   static async LayTTPhong(maPhong: string): Promise<PhongBUS | null> {
     const query = `
-      SELECT p.*, l.tenloai as loai_phong_ten, cn.diachi
+      SELECT p.*, l.tenloai as loai_phong_ten, cn.tenchinhanh, cn.diachi
       FROM Phong p
       LEFT JOIN ChiNhanh cn ON p.machinhanh = cn.machinhanh
       LEFT JOIN LoaiPhong l ON p.maloai = l.maloai
@@ -66,6 +108,7 @@ export class PhongDAO {
       GioiTinhChoPhep: row.gioitinhchophep,
       TrangThai: row.trangthai,
       MaCN: row.machinhanh,
+      TenChiNhanh: row.tenchinhanh,
       DiaChi: row.diachi
     };
 
