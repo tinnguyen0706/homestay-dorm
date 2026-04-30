@@ -1,309 +1,302 @@
 # 1. Giới thiệu
 
-Project này sử dụng:
+Project quản lý homestay/dorm sử dụng:
 
-* **Frontend:** React + TypeScript + TailwindCSS
-* **Backend:** Node.js + TypeScript + Express (MVC)
-* **Database:** Oracle
-* **Kiến trúc:** MVC (áp dụng cho backend)
+- **Frontend:** React 19 + TypeScript + TailwindCSS + Shadcn UI + Vite
+- **Backend:** Node.js + TypeScript + Express 5 (kiến trúc BUS/DAO)
+- **Database:** PostgreSQL (Neon)
+- **Kiến trúc backend:** BUS/DAO (Business Layer / Data Access Object)
 
 ---
 
 # 2. Cấu trúc thư mục
 
 ```
-project-root/
+homestay-dorm/
 │
-├── frontend/                # Frontend (React)
-│   ├── public/              # File tĩnh (favicon, index.html)
-│   ├── src/
-│   │   ├── assets/          # Ảnh, font, static resources
-│   │   ├── components/      # Component tái sử dụng (Button, Card,...)
-│   │   ├── pages/           # Page chính (Home, Login,...)
-│   │   ├── layouts/         # Layout chung (Navbar, Sidebar,...)
-│   │   ├── services/        # Gọi API backend (axios config)
-│   │   ├── hooks/           # Custom React hooks
-│   │   ├── utils/           # Helper functions
-│   │   ├── types/           # TypeScript types/interfaces
-│   │   ├── App.tsx          # Root component
-│   │   └── main.tsx         # Entry point React
-│   ├── tailwind.config.js   # Cấu hình Tailwind
-│   └── package.json         # Dependencies frontend
+├── frontend/                   # Frontend (React + Vite)
+│   └── src/
+│       ├── assets/             # Ảnh, font, static resources
+│       ├── components/
+│       │   └── ui/             # Shadcn UI components (Button, Card, Table,...)
+│       ├── hooks/              # Custom React hooks
+│       ├── lib/
+│       │   └── utils.ts        # Helper chung (cn, classnames,...)
+│       ├── pages/              # Màn hình chính (prefix MH_)
+│       ├── apiClient.ts        # Cấu hình Axios gọi backend
+│       ├── App.tsx             # Root component + React Router
+│       └── main.tsx            # Entry point React
 │
-├── backend/                 # Backend (Node.js + TS)
-│   ├── src/
-│   │   ├── config/          # Cấu hình (DB, env,...)
-│   │   │   └── db.ts        # Kết nối Oracle
-│   │   │
-│   │   ├── models/          # Định nghĩa dữ liệu (type/interface)
-│   │   │   └── user.model.ts
-│   │   │
-│   │   ├── repositories/    # Làm việc trực tiếp với DB (SQL)
-│   │   │   └── user.repo.ts
-│   │   │
-│   │   ├── services/        # Business logic
-│   │   │   └── user.service.ts
-│   │   │
-│   │   ├── controllers/     # Xử lý request/response
-│   │   │   └── user.controller.ts
-│   │   │
-│   │   ├── routes/          # Định nghĩa API endpoint
-│   │   │   └── user.route.ts
-│   │   │
-│   │   ├── middlewares/     # Middleware (auth, error,...)
-│   │   ├── utils/           # Helper backend
-│   │   ├── types/           # TypeScript types
-│   │   │
-│   │   └── app.ts           # Entry server
-│   │
-│   ├── dist/                # Build output
-│   ├── package.json         # Dependencies backend
-│   └── tsconfig.json        # Config TypeScript
+├── backend/                    # Backend (Node.js + Express)
+│   └── src/
+│       ├── config/
+│       │   └── db.ts           # Kết nối PostgreSQL
+│       ├── DAO/                # Truy vấn SQL trực tiếp (Data Access Object)
+│       ├── BUS/                # Business logic (Business Unit Service)
+│       ├── controllers/        # Nhận request, gọi BUS, trả response
+│       ├── routes/             # Định nghĩa API endpoint
+│       ├── middlewares/        # Middleware (error handler,...)
+│       ├── utils/              # Helper backend
+│       ├── scripts/            # Script tiện ích (init DB, seed data, test)
+│       └── app.ts              # Entry point server
 │
-├── database/
-│   ├── scripts/             # File SQL (tạo bảng, insert,...)
-│   │   └── init.sql
-│   ├── migrations/          # Thay đổi schema (optional)
-│   └── seeds/               # Dữ liệu mẫu (optional)
-│
-├── .env                     # Biến môi trường
-└── README.md
+└── database/
+    ├── scripts/
+    │   ├── init.sql            # Tạo toàn bộ bảng
+    │   ├── drop.sql            # Xóa toàn bộ bảng
+    │   └── dropRecords.sql     # Xóa dữ liệu (giữ cấu trúc)
+    └── seeds/
+        └── data.sql            # Dữ liệu mẫu
 ```
 
 ---
 
-# 3. Database (Oracle)
+# 3. Kiến trúc Backend (BUS/DAO)
 
-`database/scripts/init.sql`
+Luồng xử lý một request:
 
-Nơi viết:
-
-* CREATE TABLE
-* INSERT DATA
-* PROCEDURE / FUNCTION
-
-```sql
-CREATE TABLE USERS (
-    ID NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    NAME VARCHAR2(100),
-    EMAIL VARCHAR2(100)
-);
-
-INSERT INTO USERS (NAME, EMAIL) VALUES ('Tin', 'tin@gmail.com');
-
--- PROCEDURE: trả về danh sách user
-CREATE OR REPLACE PROCEDURE GET_ALL_USERS (
-    p_cursor OUT SYS_REFCURSOR
-) AS
-BEGIN
-    OPEN p_cursor FOR
-    SELECT * FROM USERS;
-END;
-/
+```
+Client → Route → Controller → BUS → DAO → Database
 ```
 
+| Layer | Thư mục | Nhiệm vụ |
+|---|---|---|
+| **Route** | `routes/` | Định nghĩa endpoint, gắn controller |
+| **Controller** | `controllers/` | Nhận req/res, gọi BUS |
+| **BUS** | `BUS/` | Xử lý business logic, validate dữ liệu |
+| **DAO** | `DAO/` | Truy vấn SQL thuần, không chứa logic |
+
 ---
 
-# 4. Backend (MVC)
+# 4. Hướng dẫn từng layer
 
----
+## DAO/
 
-## config/
+Làm việc trực tiếp với database. **Chỉ chứa SQL, không chứa business logic.** Mỗi entity là một class với các static method.
 
-Cấu hình hệ thống (DB, env)
+Type của tham số được định nghĩa **inline** ngay tại chỗ dùng, không cần file types riêng.
 
 ```ts
-// db.ts
-import oracledb from "oracledb";
+// DAO/PhongDAO.ts
+import pool from "../config/db.ts";
 
-export const getConnection = async () => {
-  return await oracledb.getConnection({
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    connectString: process.env.DB_CONNECTION_STRING,
-  });
-};
-```
+export default class PhongDAO {
+  static async getAll(): Promise<Array<{ maPhong: string; tenPhong: string; giaThue: number }>> {
+    const result = await pool.query("SELECT * FROM Phong");
+    return result.rows;
+  }
 
----
+  static async getById(maPhong: string): Promise<{ maPhong: string; tenPhong: string } | null> {
+    const result = await pool.query("SELECT * FROM Phong WHERE maPhong = $1", [maPhong]);
+    return result.rows[0] ?? null;
+  }
 
-## models/
-
-👉 Định nghĩa kiểu dữ liệu
-
-```ts
-export interface User {
-  id: number;
-  name: string;
-  email: string;
+  static async insert(data: {
+    tenPhong: string;
+    loaiPhong: string;
+    giaThue: number;
+    trangThai: string;
+  }): Promise<{ maPhong: string }> {
+    const { tenPhong, loaiPhong, giaThue, trangThai } = data;
+    const result = await pool.query(
+      "INSERT INTO Phong (tenPhong, loaiPhong, giaThue, trangThai) VALUES ($1,$2,$3,$4) RETURNING *",
+      [tenPhong, loaiPhong, giaThue, trangThai]
+    );
+    return result.rows[0];
+  }
 }
 ```
 
+> **Quy tắc:**
+> - Dùng `$1, $2,...` cho parameterized query (chống SQL injection).
+> - Không validate, không throw lỗi nghiệp vụ ở đây.
+> - Đặt tên method: `getAll`, `getById`, `insert`, `update`, `delete`.
+> - Type trả về và tham số khai báo inline trong chữ ký hàm.
+
 ---
 
-## repositories/
+## BUS/
 
-Nơi DUY NHẤT làm việc với DB
+Xử lý nghiệp vụ. Nhận dữ liệu qua constructor, gọi DAO, throw lỗi nếu vi phạm rule.
 
 ```ts
-import oracledb from "oracledb";
-import { getConnection } from "../config/db";
+// BUS/PhongBUS.ts
+import PhongDAO from "../DAO/PhongDAO.ts";
 
-export const getAllUsers = async () => {
-  const conn = await getConnection();
+export default class PhongBUS {
+  tenPhong: string;
+  loaiPhong: string;
+  giaThue: number;
+  trangThai: string;
 
-  const result = await conn.execute(
-    `BEGIN GET_ALL_USERS(:cursor); END;`,
-    {
-      cursor: { dir: oracledb.BIND_OUT, type: oracledb.CURSOR },
+  constructor(data: { tenPhong: string; loaiPhong: string; giaThue: number; trangThai: string }) {
+    this.tenPhong = data.tenPhong;
+    this.loaiPhong = data.loaiPhong;
+    this.giaThue = data.giaThue;
+    this.trangThai = data.trangThai;
+  }
+
+  async TaoPhong(): Promise<{ maPhong: string }> {
+    if (!this.tenPhong || !this.giaThue) {
+      throw new Error("Thiếu thông tin bắt buộc");
     }
-  );
+    if (this.giaThue <= 0) {
+      throw new Error("Giá thuê phải lớn hơn 0");
+    }
+    return await PhongDAO.insert(this);
+  }
 
-  const rs = (result.outBinds as any).cursor;
-  const rows = await rs.getRows(100);
-
-  await rs.close();
-  await conn.close();
-
-  return rows;
-};
+  static async LayDSPhong() {
+    return await PhongDAO.getAll();
+  }
+}
 ```
 
----
-
-## services/
-
-Business logic (xử lý dữ liệu)
-
-```ts
-import { getAllUsers } from "../repositories/user.repo";
-
-export const fetchUsers = async () => {
-  return await getAllUsers();
-};
-```
+> **Quy tắc:**
+> - Validate trong method và throw `Error` có message rõ ràng nếu sai.
+> - Không gọi `pool.query` trực tiếp, chỉ gọi qua DAO.
+> - Dùng `static` cho những thao tác không cần khởi tạo đối tượng (ví dụ: lấy danh sách).
 
 ---
 
 ## controllers/
 
-👉 Nhận request → trả response
+Nhận `req`, tạo instance BUS (hoặc gọi static), trả `res`. Không chứa logic nghiệp vụ.
 
 ```ts
+// controllers/PhongController.ts
 import { Request, Response } from "express";
-import { fetchUsers } from "../services/user.service";
+import PhongBUS from "../BUS/PhongBUS.ts";
 
-export const getUsers = async (req: Request, res: Response) => {
-  const users = await fetchUsers();
-  res.json(users);
+export const getAllPhong = async (req: Request, res: Response) => {
+  try {
+    const data = await PhongBUS.LayDSPhong();
+    res.json(data);
+  } catch (err: any) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+export const createPhong = async (req: Request, res: Response) => {
+  try {
+    const bus = new PhongBUS(req.body);
+    const phong = await bus.TaoPhong();
+    res.status(201).json(phong);
+  } catch (err: any) {
+    res.status(400).json({ message: err.message });
+  }
 };
 ```
+
+> **Quy tắc:**
+> - Luôn bọc trong `try/catch`.
+> - Lỗi từ BUS → trả `400` kèm `{ message }`.
+> - Thành công GET → `200`, POST mới → `201`.
 
 ---
 
 ## routes/
 
-👉 Định nghĩa API
+Khai báo endpoint và gắn controller tương ứng.
 
 ```ts
+// routes/phong.route.ts
 import { Router } from "express";
-import { getUsers } from "../controllers/user.controller";
+import * as PhongController from "../controllers/PhongController";
 
 const router = Router();
-router.get("/", getUsers);
+
+router.get("/", PhongController.getAllPhong);
+router.post("/", PhongController.createPhong);
 
 export default router;
 ```
 
----
-
-## app.ts
-
-👉 Entry server
+Sau đó đăng ký route trong `app.ts`:
 
 ```ts
-import express from "express";
+// app.ts
+import phongRoutes from "./routes/phong.route";
+app.use("/Phong", phongRoutes);
+// → GET /Phong    POST /Phong
+```
+
+---
+
+## config/db.ts
+
+Kết nối PostgreSQL dùng chung cho toàn bộ DAO.
+
+```ts
+import { Pool } from "pg";
 import dotenv from "dotenv";
-import userRoutes from "./routes/user.route";
 
 dotenv.config();
 
-const app = express();
-app.use(express.json());
-
-app.use("/api/users", userRoutes);
-
-app.listen(3000, () => {
-  console.log("Server running...");
+export const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
 });
 ```
 
 ---
 
-# 5. Frontend (React)
+## scripts/
 
----
-
-## services/
-
-Gọi API
+Script tiện ích chạy độc lập, không phải API. Dùng để quản lý DB hoặc test nhanh.
 
 ```ts
-// api.ts
-import axios from "axios";
-
-export const api = axios.create({
-  baseURL: "http://localhost:3000/api",
-});
+// scripts/initDB.ts  → tạo bảng từ database/scripts/init.sql
+// scripts/insertData.ts → insert dữ liệu từ database/seeds/data.sql
+// scripts/testDAO.ts → test trực tiếp các hàm DAO
+// scripts/testBUS.ts → test trực tiếp các hàm BUS
 ```
 
-```ts
-// user.service.ts
-import { api } from "./api";
+Chạy script:
 
-export const getUsers = async () => {
-  const res = await api.get("/users");
-  return res.data;
-};
+```bash
+npm run db:init       # Khởi tạo DB
+npm run db:insert     # Insert dữ liệu mẫu
+npm run db:drop       # Xóa toàn bộ bảng
+npm run testDAO       # Test DAO layer
+npm run testBUS       # Test BUS layer
 ```
 
 ---
 
-## types/
-
-Kiểu dữ liệu từ backend
-
-```ts
-export interface User {
-  ID: number;
-  NAME: string;
-  EMAIL: string;
-}
-```
-
----
+# 5. Frontend (React + Vite)
 
 ## pages/
 
-👉 UI chính
+Mỗi màn hình là một file, đặt tên theo quy ước `MH_<TênMànHình>.tsx`.
+
+```
+MH_DangNhap.tsx       → /              (Màn hình đăng nhập)
+MH_DSPhong.tsx        → /DSPhong       (Danh sách phòng)
+MH_ChiTietPhong.tsx   → /ChiTietPhong  (Chi tiết phòng)
+MH_DSKH.tsx           → /DSKH          (Danh sách khách hàng)
+MH_TaoKH.tsx          → /TaoKH         (Tạo khách hàng mới)
+```
+
+Ví dụ cấu trúc một page:
 
 ```tsx
+// pages/MH_DSPhong.tsx
 import { useEffect, useState } from "react";
-import { getUsers } from "../services/user.service";
+import { apiClient } from "../apiClient";
+import { IPhong } from "../types/IPhong"; // nếu có types ở frontend
 
-export default function Home() {
-  const [users, setUsers] = useState<any[]>([]);
+export default function MH_DSPhong() {
+  const [danhSach, setDanhSach] = useState<IPhong[]>([]);
 
   useEffect(() => {
-    getUsers().then(setUsers);
+    apiClient.get("/Phong").then((res) => setDanhSach(res.data));
   }, []);
 
   return (
     <div>
-      {users.map((u) => (
-        <div key={u.ID}>
-          {u.NAME} - {u.EMAIL}
-        </div>
+      {danhSach.map((p) => (
+        <div key={p.maPhong}>{p.tenPhong}</div>
       ))}
     </div>
   );
@@ -312,12 +305,118 @@ export default function Home() {
 
 ---
 
-## App.tsx
+## apiClient.ts
+
+Cấu hình Axios dùng chung cho toàn frontend.
+
+```ts
+// apiClient.ts
+import axios from "axios";
+
+export const apiClient = axios.create({
+  baseURL: "http://localhost:3000",
+});
+```
+
+Import và dùng trực tiếp:
+
+```ts
+import { apiClient } from "../apiClient";
+
+// GET
+const res = await apiClient.get("/Phong");
+
+// POST
+const res = await apiClient.post("/Phong", { tenPhong: "Phòng A1", ... });
+```
+
+---
+
+## components/ui/
+
+Chứa các component từ **Shadcn UI**. Không sửa các file này trực tiếp. Thêm component mới bằng lệnh:
+
+```bash
+npx shadcn@latest add <component-name>
+# Ví dụ:
+npx shadcn@latest add dialog
+npx shadcn@latest add select
+```
+
+Dùng trong page:
 
 ```tsx
-import Home from "./pages/Home";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+```
+
+---
+
+## App.tsx
+
+Khai báo routing toàn app bằng React Router.
+
+```tsx
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import MH_DangNhap from "./pages/MH_DangNhap";
+import MH_DSPhong from "./pages/MH_DSPhong";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
-  return <Home />;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MH_DangNhap />} />
+        <Route path="/DSPhong" element={<MH_DSPhong />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 ```
+
+Thêm route mới: thêm `<Route>` ở đây và tạo file page tương ứng trong `pages/`.
+
+---
+
+# 6. Setup môi trường
+
+## Tạo file .env
+
+Tạo file `.env` ở thư mục `backend/` (không commit lên git):
+
+```env
+DATABASE_URL="postgresql://user:password@host/dbname?sslmode=require"
+PORT=3000
+```
+
+## Cài đặt và chạy
+
+```bash
+# Backend
+cd backend
+npm install
+npm run db:init       # Khởi tạo database (chạy 1 lần)
+npm run db:insert     # Insert dữ liệu mẫu (chạy 1 lần)
+npm run dev           # Chạy server dev (port 3000)
+
+# Frontend (terminal khác)
+cd frontend
+npm install
+npm run dev           # Chạy Vite dev server (port 5173)
+```
+
+---
+
+# 7. Quy ước đặt tên
+
+| Loại | Quy ước | Ví dụ |
+|---|---|---|
+| File DAO | `<TênEntity>DAO.ts` | `PhongDAO.ts`, `TaiKhoanNVDAO.ts` |
+| File BUS | `<TênEntity>BUS.ts` | `PhongBUS.ts`, `TaiKhoanNVBUS.ts` |
+| File route | `<tenEntity>.route.ts` | `phong.route.ts` |
+| File controller | `<TênEntity>Controller.ts` | `PhongController.ts` |
+| File page frontend | `MH_<TênMànHình>.tsx` | `MH_DSPhong.tsx` |
+| Method BUS/DAO | PascalCase tiếng Việt viết tắt | `LayDSPhong`, `TaoPhong`, `KTraTK` |
+| Biến/thuộc tính | camelCase | `maPhong`, `tenPhong` |

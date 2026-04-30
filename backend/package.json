@@ -4,21 +4,33 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev src/app.ts"
+    "dev": "tsx watch src/app.ts",
+    "db:init": "tsx src/scripts/initDB.ts",
+    "db:drop": "tsx src/scripts/dropDB.ts",
+    "db:insert": "tsx src/scripts/insertData.ts",
+    "db:dropRecords": "tsx src/scripts/dropRecords.ts",
+    "testDAO": "tsx src/scripts/testDAO.ts",
+    "testBUS": "tsx src/scripts/testBUS.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
-    "dotenv": "^17.3.1",
+    "dotenv": "^17.4.0",
     "express": "^5.2.1",
-    "oracledb": "^6.10.0"
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.20.0"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.5.0",
+    "@types/pg": "^8.20.0",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2"
   }
