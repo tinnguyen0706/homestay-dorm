@@ -21,45 +21,24 @@ export default class KhachHangDAO {
       query += " WHERE sdt ILIKE $1";
       params.push("%" + SDT + "%");
     }
-<<<<<<< HEAD
-    static async ThemKH(kh: {
-            HoTen: string;
-            GioiTinh: string;
-            Email: string;
-            SDT: string;
-            QuocTich: string;
-        }): Promise<{ MaKH: string }> {
-            const { HoTen, GioiTinh, Email, SDT, QuocTich } = kh;
-            
-            const query = `
-                INSERT INTO khachhang (hoten, gioitinh, email, sdt, quoctich)
-                VALUES ($1, $2, $3, $4, $5)
-                RETURNING makh as "MaKH"
-            `;
-            const result = await pool.query(query, [HoTen, GioiTinh, Email, SDT, QuocTich]);
-            return result.rows[0];
-        }
-    
-=======
+
     const result = await pool.query(query, params);
     return result.rows.map((row) => new KhachHangBUS(row));
   }
-  static async ThemKH(data: {
+  static async ThemKH(kh: {
     HoTen: string;
     GioiTinh: string;
     Email: string;
     SDT: string;
     QuocTich: string;
   }): Promise<{ MaKH: string }> {
-    const { HoTen, GioiTinh, Email, SDT, QuocTich } = data;
+    const { HoTen, GioiTinh, Email, SDT, QuocTich } = kh;
 
-    // Query tạo mã khách hàng mới (Ví dụ: KH001, KH002...)
-    // Nếu database của bạn tự tăng MaKH, có thể bỏ qua phần sinh mã này
     const query = `
-            INSERT INTO khachhang (hoten, gioitinh, email, sdt, quoctich)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING makh as "MaKH"
-        `;
+                INSERT INTO khachhang (hoten, gioitinh, email, sdt, quoctich)
+                VALUES ($1, $2, $3, $4, $5)
+                RETURNING makh as "MaKH"
+            `;
     const result = await pool.query(query, [
       HoTen,
       GioiTinh,
@@ -71,13 +50,11 @@ export default class KhachHangDAO {
   }
 
   static async LayThongTinKH(MaKH: string): Promise<KhachHangBUS | null> {
-    const query =
-      'SELECT * FROM khachhang WHERE makh = $1';
+    const query = "SELECT * FROM khachhang WHERE makh = $1";
     const result = await pool.query(query, [MaKH]);
     if (result.rows.length === 0) {
       return null;
     }
     return new KhachHangBUS(result.rows[0]);
   }
->>>>>>> b187902 (feat: thêm lấy thông tin khách hàng và loại phòng)
 }
