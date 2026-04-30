@@ -92,11 +92,12 @@ export default class NhuCauThueDAO {
   // Lấy chi tiết 1 nhu cầu thuê theo Mã
   static async LayTTNCT(MaNhuCau: string): Promise<NhuCauThueBUS | null> {
     const query = `
-      SELECT n.*, k.hoten AS tenkhachhang, l.tenloai AS tenloaiphong
+      SELECT n.*, k.hoten AS tenkhachhang, l.tenloai AS tenloaiphong, nt.manhomthue
       FROM NHUCAUTHUE n
       LEFT JOIN KHACHHANG k ON n.makh = k.makh
       LEFT JOIN LOAIPHONG l ON n.maloai = l.maloai
-      WHERE n.manhucau = $1
+      LEFT JOIN NHOMTHUE nt ON n.manhomthue = nt.manhomthue
+      WHERE n.manhucau = $1 
     `;
     const result = await pool.query(query, [MaNhuCau]);
 
@@ -108,7 +109,7 @@ export default class NhuCauThueDAO {
     return new NhuCauThueBUS(
       row.manhucau,
       row.makh,
-      new NhomThueBUS(),
+      new NhomThueBUS(row.manhomthue, []),
       row.maloai,
       row.songuoidukien,
       row.hinhthucthue,
@@ -118,7 +119,7 @@ export default class NhuCauThueDAO {
       row.thoihanthue,
       row.khuvuc,
       row.trangthai,
-      [], // Cần truy vấn thêm nếu có bảng liên quan
+      [],
       row.tenkhachhang,
       row.tenloaiphong,
     );

@@ -14,7 +14,7 @@ import { NCTFilterModal } from "@/components/NCTFilterModal.tsx";
 import { NCTDetailModal } from "@/components/NCTDetailModal.tsx";
 
 // Update Interface chuẩn khớp với backend
-export interface INhuCauThue {
+interface INhuCauThue {
   _MaNCT: string;
   _MaKH_DaiDien: string;
   _NhomThue: any;
