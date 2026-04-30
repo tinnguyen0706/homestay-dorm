@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import apiClient from "../apiClient.ts";
 import { Link } from "react-router";
 import { RoomFilterModal } from "../components/RoomFilterModal.tsx";
@@ -21,6 +21,7 @@ interface Phong {
   GioiTinhChoPhep: string;
   TrangThai: string;
   MaCN: string;
+  TenChiNhanh?: string;
 }
 
 export const MH_DSPhong = () => {
@@ -46,7 +47,7 @@ export const MH_DSPhong = () => {
   }, []);
 
   const handleApplyFilter = (filters: any) => {
-    setCurrentPage(1); // Reset to first page on filter
+    setCurrentPage(1);
     fetchPhongs(filters);
   };
 
@@ -91,11 +92,11 @@ export const MH_DSPhong = () => {
                           <TableCell className="font-manrope font-bold text-[16px] text-[#00490E] px-6">#{phong.MaPhong}</TableCell>
                           <TableCell className="font-semibold text-[16px] text-[#181C22]">{phong.TenPhong}</TableCell>
                           <TableCell className="text-[14px] text-[#40493D]">{phong.LoaiPhong}</TableCell>
-                          <TableCell className="text-[14px] text-[#40493D] font-medium">Chi nhánh {phong.MaCN?.replace('CN00', '')}</TableCell>
+                          <TableCell className="text-[14px] text-[#40493D] font-medium">{phong.TenChiNhanh || phong.MaCN}</TableCell>
                           <TableCell className="text-[14px] text-[#40493D] text-center">{phong.SucChuaToiDa} người</TableCell>
                           <TableCell className="text-[14px] text-[#40493D]">{phong.GioiTinhChoPhep}</TableCell>
                           <TableCell className="text-center">
-                            <span className={`px-4 py-1.5 rounded-full text-[12px] font-semibold tracking-wide ${phong.TrangThai === 'Còn trống' ? 'bg-[#00490E]/15 text-[#00490E]' : 'bg-[#B91C1C]/15 text-[#B91C1C]'}`}>
+                            <span className={`px-4 py-1.5 rounded-full text-[12px] font-semibold tracking-wide ${phong.TrangThai === "Còn trống" ? "bg-[#00490E]/15 text-[#00490E]" : "bg-[#B91C1C]/15 text-[#B91C1C]"}`}>
                               {phong.TrangThai}
                             </span>
                           </TableCell>
@@ -111,30 +112,29 @@ export const MH_DSPhong = () => {
                 </Table>
               </div>
 
-              {/* Pagination UI */}
               {phongs.length > 0 && (
                 <div className="flex items-center justify-between px-6 py-4 border-t border-[#BFCAba]/10 bg-white">
                   <span className="text-[14px] text-gray-500 font-medium">
                     Hiển thị {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, phongs.length)} trong số {phongs.length} phòng
                   </span>
                   <div className="flex items-center gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="icon" 
+                    <Button
+                      variant="outline"
+                      size="icon"
                       className="w-8 h-8 rounded-lg border-gray-200"
-                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                       disabled={currentPage === 1}
                     >
-                      <ChevronLeft className="w-4 h-4"/>
+                      <ChevronLeft className="w-4 h-4" />
                     </Button>
-                    
+
                     <div className="flex items-center gap-1">
                       {Array.from({ length: totalPages }).map((_, i) => (
-                        <Button 
-                          key={i} 
-                          variant={currentPage === i + 1 ? "default" : "ghost"} 
+                        <Button
+                          key={i}
+                          variant={currentPage === i + 1 ? "default" : "ghost"}
                           size="icon"
-                          className={`w-8 h-8 rounded-lg text-[14px] font-semibold ${currentPage === i + 1 ? 'bg-[#0D631B] text-white hover:bg-[#0D631B]/90' : 'text-gray-600 hover:bg-gray-100'}`}
+                          className={`w-8 h-8 rounded-lg text-[14px] font-semibold ${currentPage === i + 1 ? "bg-[#0D631B] text-white hover:bg-[#0D631B]/90" : "text-gray-600 hover:bg-gray-100"}`}
                           onClick={() => setCurrentPage(i + 1)}
                         >
                           {i + 1}
@@ -142,14 +142,14 @@ export const MH_DSPhong = () => {
                       ))}
                     </div>
 
-                    <Button 
-                      variant="outline" 
-                      size="icon" 
+                    <Button
+                      variant="outline"
+                      size="icon"
                       className="w-8 h-8 rounded-lg border-gray-200"
-                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                       disabled={currentPage === totalPages}
                     >
-                      <ChevronRight className="w-4 h-4"/>
+                      <ChevronRight className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>

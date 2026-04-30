@@ -1,7 +1,10 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { PhongController } from "../controllers/PhongController.js";
 
 const router = Router();
+
+// /api/phong/filter-options
+router.get("/filter-options", PhongController.getFilterOptions);
 
 // /api/phong
 router.get("/", PhongController.getDSPhong);
