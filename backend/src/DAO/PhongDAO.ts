@@ -126,6 +126,18 @@ export class PhongDAO {
       TrangThai: g.trangthai
     }));
 
+    const giaThueGiuongQuery = `
+      SELECT AVG(g.giathuegiuong) AS gia_thue_giuong
+      FROM Giuong g
+      JOIN TaiSan ts ON g.mataisan = ts.mataisan
+      WHERE ts.maphong = $1
+    `;
+    const giaThueGiuongResult = await pool.query(giaThueGiuongQuery, [maPhong]);
+    const giaThueGiuong = giaThueGiuongResult.rows[0]?.gia_thue_giuong;
+    if (giaThueGiuong !== null && giaThueGiuong !== undefined) {
+      phong.GiaThue = Number(giaThueGiuong);
+    }
+
     // Lấy thông tin tài sản khác (không phải giường)
     const taisanQuery = `
       SELECT mataisan, tentaisan 

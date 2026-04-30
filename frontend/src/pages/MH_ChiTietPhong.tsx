@@ -15,6 +15,7 @@ import {
   Users,
   User,
   ConciergeBell,
+  Banknote,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,16 @@ export const MH_ChiTietPhong = () => {
 
   if (loading) return <div className="p-8 text-center">Đang tải thông tin phòng...</div>;
   if (!phong) return <div className="p-8 text-center text-red-500">Không tìm thấy phòng</div>;
+
+  const formatGiaThueMoiGiuong = (giaThue?: number) => {
+    if (!giaThue || Number.isNaN(giaThue)) return "Chưa cập nhật";
+    if (giaThue >= 1_000_000) {
+      const trieu = giaThue / 1_000_000;
+      const formatted = Number.isInteger(trieu) ? trieu.toString() : trieu.toFixed(1);
+      return `${formatted} triệu/tháng`;
+    }
+    return `${giaThue.toLocaleString("vi-VN")} đ/tháng`;
+  };
 
   return (
     <div className="p-8 flex flex-col gap-8 max-w-6xl mx-auto bg-[#F9F9FF] min-h-screen">
@@ -132,29 +143,69 @@ export const MH_ChiTietPhong = () => {
           </Card>
         </div>
 
-        <div className="flex flex-col gap-6">
-          <Card className="rounded-[16px] shadow-sm border border-[#BFCAba]/30 overflow-hidden">
-            <CardHeader className="bg-emerald-50/50 pb-4">
-              <CardTitle className="text-[16px] text-emerald-800">{phong.TenChiNhanh}</CardTitle>
+        <div className="flex flex-col gap-8">
+          <Card className="rounded-[28px] shadow-sm border border-[#DDE1EB] overflow-hidden bg-[#ECEFF7]">
+            <CardHeader className="pt-8 pb-3 px-10">
+              <CardTitle
+                className="text-[20px] text-[#1F2937] flex items-center gap-3 font-extrabold"
+                style={{ fontFamily: '"Be Vietnam Pro", sans-serif' }}
+              >
+                <MapPin className="w-6 h-6 text-emerald-700" />
+                {phong.TenChiNhanh}
+              </CardTitle>
             </CardHeader>
-            <CardContent className="pt-4">
-              <div className="flex items-start gap-3 text-[#40493D]">
-                <MapPin className="w-5 h-5 shrink-0 text-emerald-600 mt-0.5" />
-                <span className="text-[14px] leading-relaxed font-medium">{phong.DiaChi || "Chưa cập nhật địa chỉ"}</span>
-              </div>
+            <CardContent className="px-10 pb-8 pt-1">
+              <p className="text-[12px] tracking-[0.18em] text-[#4B5563] font-bold uppercase mb-2">Địa chỉ</p>
+              <p
+                className="text-[14px] leading-[1.5] text-[#1F2937] font-medium"
+                style={{ fontFamily: '"Be Vietnam Pro", sans-serif' }}
+              >
+                {phong.DiaChi || "Chưa cập nhật địa chỉ"}
+              </p>
             </CardContent>
           </Card>
 
-          <Card className="rounded-[16px] shadow-sm border border-[#BFCAba]/30">
-            <CardHeader>
-              <CardTitle className="text-[16px]">Tiêu chí phòng</CardTitle>
+          <Card className="rounded-[28px] shadow-sm border border-[#E5E7EB] overflow-hidden bg-white">
+            <CardHeader className="pt-8 pb-3 px-10">
+              <CardTitle
+                className="text-[20px] text-[#1F2937] flex items-center gap-3 font-extrabold"
+                style={{ fontFamily: '"Be Vietnam Pro", sans-serif' }}
+              >
+                <Banknote className="w-5 h-5 text-emerald-700" />
+                <span className="font-inter">Giá thuê mỗi giường</span>
+              </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-4">
+            <CardContent className="px-10 pb-9 pt-0">
+              <p
+                className="text-[24px] font-bold text-[#111827] leading-tight"
+                style={{ fontFamily: '"Be Vietnam Pro", sans-serif' }}
+              >
+                {formatGiaThueMoiGiuong(phong.GiaThue)}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-[28px] shadow-sm border border-[#E5E7EB] bg-white">
+            <CardHeader className="pt-8 pb-2 px-10">
+              <CardTitle
+                className="text-[20px] text-[#1F2937] flex items-center gap-3 font-extrabold"
+                style={{ fontFamily: '"Be Vietnam Pro", sans-serif' }}
+              >
+                <CheckCircle className="w-6 h-6 text-emerald-700" />
+                Tiêu chí phòng
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-5 px-10 pb-10 pt-3">
               {phong.TieuChi && phong.TieuChi.length > 0 ? (
                 phong.TieuChi.map((tc: any) => (
-                  <div key={tc.MaTieuChi} className="flex items-center gap-3 text-[#40493D]">
-                    <CheckCircle className="w-5 h-5 text-emerald-500" />
-                    <span className="text-[14px] font-medium">{tc.TenTieuChi}</span>
+                  <div key={tc.MaTieuChi} className="flex items-center gap-3 text-[#1F2937]">
+                    <CheckCircle className="w-5 h-5 text-emerald-700" />
+                    <span
+                      className="text-[14px] font-medium"
+                      style={{ fontFamily: '"Be Vietnam Pro", sans-serif' }}
+                    >
+                      {tc.TenTieuChi}
+                    </span>
                   </div>
                 ))
               ) : (
