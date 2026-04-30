@@ -15,21 +15,21 @@ import { NCTDetailModal } from "@/components/NCTDetailModal.tsx";
 
 // Update Interface chuẩn khớp với backend
 export interface INhuCauThue {
-  MaNCT: string;
-  MaKH_DaiDien: string;
-  NhomThue: any;
-  LoaiPhong: string;
-  SoNguoiDuKien: number;
-  HinhThucThue: string;
-  GiaMin: number;
-  GiaMax: number;
-  ThoiDiemVao: Date;
-  ThoiHanThue: number;
-  KhuVuc: string;
-  TrangThai: string;
-  TieuChi: string[];
-  TenKhachHang: string;
-  TenLoaiPhong: string;
+  _MaNCT: string;
+  _MaKH_DaiDien: string;
+  _NhomThue: any;
+  _LoaiPhong: string;
+  _SoNguoiDuKien: number;
+  _HinhThucThue: string;
+  _GiaMin: number;
+  _GiaMax: number;
+  _ThoiDiemVao: Date;
+  _ThoiHanThue: number;
+  _KhuVuc: string;
+  _TrangThai: string;
+  _TieuChi: string[];
+  _TenKhachHang: string;
+  _TenLoaiPhong: string;
 }
 
 // Map màu trạng thái theo đúng DB Check Constraint ('Chờ duyệt', 'Đang tìm', 'Đã khớp', 'Đã hủy', 'Hết hạn')
@@ -160,40 +160,40 @@ export const MH_DSNhuCauThue = () => {
                     ) : (
                       currentItems.map((item) => (
                         <TableRow
-                          key={item.MaNCT}
+                          key={item._MaNCT}
                           className="border-b border-[#BFCAba]/10 h-[81px] hover:bg-gray-50/50 transition-colors"
                         >
                           <TableCell className="font-manrope font-bold text-[16px] text-[#00490E] px-6">
-                            #{item.MaNCT}
+                            #{item._MaNCT}
                           </TableCell>
                           <TableCell className="font-semibold text-[16px] text-[#181C22]">
-                            {item.TenKhachHang || "N/A"}
+                            {item._TenKhachHang || "N/A"}
                           </TableCell>
                           <TableCell className="text-[14px] text-[#40493D]">
-                            {item.TenLoaiPhong || item.LoaiPhong}
+                            {item._TenLoaiPhong || item._LoaiPhong}
                           </TableCell>
                           <TableCell className="text-[14px] text-[#40493D] text-center font-medium">
-                            {item.SoNguoiDuKien}
+                            {item._SoNguoiDuKien}
                           </TableCell>
                           <TableCell className="text-[14px] text-[#40493D]">
-                            {item.HinhThucThue}
+                            {item._HinhThucThue}
                           </TableCell>
                           <TableCell className="text-[14px] text-[#40493D]">
-                            {item.ThoiHanThue} tháng
+                            {item._ThoiHanThue} tháng
                           </TableCell>
                           <TableCell className="text-[14px] text-[#40493D]">
-                            {item.KhuVuc || "N/A"}
+                            {item._KhuVuc || "N/A"}
                           </TableCell>
                           <TableCell className="text-center">
                             <span
-                              className={`px-4 py-1.5 rounded-full text-[12px] font-bold tracking-wide whitespace-nowrap ${getStatusStyles(item.TrangThai)}`}
+                              className={`px-4 py-1.5 rounded-full text-[12px] font-bold tracking-wide whitespace-nowrap ${getStatusStyles(item._TrangThai)}`}
                             >
-                              {item.TrangThai}
+                              {item._TrangThai}
                             </span>
                           </TableCell>
                           <TableCell className="text-center px-6">
                             <button
-                              onClick={() => handleOpenDetail(item.MaNCT)}
+                              onClick={() => handleOpenDetail(item._MaNCT)}
                               className="text-[14px] font-bold text-[#047857] hover:text-[#0D631B] hover:underline underline-offset-2 transition-colors whitespace-nowrap"
                             >
                               Xem chi tiết

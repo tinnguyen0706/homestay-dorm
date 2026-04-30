@@ -236,7 +236,6 @@ export default class NhuCauThueBUS {
     return await NhuCauThueDAO.LayDSNCT(filters);
   }
 
-  // Bổ sung hàm này ngay dưới hàm LayDSNCT
   static async LayTTNCT(MaNhuCau: string): Promise<NhuCauThueBUS | null> {
     return await NhuCauThueDAO.LayTTNCT(MaNhuCau);
   }
