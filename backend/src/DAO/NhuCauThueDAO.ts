@@ -47,7 +47,7 @@ export default class NhuCauThueDAO {
       values.push(filters.HinhThucThue);
     }
     if (filters.KhuVuc && filters.KhuVuc !== "all") {
-      query += ` AND n.khuvuc = $${paramIndex++}`;
+      query += ` AND n.khuvuc ILIKE $${paramIndex++}`;
       values.push(filters.KhuVuc);
     }
     if (filters.TrangThai && filters.TrangThai !== "all") {
