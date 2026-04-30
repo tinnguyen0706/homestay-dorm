@@ -18,6 +18,9 @@ export default class NhuCauThueBUS {
   private _TrangThai: string;
   private _TieuChi: string[];
 
+  private _TenKhachHang: string;
+  private _TenLoaiPhong: string;
+
   constructor(
     MaNCT: string = "",
     MaKH_DaiDien: string = "",
@@ -32,6 +35,8 @@ export default class NhuCauThueBUS {
     KhuVuc: string = "",
     TrangThai: string = "",
     TieuChi: string[] = [],
+    TenKhachHang: string = "",
+    TenLoaiPhong: string = "",
   ) {
     this._MaNCT = MaNCT;
     this._MaKH_DaiDien = MaKH_DaiDien;
@@ -46,6 +51,8 @@ export default class NhuCauThueBUS {
     this._KhuVuc = KhuVuc;
     this._TrangThai = TrangThai;
     this._TieuChi = TieuChi;
+    this._TenKhachHang = TenKhachHang;
+    this._TenLoaiPhong = TenLoaiPhong;
   }
 
   get MaNCT(): string {
@@ -152,10 +159,32 @@ export default class NhuCauThueBUS {
     this._TieuChi = value;
   }
 
-  static KiemTraThongTin(NCT: NhuCauThueBUS, loaiDangKy: "ca-nhan" | "nhom"): string[] {
+  get TenKhachHang(): string {
+    return this._TenKhachHang;
+  }
+
+  set TenKhachHang(value: string) {
+    this._TenKhachHang = value;
+  }
+
+  get TenLoaiPhong(): string {
+    return this._TenLoaiPhong;
+  }
+
+  set TenLoaiPhong(value: string) {
+    this._TenLoaiPhong = value;
+  }
+
+  static KiemTraThongTin(
+    NCT: NhuCauThueBUS,
+    loaiDangKy: "ca-nhan" | "nhom",
+  ): string[] {
     const errors: string[] = [];
 
-    if (loaiDangKy === "ca-nhan" && (!NCT.MaKH_DaiDien || NCT.MaKH_DaiDien.trim() === "")) {
+    if (
+      loaiDangKy === "ca-nhan" &&
+      (!NCT.MaKH_DaiDien || NCT.MaKH_DaiDien.trim() === "")
+    ) {
       errors.push("Phải chọn khách hàng.");
     }
 
@@ -194,5 +223,20 @@ export default class NhuCauThueBUS {
     NCT.NhomThue.MaNhomThue = MaNhomThue;
     const MaNCT = await NhuCauThueDAO.ThemNCT(NCT);
     await TieuChiDAO.ThemTieuChi_NCT(NCT.TieuChi, MaNCT);
+  }
+
+  static async LayDSNCT(filters: any) {
+    if (
+      filters.GiaMin &&
+      filters.GiaMax &&
+      Number(filters.GiaMin) > Number(filters.GiaMax)
+    ) {
+      throw new Error("Giá tối thiểu không được lớn hơn giá tối đa.");
+    }
+    return await NhuCauThueDAO.LayDSNCT(filters);
+  }
+
+  static async LayTTNCT(MaNhuCau: string): Promise<NhuCauThueBUS | null> {
+    return await NhuCauThueDAO.LayTTNCT(MaNhuCau);
   }
 }
