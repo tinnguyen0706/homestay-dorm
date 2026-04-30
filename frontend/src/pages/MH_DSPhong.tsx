@@ -58,7 +58,12 @@ export const MH_DSPhong = () => {
     <div className="bg-[#F9F9FF] min-h-screen w-full">
       <div className="max-w-[1024px] mx-auto p-8 flex flex-col gap-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-[36px] leading-[40px] font-[800] text-[#181C22] font-manrope">Danh sách phòng</h1>
+          <h1
+            className="text-[36px] leading-[40px] font-[800] text-[#181C22]"
+            style={{ fontFamily: '"Be Vietnam Pro", sans-serif' }}
+          >
+            Danh sách phòng
+          </h1>
           <RoomFilterModal onApplyFilter={handleApplyFilter} />
         </div>
 
@@ -89,7 +94,7 @@ export const MH_DSPhong = () => {
                     ) : (
                       currentPhongs.map((phong) => (
                         <TableRow key={phong.MaPhong} className="border-b border-[#BFCAba]/10 h-[81px] hover:bg-gray-50/50">
-                          <TableCell className="font-manrope font-bold text-[16px] text-[#00490E] px-6">#{phong.MaPhong}</TableCell>
+                          <TableCell className="font-manrope font-bold text-[16px] text-[#00490E] px-6">{phong.MaPhong}</TableCell>
                           <TableCell className="font-semibold text-[16px] text-[#181C22]">{phong.TenPhong}</TableCell>
                           <TableCell className="text-[14px] text-[#40493D]">{phong.LoaiPhong}</TableCell>
                           <TableCell className="text-[14px] text-[#40493D] font-medium">{phong.TenChiNhanh || phong.MaCN}</TableCell>

@@ -66,7 +66,7 @@ export function RoomFilterModal({ onApplyFilter }: RoomFilterModalProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2 h-10 px-4 rounded-[12px] border-[#BFCAba]/20 text-[#40493D] font-semibold hover:bg-gray-50">
+        <Button variant="outline" className="gap-2 h-10 px-5 rounded-[12px] bg-[#F1F3FC] border-none text-[#40493D] font-bold hover:bg-gray-200 shadow-sm transition-all">
           <Filter className="w-4 h-4" />
           {"B\u1ed9 l\u1ecdc"}
         </Button>
