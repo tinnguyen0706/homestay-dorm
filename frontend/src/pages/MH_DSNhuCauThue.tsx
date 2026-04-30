@@ -97,7 +97,7 @@ export const MH_DSNhuCauThue = () => {
 
   return (
     <div className="bg-[#F9F9FF] min-h-screen w-full">
-      <div className="max-w-[1024px] mx-auto p-8 flex flex-col gap-6">
+      <div className="max-w-[1200px] mx-auto p-8 flex flex-col gap-6">
         {/* Header */}
         <div className="flex justify-between items-center">
           <h1 className="text-[36px] leading-[40px] font-[800] text-[#181C22] font-manrope">
