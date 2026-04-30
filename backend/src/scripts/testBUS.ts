@@ -2,11 +2,16 @@
 
 // const bus = new TaiKhoanNVBUS("admin", "@Admin12");
 // const result = await bus.KTraTK();
-import LoaiPhongBUS from "../BUS/LoaiPhongBUS.ts";
-import { PhongBUS } from "../BUS/PhongBUS.ts";
+// import LoaiPhongBUS from "../BUS/LoaiPhongBUS.ts";
+// import { PhongBUS } from "../BUS/PhongBUS.ts";
 
-const result = await LoaiPhongBUS.LayDSLoaiPhong();
+// const result = await LoaiPhongBUS.LayDSLoaiPhong();
 
-console.log("-----------KET QUA: ", result);
+// console.log("-----------KET QUA: ", result);
 
-process.exit(0);
+// process.exit(0);
+import TaiKhoanNVBUS from "../BUS/TaiKhoanNVBUS.ts";
+
+const result = await TaiKhoanNVBUS.DangNhap("admin", "@Admin123");
+
+console.log(result);

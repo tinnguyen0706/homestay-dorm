@@ -31,10 +31,10 @@ export default class TaiKhoanNVBUS {
     const result = await TaiKhoanNVDAO.LayTTTK(instance);
     if (result?.length !== 1) return null;
     const token = jwt.sign(
-      { username: result[0]!.Username },
+      { username: result[0]!.username },
       process.env.ACCESS_TOKEN_SECRET as string,
       { expiresIn: "8h" },
     );
-    return { token, username: result[0]!.Username };
+    return { token, username: result[0]!.username };
   }
 }
