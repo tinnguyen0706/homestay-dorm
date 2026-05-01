@@ -198,7 +198,7 @@ export const MH_ChiTietPhong = () => {
                 style={{ fontFamily: '"Be Vietnam Pro", sans-serif' }}
               >
                 <MapPin className="w-6 h-6 text-emerald-700" />
-                {phong.TenChiNhanh}
+                {phong.ChiNhanh?.TenChiNhanh || phong.ChiNhanh?.TenCN || phong.ChiNhanh?.MaCN}
               </CardTitle>
             </CardHeader>
             <CardContent className="px-10 pb-8 pt-1">
@@ -209,7 +209,7 @@ export const MH_ChiTietPhong = () => {
                 className="text-[14px] leading-normal text-[#1F2937] font-medium"
                 style={{ fontFamily: '"Be Vietnam Pro", sans-serif' }}
               >
-                {phong.DiaChi || "Chưa cập nhật địa chỉ"}
+                {phong.ChiNhanh?.DiaChi || "Chưa cập nhật địa chỉ"}
               </p>
             </CardContent>
           </Card>
@@ -316,8 +316,8 @@ export const MH_ChiTietPhong = () => {
           </CardHeader>
           <CardContent className="p-8 pt-0">
             <div className="flex flex-wrap gap-3">
-              {phong.DichVu && phong.DichVu.length > 0 ? (
-                phong.DichVu.map((dv: any) => {
+              {phong.ChiNhanh?.DichVu && phong.ChiNhanh.DichVu.length > 0 ? (
+                phong.ChiNhanh.DichVu.map((dv: any) => {
                   let Icon = CheckCircle;
                   if (dv.TenDV.toLowerCase().includes("wifi")) Icon = Wifi;
                   if (
@@ -351,3 +351,4 @@ export const MH_ChiTietPhong = () => {
     </div>
   );
 };
+

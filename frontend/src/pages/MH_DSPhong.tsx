@@ -20,8 +20,11 @@ interface Phong {
   SucChuaToiDa: number;
   GioiTinhChoPhep: string;
   TrangThai: string;
-  MaCN: string;
-  TenChiNhanh?: string;
+  ChiNhanh: {
+    MaCN: string;
+    TenCN?: string;
+    TenChiNhanh?: string;
+  };
 }
 
 export const MH_DSPhong = () => {
@@ -97,7 +100,9 @@ export const MH_DSPhong = () => {
                           <TableCell className="font-manrope font-bold text-[16px] text-[#00490E] px-6">{phong.MaPhong}</TableCell>
                           <TableCell className="font-semibold text-[16px] text-[#181C22]">{phong.TenPhong}</TableCell>
                           <TableCell className="text-[14px] text-[#40493D]">{phong.LoaiPhong}</TableCell>
-                          <TableCell className="text-[14px] text-[#40493D] font-medium">{phong.TenChiNhanh || phong.MaCN}</TableCell>
+                          <TableCell className="text-[14px] text-[#40493D] font-medium">
+                            {phong.ChiNhanh?.TenChiNhanh || phong.ChiNhanh?.TenCN || phong.ChiNhanh?.MaCN}
+                          </TableCell>
                           <TableCell className="text-[14px] text-[#40493D] text-center">{phong.SucChuaToiDa} người</TableCell>
                           <TableCell className="text-[14px] text-[#40493D]">{phong.GioiTinhChoPhep}</TableCell>
                           <TableCell className="text-center">
