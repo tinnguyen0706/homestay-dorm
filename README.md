@@ -1,3 +1,33 @@
+# Hệ thống ký túc xá tư nhân HomeStay Dorm
+
+# Chạy ứng dụng (Run the web app)
+
+Các bước chạy web:
+
+1. Tạo 2 file `.env` ở `frontend/` và `backend/`.
+   - `backend/.env` ví dụ:
+
+     DATABASE_URL="postgresql://user:password@host/dbname?sslmode=require"
+     PORT=3000
+
+   - `frontend/.env` (Vite) ví dụ:
+
+     VITE_API_URL="http://localhost:3000"
+
+2. Chạy `npm install` nếu chưa cài, sau đó chạy `npm run dev` ở cả `backend/` và `frontend/`.
+3. Bấm vào link hiển thị khi chạy `npm run dev` ở `frontend` (Vite) để mở giao diện web.
+4. Login bằng tài khoản mẫu (dữ liệu nằm trong `database/seeds/data.sql`).
+
+## Đóng góp thành viên
+
+Chức năng phụ trách:
+
+- Danh sách Phòng: Phan Trung Tuấn
+- Danh sách khách hàng: Nguyễn Minh Quang
+- Danh sách nhu cầu thuê: Nguyễn Trọng Tín
+- Tạo khách hàng: Võ Nhật Hào
+- Đăng ký nhu cầu thuê: Ngô Thế Đạt
+
 # 1. Giới thiệu
 
 Project quản lý homestay/dorm sử dụng:
@@ -59,12 +89,12 @@ Luồng xử lý một request:
 Client → Route → Controller → BUS → DAO → Database
 ```
 
-| Layer | Thư mục | Nhiệm vụ |
-|---|---|---|
-| **Route** | `routes/` | Định nghĩa endpoint, gắn controller |
-| **Controller** | `controllers/` | Nhận req/res, gọi BUS |
-| **BUS** | `BUS/` | Xử lý business logic, validate dữ liệu |
-| **DAO** | `DAO/` | Truy vấn SQL thuần, không chứa logic |
+| Layer          | Thư mục        | Nhiệm vụ                               |
+| -------------- | -------------- | -------------------------------------- |
+| **Route**      | `routes/`      | Định nghĩa endpoint, gắn controller    |
+| **Controller** | `controllers/` | Nhận req/res, gọi BUS                  |
+| **BUS**        | `BUS/`         | Xử lý business logic, validate dữ liệu |
+| **DAO**        | `DAO/`         | Truy vấn SQL thuần, không chứa logic   |
 
 ---
 
@@ -81,13 +111,19 @@ Type của tham số được định nghĩa **inline** ngay tại chỗ dùng, 
 import pool from "../config/db.ts";
 
 export default class PhongDAO {
-  static async getAll(): Promise<Array<{ maPhong: string; tenPhong: string; giaThue: number }>> {
+  static async getAll(): Promise<
+    Array<{ maPhong: string; tenPhong: string; giaThue: number }>
+  > {
     const result = await pool.query("SELECT * FROM Phong");
     return result.rows;
   }
 
-  static async getById(maPhong: string): Promise<{ maPhong: string; tenPhong: string } | null> {
-    const result = await pool.query("SELECT * FROM Phong WHERE maPhong = $1", [maPhong]);
+  static async getById(
+    maPhong: string,
+  ): Promise<{ maPhong: string; tenPhong: string } | null> {
+    const result = await pool.query("SELECT * FROM Phong WHERE maPhong = $1", [
+      maPhong,
+    ]);
     return result.rows[0] ?? null;
   }
 
@@ -100,7 +136,7 @@ export default class PhongDAO {
     const { tenPhong, loaiPhong, giaThue, trangThai } = data;
     const result = await pool.query(
       "INSERT INTO Phong (tenPhong, loaiPhong, giaThue, trangThai) VALUES ($1,$2,$3,$4) RETURNING *",
-      [tenPhong, loaiPhong, giaThue, trangThai]
+      [tenPhong, loaiPhong, giaThue, trangThai],
     );
     return result.rows[0];
   }
@@ -108,6 +144,7 @@ export default class PhongDAO {
 ```
 
 > **Quy tắc:**
+>
 > - Dùng `$1, $2,...` cho parameterized query (chống SQL injection).
 > - Không validate, không throw lỗi nghiệp vụ ở đây.
 > - Đặt tên method: `getAll`, `getById`, `insert`, `update`, `delete`.
@@ -129,7 +166,12 @@ export default class PhongBUS {
   giaThue: number;
   trangThai: string;
 
-  constructor(data: { tenPhong: string; loaiPhong: string; giaThue: number; trangThai: string }) {
+  constructor(data: {
+    tenPhong: string;
+    loaiPhong: string;
+    giaThue: number;
+    trangThai: string;
+  }) {
     this.tenPhong = data.tenPhong;
     this.loaiPhong = data.loaiPhong;
     this.giaThue = data.giaThue;
@@ -153,6 +195,7 @@ export default class PhongBUS {
 ```
 
 > **Quy tắc:**
+>
 > - Validate trong method và throw `Error` có message rõ ràng nếu sai.
 > - Không gọi `pool.query` trực tiếp, chỉ gọi qua DAO.
 > - Dùng `static` cho những thao tác không cần khởi tạo đối tượng (ví dụ: lấy danh sách).
@@ -189,6 +232,7 @@ export const createPhong = async (req: Request, res: Response) => {
 ```
 
 > **Quy tắc:**
+>
 > - Luôn bọc trong `try/catch`.
 > - Lỗi từ BUS → trả `400` kèm `{ message }`.
 > - Thành công GET → `200`, POST mới → `201`.
@@ -411,12 +455,12 @@ npm run dev           # Chạy Vite dev server (port 5173)
 
 # 7. Quy ước đặt tên
 
-| Loại | Quy ước | Ví dụ |
-|---|---|---|
-| File DAO | `<TênEntity>DAO.ts` | `PhongDAO.ts`, `TaiKhoanNVDAO.ts` |
-| File BUS | `<TênEntity>BUS.ts` | `PhongBUS.ts`, `TaiKhoanNVBUS.ts` |
-| File route | `<tenEntity>.route.ts` | `phong.route.ts` |
-| File controller | `<TênEntity>Controller.ts` | `PhongController.ts` |
-| File page frontend | `MH_<TênMànHình>.tsx` | `MH_DSPhong.tsx` |
-| Method BUS/DAO | PascalCase tiếng Việt viết tắt | `LayDSPhong`, `TaoPhong`, `KTraTK` |
-| Biến/thuộc tính | camelCase | `maPhong`, `tenPhong` |
+| Loại               | Quy ước                        | Ví dụ                              |
+| ------------------ | ------------------------------ | ---------------------------------- |
+| File DAO           | `<TênEntity>DAO.ts`            | `PhongDAO.ts`, `TaiKhoanNVDAO.ts`  |
+| File BUS           | `<TênEntity>BUS.ts`            | `PhongBUS.ts`, `TaiKhoanNVBUS.ts`  |
+| File route         | `<tenEntity>.route.ts`         | `phong.route.ts`                   |
+| File controller    | `<TênEntity>Controller.ts`     | `PhongController.ts`               |
+| File page frontend | `MH_<TênMànHình>.tsx`          | `MH_DSPhong.tsx`                   |
+| Method BUS/DAO     | PascalCase tiếng Việt viết tắt | `LayDSPhong`, `TaoPhong`, `KTraTK` |
+| Biến/thuộc tính    | camelCase                      | `maPhong`, `tenPhong`              |
