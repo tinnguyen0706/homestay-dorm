@@ -29,7 +29,10 @@ export const MH_DangNhap = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#eef2f7" }}>
+    <div
+      className="min-h-screen flex flex-col"
+      style={{ backgroundColor: "#eef2f7" }}
+    >
       {/* Header */}
       <header className="px-8 py-4">
         <span className="text-lg font-semibold" style={{ color: "#1a6b3c" }}>
@@ -56,9 +59,7 @@ export const MH_DangNhap = () => {
 
           {/* Username */}
           <div className="mb-5">
-            <label
-              className="block text-xs font-semibold text-gray-500 mb-2 tracking-widest uppercase"
-            >
+            <label className="block text-xs font-semibold text-gray-500 mb-2 tracking-widest uppercase">
               Tên đăng nhập
             </label>
             <div
@@ -78,9 +79,7 @@ export const MH_DangNhap = () => {
 
           {/* Password */}
           <div className="mb-8">
-            <label
-              className="block text-xs font-semibold text-gray-500 mb-2 tracking-widest uppercase"
-            >
+            <label className="block text-xs font-semibold text-gray-500 mb-2 tracking-widest uppercase">
               Mật khẩu
             </label>
             <div
@@ -91,6 +90,7 @@ export const MH_DangNhap = () => {
               <input
                 type="password"
                 value={password}
+                placeholder="●●●●●●●●"
                 onChange={(e) => setPassword(e.target.value)}
                 className="bg-transparent outline-none text-sm text-gray-700 placeholder-gray-400 w-full"
               />

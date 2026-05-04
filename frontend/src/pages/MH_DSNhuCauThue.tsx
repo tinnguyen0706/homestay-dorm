@@ -100,7 +100,10 @@ export const MH_DSNhuCauThue = () => {
       <div className="max-w-[1200px] mx-auto p-8 flex flex-col gap-6">
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h1 className="text-[36px] leading-[40px] font-[800] text-[#181C22] font-manrope">
+          <h1
+            className="text-[36px] leading-[40px] font-[800] text-[#181C22]"
+            style={{ fontFamily: '"Be Vietnam Pro", sans-serif' }}
+          >
             Danh sách nhu cầu thuê
           </h1>
           <NCTFilterModal onApplyFilter={handleApplyFilter} />
@@ -122,7 +125,7 @@ export const MH_DSNhuCauThue = () => {
                         MÃ NCT
                       </TableHead>
                       <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] uppercase">
-                        KHÁCH HÀNG
+                        KHÁCH HÀNG ĐẠI DIỆN
                       </TableHead>
                       <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] uppercase">
                         LOẠI PHÒNG
@@ -164,7 +167,7 @@ export const MH_DSNhuCauThue = () => {
                           className="border-b border-[#BFCAba]/10 h-[81px] hover:bg-gray-50/50 transition-colors"
                         >
                           <TableCell className="font-manrope font-bold text-[16px] text-[#00490E] px-6">
-                            #{item._MaNCT}
+                            {item._MaNCT}
                           </TableCell>
                           <TableCell className="font-semibold text-[16px] text-[#181C22]">
                             {item._TenKhachHang || "N/A"}
@@ -230,11 +233,10 @@ export const MH_DSNhuCauThue = () => {
                           key={i}
                           variant={currentPage === i + 1 ? "default" : "ghost"}
                           size="icon"
-                          className={`w-8 h-8 rounded-lg text-[14px] font-semibold transition-colors ${
-                            currentPage === i + 1
-                              ? "bg-[#0D631B] text-white hover:bg-[#0D631B]/90"
-                              : "text-gray-600 hover:bg-gray-100"
-                          }`}
+                          className={`w-8 h-8 rounded-lg text-[14px] font-semibold transition-colors ${currentPage === i + 1
+                            ? "bg-[#0D631B] text-white hover:bg-[#0D631B]/90"
+                            : "text-gray-600 hover:bg-gray-100"
+                            }`}
                           onClick={() => setCurrentPage(i + 1)}
                         >
                           {i + 1}

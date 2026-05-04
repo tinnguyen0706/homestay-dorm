@@ -1,13 +1,34 @@
-import pool from "../config/db.js";
-
+import pool from "../config/db.ts";
 import { PhongBUS } from "../BUS/PhongBUS.js";
+import ChiNhanhBUS from "../BUS/ChiNhanhBUS.ts";
 
 export class PhongDAO {
+  static async LayDSGioiTinh(): Promise<string[]> {
+    const result = await pool.query(`
+      SELECT DISTINCT gioitinhchophep
+      FROM Phong
+      WHERE gioitinhchophep IS NOT NULL AND gioitinhchophep <> ''
+      ORDER BY gioitinhchophep ASC
+    `);
+    return result.rows.map((row) => row.gioitinhchophep);
+  }
+
+  static async LayDSTrangThai(): Promise<string[]> {
+    const result = await pool.query(`
+      SELECT DISTINCT trangthai
+      FROM Phong
+      WHERE trangthai IS NOT NULL AND trangthai <> ''
+      ORDER BY trangthai ASC
+    `);
+    return result.rows.map((row) => row.trangthai);
+  }
+
   static async LayDSPhong(filters: any): Promise<PhongBUS[]> {
     let query = `
-      SELECT p.*, l.tenloai as loai_phong_ten
+      SELECT p.*, l.tenloai AS loai_phong_ten, cn.tenchinhanh
       FROM Phong p
       LEFT JOIN LoaiPhong l ON p.maloai = l.maloai
+      LEFT JOIN ChiNhanh cn ON p.machinhanh = cn.machinhanh
       WHERE 1=1
     `;
     const values: any[] = [];
@@ -35,92 +56,78 @@ export class PhongDAO {
     }
 
     const result = await pool.query(query, values);
-    return result.rows.map(row => ({
+    return result.rows.map((row) => ({
       MaPhong: row.maphong,
       TenPhong: row.tenphong,
       LoaiPhong: row.loai_phong_ten || row.maloai,
       SucChuaToiDa: row.succhuatoida,
       GioiTinhChoPhep: row.gioitinhchophep,
       TrangThai: row.trangthai,
-      MaCN: row.machinhanh
+      ChiNhanh: new ChiNhanhBUS(
+        row.machinhanh,
+        row.tenchinhanh ?? row.machinhanh,
+        row.tenchinhanh ?? row.machinhanh,
+        "",
+      ),
     }));
   }
 
   static async LayTTPhong(maPhong: string): Promise<PhongBUS | null> {
-    const query = `
-      SELECT p.*, l.tenloai as loai_phong_ten, cn.diachi
+    const result = await pool.query(
+      `
+      SELECT p.*, l.tenloai AS loai_phong_ten
       FROM Phong p
-      LEFT JOIN ChiNhanh cn ON p.machinhanh = cn.machinhanh
       LEFT JOIN LoaiPhong l ON p.maloai = l.maloai
       WHERE p.maphong = $1
-    `;
-    const result = await pool.query(query, [maPhong]);
+    `,
+      [maPhong],
+    );
+
     if (result.rows.length === 0) return null;
 
     const row = result.rows[0];
-    const phong: PhongBUS = {
+    const [taiSanResult, tieuChiResult] = await Promise.all([
+      pool.query(
+        `
+        SELECT mataisan, tentaisan
+        FROM TaiSan
+        WHERE maphong = $1 AND loai = 'T�i s?n kh�c'
+        ORDER BY mataisan ASC
+      `,
+        [maPhong],
+      ),
+      pool.query(
+        `
+        SELECT tc.matieuchi, tc.tentieuchi
+        FROM TieuChi tc
+        JOIN Phong_TieuChi ptc ON tc.matieuchi = ptc.matieuchi
+        WHERE ptc.maphong = $1
+        ORDER BY tc.matieuchi ASC
+      `,
+        [maPhong],
+      ),
+    ]);
+
+    const taiSan = taiSanResult.rows.map((row) => ({
+      MaTaiSan: row.mataisan,
+      TenTaiSan: row.tentaisan,
+    }));
+
+    const tieuChi = tieuChiResult.rows.map((row) => ({
+      MaTieuChi: row.matieuchi,
+      TenTieuChi: row.tentieuchi,
+    }));
+
+    return {
       MaPhong: row.maphong,
       TenPhong: row.tenphong,
       LoaiPhong: row.loai_phong_ten || row.maloai,
       SucChuaToiDa: row.succhuatoida,
       GioiTinhChoPhep: row.gioitinhchophep,
       TrangThai: row.trangthai,
-      MaCN: row.machinhanh,
-      DiaChi: row.diachi
+      ChiNhanh: new ChiNhanhBUS(row.machinhanh, row.machinhanh, row.machinhanh, ""),
+      TaiSan: taiSan,
+      TieuChi: tieuChi,
     };
-
-    // Lấy thông tin giường
-    const giuongQuery = `
-      SELECT g.mataisan, g.trangthai 
-      FROM Giuong g
-      JOIN TaiSan ts ON g.mataisan = ts.mataisan
-      WHERE ts.maphong = $1
-      ORDER BY g.mataisan ASC
-    `;
-    const giuongResult = await pool.query(giuongQuery, [maPhong]);
-    phong.Giuong = giuongResult.rows.map(g => ({
-      MaTaiSan: g.mataisan,
-      TrangThai: g.trangthai
-    }));
-
-    // Lấy thông tin tài sản khác (không phải giường)
-    const taisanQuery = `
-      SELECT mataisan, tentaisan 
-      FROM TaiSan 
-      WHERE maphong = $1 AND loai = 'Tài sản khác'
-    `;
-    const taisanResult = await pool.query(taisanQuery, [maPhong]);
-    phong.TaiSan = taisanResult.rows.map(ts => ({
-      MaTaiSan: ts.mataisan,
-      TenTaiSan: ts.tentaisan
-    }));
-
-    // Lấy thông tin tiêu chí phòng
-    const tieuchiQuery = `
-      SELECT tc.matieuchi, tc.tentieuchi 
-      FROM TieuChi tc
-      JOIN Phong_TieuChi ptc ON tc.matieuchi = ptc.matieuchi
-      WHERE ptc.maphong = $1
-    `;
-    const tieuchiResult = await pool.query(tieuchiQuery, [maPhong]);
-    phong.TieuChi = tieuchiResult.rows.map(tc => ({
-      MaTieuChi: tc.matieuchi,
-      TenTieuChi: tc.tentieuchi
-    }));
-
-    // Lấy thông tin dịch vụ tại chi nhánh
-    const dichvuQuery = `
-      SELECT dv.madv, dv.tendv 
-      FROM DichVu dv
-      JOIN ChiNhanh_DichVu cndv ON dv.madv = cndv.madv
-      WHERE cndv.machinhanh = $1
-    `;
-    const dichvuResult = await pool.query(dichvuQuery, [row.machinhanh]);
-    phong.DichVu = dichvuResult.rows.map(dv => ({
-      MaDV: dv.madv,
-      TenDV: dv.tendv
-    }));
-
-    return phong;
   }
 }

@@ -22,6 +22,8 @@ export default class KhachHangDAO {
       params.push("%" + SDT + "%");
     }
 
+    query += " ORDER BY makh desc";
+
     const result = await pool.query(query, params);
     return result.rows.map((row) => new KhachHangBUS(row));
   }
