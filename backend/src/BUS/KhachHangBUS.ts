@@ -18,16 +18,11 @@
             this.SDT = KhachHang.SDT;
             this.MaNhomThue = KhachHang.MaNhomThue;
         }
-        static async ThemKH(kh: {
-            HoTen: string;
-            GioiTinh: string;
-            Email: string;
-            SDT: string;
-            QuocTich: string;
-        }): Promise<{ MaKH: string }> {
-                return await KhachHangDAO.ThemKH(kh);
+        static async ThemKH(kh: KhachHangBUS): Promise<{ MaKH: string }> {
+            return await KhachHangDAO.ThemKH(kh);
         }
-        static KTraTTKH(kh: { HoTen: string; SDT: string; Email: string; }): boolean {
+
+        static KTraTTKH(kh: KhachHangBUS): boolean {
             if (!kh.HoTen || kh.HoTen.trim().length < 2) {
                 throw new Error("Họ tên không hợp lệ (tối thiểu 2 ký tự)");
             }
@@ -37,7 +32,7 @@
             if (kh.Email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(kh.Email)) {
                 throw new Error("Email không đúng định dạng");
             }
-            return true; 
+            return true;
         }
 
         static async LayDSKH(MaKH?: string, HoTen?: string, SDT?: string): Promise<Array<KhachHangBUS>> {
