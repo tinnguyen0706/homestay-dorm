@@ -39,21 +39,11 @@ export default class KhachHangBUS {
             const result = await KhachHangDAO.LayDSKH(MaKH, HoTen, SDT);
             return result;
         }
+
+        
+        static async LayThongTinKH(MaKH: string): Promise<KhachHangBUS | null> {
+            const result = await KhachHangDAO.LayThongTinKH(MaKH);
+            return result;
+        }
     }
-    return true;
-  }
-
-  static async LayDSKH(
-    MaKH?: string,
-    HoTen?: string,
-    SDT?: string,
-  ): Promise<Array<KhachHangBUS>> {
-    const result = await KhachHangDAO.LayDSKH(MaKH, HoTen, SDT);
-    return result;
-  }
-
-  static async LayThongTinKH(MaKH: string): Promise<KhachHangBUS | null> {
-    const result = await KhachHangDAO.LayThongTinKH(MaKH);
-    return result;
-  }
-}
+    
