@@ -21,26 +21,20 @@ export default class KhachHangDAO {
       query += " WHERE sdt ILIKE $1";
       params.push("%" + SDT + "%");
     }
-
+      
     query += " ORDER BY makh desc";
 
     const result = await pool.query(query, params);
     return result.rows.map((row) => new KhachHangBUS(row));
   }
-  static async ThemKH(kh: {
-    HoTen: string;
-    GioiTinh: string;
-    Email: string;
-    SDT: string;
-    QuocTich: string;
-  }): Promise<{ MaKH: string }> {
+  static async ThemKH(kh: KhachHangBUS): Promise<{ MaKH: string }> {
     const { HoTen, GioiTinh, Email, SDT, QuocTich } = kh;
 
     const query = `
-                INSERT INTO khachhang (hoten, gioitinh, email, sdt, quoctich)
-                VALUES ($1, $2, $3, $4, $5)
-                RETURNING makh as "MaKH"
-            `;
+            INSERT INTO khachhang (hoten, gioitinh, email, sdt, quoctich)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING makh as "MaKH"
+        `;
     const result = await pool.query(query, [
       HoTen,
       GioiTinh,
