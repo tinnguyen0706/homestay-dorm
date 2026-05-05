@@ -12,4 +12,10 @@ export default class LoaiPhongBUS {
   static async LayDSLoaiPhong(): Promise<LoaiPhongBUS[]> {
     return await LoaiPhongDAO.LayDSLoaiPhong();
   }
+
+  static async LayThongTinLoaiPhong(
+    MaLoai: string,
+  ): Promise<LoaiPhongBUS | null> {
+    return await LoaiPhongDAO.LayThongTinLoaiPhong(MaLoai);
+  }
 }

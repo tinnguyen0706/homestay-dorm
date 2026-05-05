@@ -1,5 +1,7 @@
 import { Toaster } from "sonner";
 import { BrowserRouter, Routes, Route } from "react-router";
+import { AuthProvider } from "./context/AuthContext.tsx";
+import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
 import { MH_DangNhap } from "./pages/MH_DangNhap.tsx";
 import { NotFound } from "./pages/NotFound.tsx";
 import { MH_DSPhong } from "./pages/MH_DSPhong.tsx";
@@ -15,18 +17,22 @@ function App() {
     <>
       <Toaster richColors />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<MH_DangNhap />} />
-          <Route element={<MainLayout />}>
-            <Route path="/DSPhong"      element={<MH_DSPhong />} />
-            <Route path="/ChiTietPhong/:id" element={<MH_ChiTietPhong />} />
-            <Route path="/DSKH"         element={<MH_DSKH />} />
-            <Route path="/TaoKH"        element={<MH_TaoKH />} />
-            <Route path="/DKNCThue"     element={<MH_DKNCThue />} />
-            <Route path="/DSNhuCauThue" element={<MH_DSNhuCauThue />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<MH_DangNhap />} />
+            <Route element={<ProtectedRoute />}>
+              <Route element={<MainLayout />}>
+                <Route path="/DSPhong"          element={<MH_DSPhong />} />
+                <Route path="/ChiTietPhong/:id" element={<MH_ChiTietPhong />} />
+                <Route path="/DSKH"             element={<MH_DSKH />} />
+                <Route path="/TaoKH"            element={<MH_TaoKH />} />
+                <Route path="/DKNCThue"         element={<MH_DKNCThue />} />
+                <Route path="/DSNhuCauThue"     element={<MH_DSNhuCauThue />} />
+              </Route>
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </>
   );

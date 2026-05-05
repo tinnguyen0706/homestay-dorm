@@ -7,7 +7,11 @@
 
 // process.exit(0);
 
-import LoaiPhongDAO from "../DAO/LoaiPhongDAO.ts";
+import TaiKhoanNVBUS from "../BUS/TaiKhoanNVBUS.ts";
+import TaiKhoanNVDAO from "../DAO/TaiKhoanNVDAO.ts";
 
-const result = await LoaiPhongDAO.LayDSLoaiPhong();
-console.log("---------KET QUA: \n", result)
+const result = await TaiKhoanNVDAO.LayTTTK(
+  new TaiKhoanNVBUS("admin", "@Admin123"),
+);
+
+console.log(result);
