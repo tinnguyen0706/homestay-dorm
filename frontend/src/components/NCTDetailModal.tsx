@@ -11,39 +11,39 @@ import { X } from "lucide-react";
 import apiClient from "../apiClient.ts";
 
 interface IDetailNCT {
-  _MaNCT: string;
-  _MaKH_DaiDien: string;
-  _NhomThue: any;
-  _LoaiPhong: string;
-  _SoNguoiDuKien: number;
-  _HinhThucThue: string;
-  _GiaMin: number;
-  _GiaMax: number;
-  _ThoiDiemVao: Date;
-  _ThoiHanThue: number;
-  _KhuVuc: string;
-  _TrangThai: string;
-  _TieuChi: string[];
-  _TenKhachHang: string;
-  _TenLoaiPhong: string;
+  MaNCT: string;
+  MaKH_DaiDien: string;
+  NhomThue: any;
+  LoaiPhong: string;
+  SoNguoiDuKien: number;
+  HinhThucThue: string;
+  GiaMin: number;
+  GiaMax: number;
+  ThoiDiemVao: Date;
+  ThoiHanThue: number;
+  KhuVuc: string;
+  TrangThai: string;
+  TieuChi: Array<{ MaTieuChi: string; TenTieuChi: string }>;
+  TenKhachHang: string;
+  TenLoaiPhong: string;
 }
 
 interface NCTDetailModalProps {
-  maNCT: string | null;
+  MaNCT: string | null;
   open: boolean;
   onClose: () => void;
 }
 
-export function NCTDetailModal({ maNCT, open, onClose }: NCTDetailModalProps) {
+export function NCTDetailModal({ MaNCT, open, onClose }: NCTDetailModalProps) {
   const [data, setData] = useState<IDetailNCT | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (open && maNCT) {
+    if (open && MaNCT) {
       const fetchDetail = async () => {
         try {
           setLoading(true);
-          const res = await apiClient.get(`/NhuCauThue/${maNCT}`);
+          const res = await apiClient.get(`/NhuCauThue/${MaNCT}`);
           if (res.data.success) {
             setData(res.data.data);
           }
@@ -57,16 +57,16 @@ export function NCTDetailModal({ maNCT, open, onClose }: NCTDetailModalProps) {
     } else {
       setData(null);
     }
-  }, [open, maNCT]);
+  }, [open, MaNCT]);
 
   if (!open) return null;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       {/* Header */}
-      <DialogContent className="sm:max-w-[720px] p-0 bg-white border-none shadow-2xl rounded-[24px] overflow-hidden [&>button.absolute]:hidden">
+      <DialogContent className="sm:max-w-180 p-0 bg-white border-none shadow-2xl rounded-[24px] overflow-hidden [&>button.absolute]:hidden">
         <div className="flex items-center justify-between px-8 py-6">
-          <DialogTitle className="text-[#181C22] font-manrope text-[22px] font-[800]">
+          <DialogTitle className="text-[#181C22] font-manrope text-[22px] font-extrabold">
             Chi tiết nhu cầu thuê
           </DialogTitle>
           <DialogClose className="text-gray-400 hover:text-gray-600 transition-colors">
@@ -82,49 +82,49 @@ export function NCTDetailModal({ maNCT, open, onClose }: NCTDetailModalProps) {
           <div className="px-8 pb-8 flex flex-col gap-8">
             {/* Grid Thông tin */}
             <div className="grid grid-cols-2 gap-x-12 gap-y-6">
-              <InfoItem label="MÃ NHU CẦU THUÊ" value={data._MaNCT} />
+              <InfoItem label="MÃ NHU CẦU THUÊ" value={data.MaNCT} />
               <InfoItem
                 label="KHÁCH HÀNG ĐẠI DIỆN"
-                value={data._TenKhachHang || "N/A"}
+                value={data.TenKhachHang || "N/A"}
               />
               <InfoItem
                 label="MÃ NHÓM THUÊ"
-                value={data._NhomThue._MaNhomThue || "GRP_A1"}
+                value={data.NhomThue.MaNhomThue || "GRP_A1"}
               />
               <InfoItem
                 label="LOẠI PHÒNG"
-                value={data._TenLoaiPhong || "Phòng Studio"}
+                value={data.TenLoaiPhong || "Phòng Studio"}
               />
               <InfoItem
                 label="SỐ NGƯỜI"
                 value={
-                  data._SoNguoiDuKien < 10
-                    ? `0${data._SoNguoiDuKien}`
-                    : data._SoNguoiDuKien
+                  data.SoNguoiDuKien < 10
+                    ? `0${data.SoNguoiDuKien}`
+                    : data.SoNguoiDuKien
                 }
               />
-              <InfoItem label="HÌNH THỨC THUÊ" value={data._HinhThucThue} />
+              <InfoItem label="HÌNH THỨC THUÊ" value={data.HinhThucThue} />
 
               <InfoItem
                 label="GIÁ TỐI THIỂU"
-                value={`${(data._GiaMin / 1000000).toFixed(1)} Tr`}
+                value={`${(data.GiaMin / 1000000).toFixed(1)} Tr`}
                 valueClassName="text-[#181C22]"
               />
               <InfoItem
                 label="GIÁ TỐI ĐA"
-                value={`${(data._GiaMax / 1000000).toFixed(1)} Tr`}
+                value={`${(data.GiaMax / 1000000).toFixed(1)} Tr`}
                 valueClassName="text-[#181C22]"
               />
 
               <InfoItem
                 label="THỜI ĐIỂM VÀO"
-                value={new Date(data._ThoiDiemVao).toLocaleDateString("vi-VN")}
+                value={new Date(data.ThoiDiemVao).toLocaleDateString("vi-VN")}
               />
               <InfoItem
                 label="THỜI HẠN THUÊ"
-                value={`${data._ThoiHanThue} tháng`}
+                value={`${data.ThoiHanThue} tháng`}
               />
-              <InfoItem label="KHU VỰC" value={data._KhuVuc || "N/A"} />
+              <InfoItem label="KHU VỰC" value={data.KhuVuc || "N/A"} />
 
               <div className="flex flex-col gap-1.5">
                 <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
@@ -132,7 +132,7 @@ export function NCTDetailModal({ maNCT, open, onClose }: NCTDetailModalProps) {
                 </span>
                 <div>
                   <Badge className="bg-[#E8F5E9] text-[#0D631B] border-none px-4 py-1 rounded-full font-bold text-[12px]">
-                    {data._TrangThai}
+                    {data.TrangThai}
                   </Badge>
                 </div>
               </div>
@@ -144,20 +144,20 @@ export function NCTDetailModal({ maNCT, open, onClose }: NCTDetailModalProps) {
                 Tiêu chí
               </span>
               <div className="flex flex-wrap gap-2">
-                {[
-                  "Gần chợ",
-                  "Nuôi thú cưng",
-                  "Có máy giặt",
-                  "Ban công riêng",
-                  "An ninh 24/7",
-                ].map((tc) => (
-                  <div
-                    key={tc}
-                    className="px-5 py-2.5 bg-[#F1F3FC] text-[#40493D] rounded-[12px] text-[14px] font-medium transition-colors hover:bg-gray-200 cursor-default"
-                  >
-                    {tc}
+                {data.TieuChi && data.TieuChi.length > 0 ? (
+                  data.TieuChi.map((tc) => (
+                    <div
+                      key={tc.MaTieuChi}
+                      className="px-5 py-2.5 bg-[#F1F3FC] text-[#40493D] rounded-[12px] text-[14px] font-medium transition-colors hover:bg-gray-200 cursor-default"
+                    >
+                      {tc.TenTieuChi}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-5 py-2.5 bg-[#F1F3FC] text-[#40493D] rounded-[12px] text-[14px] font-medium cursor-default">
+                    Không có tiêu chí
                   </div>
-                ))}
+                )}
               </div>
             </div>
 

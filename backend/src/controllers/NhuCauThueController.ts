@@ -3,6 +3,7 @@ import NhuCauThueBUS from "../BUS/NhuCauThueBUS.ts";
 import NhomThueBUS from "../BUS/NhomThueBUS.ts";
 import KhachHangBUS from "../BUS/KhachHangBUS.ts";
 import LoaiPhongBUS from "../BUS/LoaiPhongBUS.ts";
+import TieuChiBUS from "../BUS/TieuChiBUS.ts";
 
 export default class NhuCauThueController {
   static async ThemNCThue(req: Request, res: Response) {
@@ -35,7 +36,7 @@ export default class NhuCauThueController {
               QuocTich: "",
               SDT: "",
               MaNhomThue: "",
-            } as KhachHangBUS),
+            }),
         ),
       );
 
@@ -52,7 +53,7 @@ export default class NhuCauThueController {
         Number(ThoiHanThue),
         KhuVuc,
         TrangThai,
-        TieuChi,
+        (TieuChi as string[]).map((maTieuChi) => new TieuChiBUS(maTieuChi, "")),
         "", // TenKhachHang sẽ được lấy từ DB sau khi có MaKH_DaiDien
         "", // TenLoaiPhong sẽ được lấy từ DB sau khi có LoaiPhong
       );
