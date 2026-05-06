@@ -25,6 +25,7 @@ import {
   X,
 } from "lucide-react";
 import apiClient from "../apiClient.ts";
+import { toast } from "sonner";
 
 interface NCTFilterModalProps {
   onApplyFilter: (
@@ -78,11 +79,24 @@ export function NCTFilterModal({ onApplyFilter }: NCTFilterModalProps) {
   const btn_ApDung_click = () => {
     const finalFilters = { ...filters };
 
+    // 1. Kiểm tra logic khoảng giá
+    const min = finalFilters.GiaMin ? Number(finalFilters.GiaMin) : 0;
+    const max = finalFilters.GiaMax ? Number(finalFilters.GiaMax) : Infinity;
+
+    if (min > max) {
+      toast.error("Giá tối thiểu không được lớn hơn giá tối đa");
+      return; // Ngắt thực thi nếu sai logic
+    }
+
+    // 2. Chuẩn hóa dữ liệu "Tất cả"
     if (finalFilters.HinhThucThue === "all") finalFilters.HinhThucThue = "";
     if (finalFilters.LoaiPhong === "all") finalFilters.LoaiPhong = "";
 
+    // 3. Thực thi callback
     onApplyFilter(
-      finalFilters.SoNguoiDuKien ? Number(finalFilters.SoNguoiDuKien) : undefined,
+      finalFilters.SoNguoiDuKien
+        ? Number(finalFilters.SoNguoiDuKien)
+        : undefined,
       finalFilters.HinhThucThue as string,
       finalFilters.GiaMin ? Number(finalFilters.GiaMin) : undefined,
       finalFilters.GiaMax ? Number(finalFilters.GiaMax) : undefined,
@@ -90,8 +104,9 @@ export function NCTFilterModal({ onApplyFilter }: NCTFilterModalProps) {
       finalFilters.ThoiHanThue ? Number(finalFilters.ThoiHanThue) : undefined,
       finalFilters.KhuVuc as string,
       finalFilters.LoaiPhong as string,
-      finalFilters.TrangThai as string
+      finalFilters.TrangThai as string,
     );
+
     setOpen(false);
   };
 
