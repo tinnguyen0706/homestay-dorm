@@ -221,15 +221,31 @@ export default class NhuCauThueBUS {
     );
   }
 
-  static async LayDSNCT(filters: any) {
-    if (
-      filters.GiaMin &&
-      filters.GiaMax &&
-      Number(filters.GiaMin) > Number(filters.GiaMax)
-    ) {
+  static async LayDSNCT(
+    SoNguoiDuKien?: number,
+    HinhThucThue?: string,
+    GiaMin?: number,
+    GiaMax?: number,
+    ThoiGianDonVao?: Date,
+    ThoiHanThue?: number,
+    KhuVuc?: string,
+    LoaiPhong?: string,
+    TrangThai?: string,
+  ): Promise<NhuCauThueBUS[]> {
+    if (GiaMin && GiaMax && Number(GiaMin) > Number(GiaMax)) {
       throw new Error("Giá tối thiểu không được lớn hơn giá tối đa.");
     }
-    return await NhuCauThueDAO.LayDSNCT(filters);
+    return await NhuCauThueDAO.LayDSNCT(
+      SoNguoiDuKien,
+      HinhThucThue,
+      GiaMin,
+      GiaMax,
+      ThoiGianDonVao,
+      ThoiHanThue,
+      KhuVuc,
+      LoaiPhong,
+      TrangThai,
+    );
   }
 
   static async LayTTNCT(MaNhuCau: string): Promise<NhuCauThueBUS | null> {

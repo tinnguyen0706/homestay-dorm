@@ -24,7 +24,17 @@ export default class NhuCauThueDAO {
     return result.rows[0].manhucau;
   }
 
-  static async LayDSNCT(filters: any = {}): Promise<NhuCauThueBUS[]> {
+  static async LayDSNCT(
+    SoNguoiDuKien?: number,
+    HinhThucThue?: string,
+    GiaMin?: number,
+    GiaMax?: number,
+    ThoiGianDonVao?: Date,
+    ThoiHanThue?: number,
+    KhuVuc?: string,
+    LoaiPhong?: string,
+    TrangThai?: string,
+  ): Promise<NhuCauThueBUS[]> {
     let query = `
       SELECT 
         n.manhucau, n.songuoidukien, n.hinhthucthue, n.giamin, n.giamax,
@@ -40,29 +50,41 @@ export default class NhuCauThueDAO {
     const values: any[] = [];
     let paramIndex = 1;
 
-    if (filters.SoNguoiDuKien) {
+    if (SoNguoiDuKien) {
       query += ` AND n.songuoidukien = $${paramIndex++}`;
-      values.push(filters.SoNguoiDuKien);
+      values.push(SoNguoiDuKien);
     }
-    if (filters.HinhThucThue && filters.HinhThucThue !== "all") {
+    if (HinhThucThue && HinhThucThue !== "all") {
       query += ` AND n.hinhthucthue = $${paramIndex++}`;
-      values.push(filters.HinhThucThue);
+      values.push(HinhThucThue);
     }
-    if (filters.KhuVuc && filters.KhuVuc !== "all") {
+    if (KhuVuc && KhuVuc !== "all") {
       query += ` AND n.khuvuc ILIKE $${paramIndex++}`;
-      values.push(filters.KhuVuc);
+      values.push(KhuVuc);
     }
-    if (filters.TrangThai && filters.TrangThai !== "all") {
+    if (TrangThai && TrangThai !== "all") {
       query += ` AND n.trangthai = $${paramIndex++}`;
-      values.push(filters.TrangThai);
+      values.push(TrangThai);
     }
-    if (filters.ThoiHanThue) {
+    if (ThoiHanThue) {
       query += ` AND n.thoihanthue = $${paramIndex++}`;
-      values.push(filters.ThoiHanThue);
+      values.push(ThoiHanThue);
     }
-    if (filters.LoaiPhong && filters.LoaiPhong !== "all") {
+    if (LoaiPhong && LoaiPhong !== "all") {
       query += ` AND n.maloai = $${paramIndex++}`; // Lọc theo MaLoai
-      values.push(filters.LoaiPhong);
+      values.push(LoaiPhong);
+    }
+    if (GiaMin) {
+      query += ` AND n.giamin >= $${paramIndex++}`;
+      values.push(GiaMin);
+    }
+    if (GiaMax) {
+      query += ` AND n.giamax <= $${paramIndex++}`;
+      values.push(GiaMax);
+    }
+    if (ThoiGianDonVao) {
+      query += ` AND n.thoidiemvao = $${paramIndex++}`;
+      values.push(ThoiGianDonVao);
     }
 
     query += ` ORDER BY n.manhucau DESC`;

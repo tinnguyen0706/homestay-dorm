@@ -72,22 +72,29 @@ export default class NhuCauThueController {
 
   static async getDanhSachNhuCauThue(req: Request, res: Response) {
     try {
-      const filters = {
-        SoNguoiDuKien: req.query.SoNguoiDuKien
-          ? Number(req.query.SoNguoiDuKien)
-          : undefined,
-        HinhThucThue: req.query.HinhThucThue,
-        GiaMin: req.query.GiaMin ? Number(req.query.GiaMin) : undefined,
-        GiaMax: req.query.GiaMax ? Number(req.query.GiaMax) : undefined,
-        ThoiHanThue: req.query.ThoiHanThue
-          ? Number(req.query.ThoiHanThue)
-          : undefined,
-        KhuVuc: req.query.KhuVuc,
-        LoaiPhong: req.query.LoaiPhong,
-        TrangThai: req.query.TrangThai,
-      };
+      const {
+        SoNguoiDuKien,
+        HinhThucThue,
+        GiaMin,
+        GiaMax,
+        ThoiGianDonVao,
+        ThoiHanThue,
+        KhuVuc,
+        LoaiPhong,
+        TrangThai,
+      } = req.query;
 
-      const dsNhuCauThue = await NhuCauThueBUS.LayDSNCT(filters);
+      const dsNhuCauThue = await NhuCauThueBUS.LayDSNCT(
+        SoNguoiDuKien ? Number(SoNguoiDuKien) : undefined,
+        HinhThucThue as string, // undefined nếu vắng mặt
+        GiaMin ? Number(GiaMin) : undefined,
+        GiaMax ? Number(GiaMax) : undefined,
+        ThoiGianDonVao ? new Date(ThoiGianDonVao as string) : undefined,
+        ThoiHanThue ? Number(ThoiHanThue) : undefined,
+        KhuVuc as string,
+        LoaiPhong as string,
+        TrangThai as string,
+      );
 
       res.status(200).json({
         success: true,

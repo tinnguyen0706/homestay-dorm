@@ -58,10 +58,32 @@ export const MH_DSNhuCauThue = () => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const itemsPerPage = 8;
 
-  const fetchNhuCauThue = async (filters = {}) => {
+  const fetchNhuCauThue = async (
+    SoNguoiDuKien?: number,
+    HinhThucThue?: string,
+    GiaMin?: number,
+    GiaMax?: number,
+    ThoiGianDonVao?: Date,
+    ThoiHanThue?: number,
+    KhuVuc?: string,
+    LoaiPhong?: string,
+    TrangThai?: string,
+  ) => {
     try {
       setLoading(true);
-      const res = await apiClient.get("/NhuCauThue", { params: filters });
+      const res = await apiClient.get("/NhuCauThue", {
+        params: {
+          SoNguoiDuKien,
+          HinhThucThue,
+          GiaMin,
+          GiaMax,
+          ThoiGianDonVao,
+          ThoiHanThue,
+          KhuVuc,
+          LoaiPhong,
+          TrangThai,
+        },
+      });
       if (res.data.success) {
         setDanhSach(res.data.data);
       }
@@ -76,10 +98,40 @@ export const MH_DSNhuCauThue = () => {
     fetchNhuCauThue();
   }, []);
 
-  const handleApplyFilter = (filters: any) => {
-    setCurrentFilters(filters); // Lưu lại filter đang áp dụng
+  const handleApplyFilter = (
+    SoNguoiDuKien?: number,
+    HinhThucThue?: string,
+    GiaMin?: number,
+    GiaMax?: number,
+    ThoiGianDonVao?: Date,
+    ThoiHanThue?: number,
+    KhuVuc?: string,
+    LoaiPhong?: string,
+    TrangThai?: string,
+  ) => {
+    setCurrentFilters({
+      SoNguoiDuKien,
+      HinhThucThue,
+      GiaMin,
+      GiaMax,
+      ThoiGianDonVao,
+      ThoiHanThue,
+      KhuVuc,
+      LoaiPhong,
+      TrangThai,
+    }); // Lưu lại filter đang áp dụng
     setCurrentPage(1); // Reset về trang 1 khi lọc
-    fetchNhuCauThue(filters); // Gọi API mới
+    fetchNhuCauThue(
+      SoNguoiDuKien,
+      HinhThucThue,
+      GiaMin,
+      GiaMax,
+      ThoiGianDonVao,
+      ThoiHanThue,
+      KhuVuc,
+      LoaiPhong,
+      TrangThai,
+    ); // Gọi API mới
   };
 
   // Hàm xử lý khi nhấn Xem chi tiết

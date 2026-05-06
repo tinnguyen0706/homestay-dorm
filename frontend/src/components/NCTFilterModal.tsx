@@ -27,7 +27,17 @@ import {
 import apiClient from "../apiClient.ts";
 
 interface NCTFilterModalProps {
-  onApplyFilter: (filters: any) => void;
+  onApplyFilter: (
+    SoNguoiDuKien?: number,
+    HinhThucThue?: string,
+    GiaMin?: number,
+    GiaMax?: number,
+    ThoiGianDonVao?: Date,
+    ThoiHanThue?: number,
+    KhuVuc?: string,
+    LoaiPhong?: string,
+    TrangThai?: string,
+  ) => void;
 }
 
 export function NCTFilterModal({ onApplyFilter }: NCTFilterModalProps) {
@@ -71,7 +81,17 @@ export function NCTFilterModal({ onApplyFilter }: NCTFilterModalProps) {
     if (finalFilters.HinhThucThue === "all") finalFilters.HinhThucThue = "";
     if (finalFilters.LoaiPhong === "all") finalFilters.LoaiPhong = "";
 
-    onApplyFilter(finalFilters);
+    onApplyFilter(
+      finalFilters.SoNguoiDuKien ? Number(finalFilters.SoNguoiDuKien) : undefined,
+      finalFilters.HinhThucThue as string,
+      finalFilters.GiaMin ? Number(finalFilters.GiaMin) : undefined,
+      finalFilters.GiaMax ? Number(finalFilters.GiaMax) : undefined,
+      finalFilters.ThoiDiemVao ? new Date(finalFilters.ThoiDiemVao) : undefined,
+      finalFilters.ThoiHanThue ? Number(finalFilters.ThoiHanThue) : undefined,
+      finalFilters.KhuVuc as string,
+      finalFilters.LoaiPhong as string,
+      finalFilters.TrangThai as string
+    );
     setOpen(false);
   };
 
