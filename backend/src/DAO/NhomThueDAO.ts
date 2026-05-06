@@ -6,13 +6,13 @@ export default class NhomThueDAO {
     try {
       const result = await pool.query(
         "INSERT INTO NHOMTHUE (MaKH_DaiDien) VALUES ($1) RETURNING MaNhomThue",
-        [NCT.MaKH_DaiDien],
+        [NCT._MaKH_DaiDien],
       );
       const MaNhomThue = result.rows[0].manhomthue ?? result.rows[0].MaNhomThue;
-      for (const KH of NCT.NhomThue.KH) {
+      for (const KH of NCT._NhomThue._KH) {
         await pool.query(
           "UPDATE KHACHHANG SET MaNhomThue = $1 WHERE MaKH = $2",
-          [MaNhomThue, KH.MaKH],
+          [MaNhomThue, KH._MaKH],
         );
       }
       return MaNhomThue;

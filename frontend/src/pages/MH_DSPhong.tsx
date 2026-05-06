@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import apiClient from "../apiClient.ts";
 import { Link } from "react-router";
 import { RoomFilterModal } from "../components/RoomFilterModal.tsx";
@@ -55,7 +55,10 @@ export const MH_DSPhong = () => {
   };
 
   const totalPages = Math.ceil(phongs.length / itemsPerPage);
-  const currentPhongs = phongs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const currentPhongs = phongs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
 
   return (
     <div className="bg-[#F9F9FF] min-h-screen w-full">
@@ -72,46 +75,88 @@ export const MH_DSPhong = () => {
 
         <div className="bg-white rounded-[24px] shadow-[0px_8px_30px_0px_rgba(0,0,0,0.04)] border border-[#BFCAba]/10 mt-2 overflow-hidden flex flex-col min-h-[588px]">
           {loading ? (
-            <div className="py-20 text-center text-[#40493D] flex-1">Đang tải dữ liệu...</div>
+            <div className="py-20 text-center text-[#40493D] flex-1">
+              Đang tải dữ liệu...
+            </div>
           ) : (
             <>
               <div className="flex-1">
                 <Table>
                   <TableHeader className="bg-[#F1F3FC]/50 border-b border-[#BFCAba]/10">
                     <TableRow className="border-b-0 hover:bg-transparent">
-                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] h-[72px] uppercase px-6">MÃ PHÒNG</TableHead>
-                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] uppercase">TÊN PHÒNG</TableHead>
-                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] uppercase">LOẠI PHÒNG</TableHead>
-                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] uppercase">CHI NHÁNH</TableHead>
-                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] text-center uppercase">SỨC CHỨA</TableHead>
-                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] uppercase">GIỚI TÍNH</TableHead>
-                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] text-center uppercase">TRẠNG THÁI</TableHead>
-                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] text-center uppercase px-6">THAO TÁC</TableHead>
+                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] h-[72px] uppercase px-6">
+                        MÃ PHÒNG
+                      </TableHead>
+                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] uppercase">
+                        TÊN PHÒNG
+                      </TableHead>
+                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] uppercase">
+                        LOẠI PHÒNG
+                      </TableHead>
+                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] uppercase">
+                        CHI NHÁNH
+                      </TableHead>
+                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] text-center uppercase">
+                        SỨC CHỨA
+                      </TableHead>
+                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] uppercase">
+                        GIỚI TÍNH
+                      </TableHead>
+                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] text-center uppercase">
+                        TRẠNG THÁI
+                      </TableHead>
+                      <TableHead className="font-manrope font-bold text-[12px] text-[#40493D] text-center uppercase px-6">
+                        THAO TÁC
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {phongs.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-20 text-gray-500">Không tìm thấy phòng nào.</TableCell>
+                        <TableCell
+                          colSpan={8}
+                          className="text-center py-20 text-gray-500"
+                        >
+                          Không tìm thấy phòng nào.
+                        </TableCell>
                       </TableRow>
                     ) : (
                       currentPhongs.map((phong) => (
-                        <TableRow key={phong.MaPhong} className="border-b border-[#BFCAba]/10 h-[81px] hover:bg-gray-50/50">
-                          <TableCell className="font-manrope font-bold text-[16px] text-[#00490E] px-6">{phong.MaPhong}</TableCell>
-                          <TableCell className="font-semibold text-[16px] text-[#181C22]">{phong.TenPhong}</TableCell>
-                          <TableCell className="text-[14px] text-[#40493D]">{phong.LoaiPhong}</TableCell>
-                          <TableCell className="text-[14px] text-[#40493D] font-medium">
-                            {phong.ChiNhanh?.TenChiNhanh || phong.ChiNhanh?.TenCN || phong.ChiNhanh?.MaCN}
+                        <TableRow
+                          key={phong.MaPhong}
+                          className="border-b border-[#BFCAba]/10 h-[81px] hover:bg-gray-50/50"
+                        >
+                          <TableCell className="font-manrope font-bold text-[16px] text-[#00490E] px-6">
+                            {phong.MaPhong}
                           </TableCell>
-                          <TableCell className="text-[14px] text-[#40493D] text-center">{phong.SucChuaToiDa} người</TableCell>
-                          <TableCell className="text-[14px] text-[#40493D]">{phong.GioiTinhChoPhep}</TableCell>
+                          <TableCell className="font-semibold text-[16px] text-[#181C22]">
+                            {phong.TenPhong}
+                          </TableCell>
+                          <TableCell className="text-[14px] text-[#40493D]">
+                            {phong.LoaiPhong}
+                          </TableCell>
+                          <TableCell className="text-[14px] text-[#40493D] font-medium">
+                            {phong.ChiNhanh?.TenChiNhanh ||
+                              phong.ChiNhanh?.MaCN}
+                          </TableCell>
+                          <TableCell className="text-[14px] text-[#40493D] text-center">
+                            {phong.SucChuaToiDa} người
+                          </TableCell>
+                          <TableCell className="text-[14px] text-[#40493D]">
+                            {phong.GioiTinhChoPhep}
+                          </TableCell>
                           <TableCell className="text-center">
-                            <span className={`px-4 py-1.5 rounded-full text-[12px] font-semibold tracking-wide ${phong.TrangThai === "Còn trống" ? "bg-[#00490E]/15 text-[#00490E]" : "bg-[#B91C1C]/15 text-[#B91C1C]"}`}>
+                            <span
+                              className={`px-4 py-1.5 rounded-full text-[12px] font-semibold tracking-wide ${phong.TrangThai === "Còn trống" ? "bg-[#00490E]/15 text-[#00490E]" : "bg-[#B91C1C]/15 text-[#B91C1C]"}`}
+                            >
                               {phong.TrangThai}
                             </span>
                           </TableCell>
                           <TableCell className="text-center px-6">
-                            <Link to={`/ChiTietPhong/${phong.MaPhong}`} className="text-[14px] font-semibold text-[#047857] hover:underline">
+                            <Link
+                              to={`/ChiTietPhong/${phong.MaPhong}`}
+                              className="text-[14px] font-semibold text-[#047857] hover:underline"
+                            >
                               Xem chi tiết
                             </Link>
                           </TableCell>
@@ -125,7 +170,9 @@ export const MH_DSPhong = () => {
               {phongs.length > 0 && (
                 <div className="flex items-center justify-between px-6 py-4 border-t border-[#BFCAba]/10 bg-white">
                   <span className="text-[14px] text-gray-500 font-medium">
-                    Hiển thị {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, phongs.length)} trong số {phongs.length} phòng
+                    Hiển thị {(currentPage - 1) * itemsPerPage + 1} -{" "}
+                    {Math.min(currentPage * itemsPerPage, phongs.length)} trong
+                    số {phongs.length} phòng
                   </span>
                   <div className="flex items-center gap-2">
                     <Button
@@ -156,7 +203,9 @@ export const MH_DSPhong = () => {
                       variant="outline"
                       size="icon"
                       className="w-8 h-8 rounded-lg border-gray-200"
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }
                       disabled={currentPage === totalPages}
                     >
                       <ChevronRight className="w-4 h-4" />

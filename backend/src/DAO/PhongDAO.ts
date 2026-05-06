@@ -91,7 +91,7 @@ export class PhongDAO {
         `
         SELECT mataisan, tentaisan
         FROM TaiSan
-        WHERE maphong = $1 AND loai = 'T�i s?n kh�c'
+        WHERE maphong = $1 AND loai = 'Tài sản khác'
         ORDER BY mataisan ASC
       `,
         [maPhong],

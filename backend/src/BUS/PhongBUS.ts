@@ -1,4 +1,4 @@
-﻿import LoaiPhongBUS from "./LoaiPhongBUS.ts";
+import LoaiPhongBUS from "./LoaiPhongBUS.ts";
 import ChiNhanhBUS from "./ChiNhanhBUS.ts";
 import GiuongBUS from "./GiuongBUS.ts";
 import { PhongDAO } from "../DAO/PhongDAO.js";
@@ -37,8 +37,8 @@ export class PhongBUS {
     return {
       ChiNhanh: chiNhanh,
       LoaiPhong: loaiPhong.map((lp) => ({
-        MaLoai: lp.MaLoai,
-        TenLoai: lp.TenLoai,
+        MaLoai: lp._MaLoai,
+        TenLoai: lp._TenLoai,
       })),
       GioiTinh: gioiTinh,
       TrangThai: trangThai,
@@ -54,19 +54,19 @@ export class PhongBUS {
     if (!phong) return null;
 
     const [chiNhanhInfo, giuong, dichVu] = await Promise.all([
-      ChiNhanhBUS.LayThongTinChiNhanh(phong.ChiNhanh.MaCN),
+      ChiNhanhBUS.LayThongTinChiNhanh(phong.ChiNhanh._MaCN),
       GiuongBUS.LayDSGiuongTrongPhong(maPhong),
-      ChiNhanhBUS.LayDSDichVuTaiChiNhanh(phong.ChiNhanh.MaCN),
+      ChiNhanhBUS.LayDSDichVuTaiChiNhanh(phong.ChiNhanh._MaCN),
     ]);
 
     if (chiNhanhInfo) {
       phong.ChiNhanh = chiNhanhInfo;
     }
-    phong.ChiNhanh.DichVu = dichVu;
+    phong.ChiNhanh._DichVu = dichVu;
 
     phong.Giuong = giuong;
     if (giuong.length > 0) {
-      const tongGia = giuong.reduce((sum, g) => sum + (g.GiaThueGiuong || 0), 0);
+      const tongGia = giuong.reduce((sum, g) => sum + (g._GiaThueGiuong || 0), 0);
       phong.GiaThue = tongGia / giuong.length;
     }
 

@@ -1,28 +1,40 @@
 import NhomThueBUS from "../BUS/NhomThueBUS.ts";
 import NhuCauThueBUS from "../BUS/NhuCauThueBUS.ts";
+import LoaiPhongBUS from "../BUS/LoaiPhongBUS.ts";
+import TieuChiBUS from "../BUS/TieuChiBUS.ts";
 import pool from "../config/db.ts";
 export default class NhuCauThueDAO {
   static async ThemNCT(NhuCauThue: NhuCauThueBUS): Promise<string> {
     const result = await pool.query(
       "INSERT INTO NHUCAUTHUE(SoNguoiDuKien, HinhThucThue, GiaMin, GiaMax, ThoiDiemVao, ThoiHanThue, KhuVuc, TrangThai, MaKH, MaNhomThue, MaLoai) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING MaNhuCau",
       [
-        NhuCauThue.SoNguoiDuKien,
-        NhuCauThue.HinhThucThue,
-        NhuCauThue.GiaMin,
-        NhuCauThue.GiaMax,
-        NhuCauThue.ThoiDiemVao,
-        NhuCauThue.ThoiHanThue,
-        NhuCauThue.KhuVuc,
-        NhuCauThue.TrangThai,
-        NhuCauThue.MaKH_DaiDien,
-        NhuCauThue.NhomThue.MaNhomThue,
-        NhuCauThue.LoaiPhong,
+        NhuCauThue._SoNguoiDuKien,
+        NhuCauThue._HinhThucThue,
+        NhuCauThue._GiaMin,
+        NhuCauThue._GiaMax,
+        NhuCauThue._ThoiDiemVao,
+        NhuCauThue._ThoiHanThue,
+        NhuCauThue._KhuVuc,
+        NhuCauThue._TrangThai,
+        NhuCauThue._MaKH_DaiDien,
+        NhuCauThue._NhomThue._MaNhomThue,
+        NhuCauThue._LoaiPhong._MaLoai,
       ],
     );
     return result.rows[0].manhucau;
   }
 
-  static async LayDSNCT(filters: any = {}): Promise<NhuCauThueBUS[]> {
+  static async LayDSNCT(
+    SoNguoiDuKien?: number,
+    HinhThucThue?: string,
+    GiaMin?: number,
+    GiaMax?: number,
+    ThoiGianDonVao?: Date,
+    ThoiHanThue?: number,
+    KhuVuc?: string,
+    LoaiPhong?: string,
+    TrangThai?: string,
+  ): Promise<NhuCauThueBUS[]> {
     let query = `
       SELECT 
         n.manhucau, n.songuoidukien, n.hinhthucthue, n.giamin, n.giamax,
@@ -38,29 +50,41 @@ export default class NhuCauThueDAO {
     const values: any[] = [];
     let paramIndex = 1;
 
-    if (filters.SoNguoiDuKien) {
+    if (SoNguoiDuKien) {
       query += ` AND n.songuoidukien = $${paramIndex++}`;
-      values.push(filters.SoNguoiDuKien);
+      values.push(SoNguoiDuKien);
     }
-    if (filters.HinhThucThue && filters.HinhThucThue !== "all") {
+    if (HinhThucThue && HinhThucThue !== "all") {
       query += ` AND n.hinhthucthue = $${paramIndex++}`;
-      values.push(filters.HinhThucThue);
+      values.push(HinhThucThue);
     }
-    if (filters.KhuVuc && filters.KhuVuc !== "all") {
+    if (KhuVuc && KhuVuc !== "all") {
       query += ` AND n.khuvuc ILIKE $${paramIndex++}`;
-      values.push(filters.KhuVuc);
+      values.push(KhuVuc);
     }
-    if (filters.TrangThai && filters.TrangThai !== "all") {
+    if (TrangThai && TrangThai !== "all") {
       query += ` AND n.trangthai = $${paramIndex++}`;
-      values.push(filters.TrangThai);
+      values.push(TrangThai);
     }
-    if (filters.ThoiHanThue) {
+    if (ThoiHanThue) {
       query += ` AND n.thoihanthue = $${paramIndex++}`;
-      values.push(filters.ThoiHanThue);
+      values.push(ThoiHanThue);
     }
-    if (filters.LoaiPhong && filters.LoaiPhong !== "all") {
+    if (LoaiPhong && LoaiPhong !== "all") {
       query += ` AND n.maloai = $${paramIndex++}`; // Lọc theo MaLoai
-      values.push(filters.LoaiPhong);
+      values.push(LoaiPhong);
+    }
+    if (GiaMin) {
+      query += ` AND n.giamin >= $${paramIndex++}`;
+      values.push(GiaMin);
+    }
+    if (GiaMax) {
+      query += ` AND n.giamax <= $${paramIndex++}`;
+      values.push(GiaMax);
+    }
+    if (ThoiGianDonVao) {
+      query += ` AND n.thoidiemvao = $${paramIndex++}`;
+      values.push(ThoiGianDonVao);
     }
 
     query += ` ORDER BY n.manhucau DESC`;
@@ -72,8 +96,9 @@ export default class NhuCauThueDAO {
         new NhuCauThueBUS(
           row.manhucau,
           row.makh,
+          row.tenkhachhang,
           new NhomThueBUS(),
-          row.maloai,
+          new LoaiPhongBUS(row.maloai, row.tenloaiphong),
           row.songuoidukien,
           row.hinhthucthue,
           parseFloat(row.giamin), // Convert từ Numeric
@@ -82,9 +107,7 @@ export default class NhuCauThueDAO {
           row.thoihanthue,
           row.khuvuc,
           row.trangthai,
-          [], // Cần truy vấn thêm nếu có bảng liên quan
-          row.tenkhachhang,
-          row.tenloaiphong,
+          [],
         ),
     );
   }
@@ -99,18 +122,33 @@ export default class NhuCauThueDAO {
       LEFT JOIN NHOMTHUE nt ON n.manhomthue = nt.manhomthue
       WHERE n.manhucau = $1 
     `;
-    const result = await pool.query(query, [MaNhuCau]);
+    const tieuChiQuery = `
+      SELECT tc.matieuchi, tc.tentieuchi
+      FROM TIEUCHI tc
+      INNER JOIN TIEUCHI_NHUCAU tcnc ON tc.matieuchi = tcnc.matieuchi
+      WHERE tcnc.manhucau = $1
+      ORDER BY tc.matieuchi ASC
+    `;
+
+    const [result, tieuChiResult] = await Promise.all([
+      pool.query(query, [MaNhuCau]),
+      pool.query(tieuChiQuery, [MaNhuCau]),
+    ]);
 
     if (result.rows.length === 0) return null;
 
     const row = result.rows[0];
+    const tieuChi = tieuChiResult.rows.map(
+      (tc) => new TieuChiBUS(tc.matieuchi, tc.tentieuchi),
+    );
 
     // Trả về object thuần ép kiểu sang BUS
     return new NhuCauThueBUS(
       row.manhucau,
       row.makh,
+      row.tenkhachhang,
       new NhomThueBUS(row.manhomthue, []),
-      row.maloai,
+      new LoaiPhongBUS(row.maloai, row.tenloaiphong),
       row.songuoidukien,
       row.hinhthucthue,
       parseFloat(row.giamin), // Convert từ Numeric
@@ -119,9 +157,7 @@ export default class NhuCauThueDAO {
       row.thoihanthue,
       row.khuvuc,
       row.trangthai,
-      [],
-      row.tenkhachhang,
-      row.tenloaiphong,
+      tieuChi,
     );
   }
 }

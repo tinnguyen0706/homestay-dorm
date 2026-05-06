@@ -28,19 +28,17 @@ export default class KhachHangDAO {
     return result.rows.map((row) => new KhachHangBUS(row));
   }
   static async ThemKH(kh: KhachHangBUS): Promise<{ MaKH: string }> {
-    const { HoTen, GioiTinh, Email, SDT, QuocTich } = kh;
-
     const query = `
             INSERT INTO khachhang (hoten, gioitinh, email, sdt, quoctich)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING makh as "MaKH"
         `;
     const result = await pool.query(query, [
-      HoTen,
-      GioiTinh,
-      Email,
-      SDT,
-      QuocTich,
+      kh._HoTen,
+      kh._GioiTinh,
+      kh._Email,
+      kh._SDT,
+      kh._QuocTich,
     ]);
     return result.rows[0];
   }

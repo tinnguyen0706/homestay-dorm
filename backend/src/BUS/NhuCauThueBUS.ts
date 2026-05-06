@@ -2,30 +2,31 @@ import NhomThueBUS from "./NhomThueBUS.ts";
 import NhomThueDAO from "../DAO/NhomThueDAO.ts";
 import NhuCauThueDAO from "../DAO/NhuCauThueDAO.ts";
 import TieuChiDAO from "../DAO/TieuChiDAO.ts";
+import TieuChiBUS from "./TieuChiBUS.ts";
+import LoaiPhongBUS from "./LoaiPhongBUS.ts";
 
 export default class NhuCauThueBUS {
-  private _MaNCT: string;
-  private _MaKH_DaiDien: string;
-  private _NhomThue: NhomThueBUS;
-  private _LoaiPhong: string;
-  private _SoNguoiDuKien: number;
-  private _HinhThucThue: string;
-  private _GiaMin: number;
-  private _GiaMax: number;
-  private _ThoiDiemVao: Date;
-  private _ThoiHanThue: number;
-  private _KhuVuc: string;
-  private _TrangThai: string;
-  private _TieuChi: string[];
-
-  private _TenKhachHang: string;
-  private _TenLoaiPhong: string;
+  private MaNCT: string;
+  private MaKH_DaiDien: string;
+  private TenKhachHang: string;
+  private NhomThue: NhomThueBUS;
+  private LoaiPhong: LoaiPhongBUS;
+  private SoNguoiDuKien: number;
+  private HinhThucThue: string;
+  private GiaMin: number;
+  private GiaMax: number;
+  private ThoiDiemVao: Date;
+  private ThoiHanThue: number;
+  private KhuVuc: string;
+  private TrangThai: string;
+  private TieuChi: TieuChiBUS[];
 
   constructor(
     MaNCT: string = "",
     MaKH_DaiDien: string = "",
+    TenKhachHang: string = "",
     NhomThue: NhomThueBUS = new NhomThueBUS(),
-    LoaiPhong: string = "",
+    LoaiPhong: LoaiPhongBUS = new LoaiPhongBUS(),
     SoNguoiDuKien: number = 0,
     HinhThucThue: string = "",
     GiaMin: number = 0,
@@ -34,145 +35,137 @@ export default class NhuCauThueBUS {
     ThoiHanThue: number = 0,
     KhuVuc: string = "",
     TrangThai: string = "",
-    TieuChi: string[] = [],
-    TenKhachHang: string = "",
-    TenLoaiPhong: string = "",
+    TieuChi: TieuChiBUS[] = [],
   ) {
-    this._MaNCT = MaNCT;
-    this._MaKH_DaiDien = MaKH_DaiDien;
-    this._NhomThue = NhomThue;
-    this._LoaiPhong = LoaiPhong;
-    this._SoNguoiDuKien = SoNguoiDuKien;
-    this._HinhThucThue = HinhThucThue;
-    this._GiaMin = GiaMin;
-    this._GiaMax = GiaMax;
-    this._ThoiDiemVao = ThoiDiemVao;
-    this._ThoiHanThue = ThoiHanThue;
-    this._KhuVuc = KhuVuc;
-    this._TrangThai = TrangThai;
-    this._TieuChi = TieuChi;
-    this._TenKhachHang = TenKhachHang;
-    this._TenLoaiPhong = TenLoaiPhong;
+    this.MaNCT = MaNCT;
+    this.MaKH_DaiDien = MaKH_DaiDien;
+    this.NhomThue = NhomThue;
+    this.LoaiPhong = LoaiPhong;
+    this.SoNguoiDuKien = SoNguoiDuKien;
+    this.HinhThucThue = HinhThucThue;
+    this.GiaMin = GiaMin;
+    this.GiaMax = GiaMax;
+    this.ThoiDiemVao = ThoiDiemVao;
+    this.ThoiHanThue = ThoiHanThue;
+    this.KhuVuc = KhuVuc;
+    this.TrangThai = TrangThai;
+    this.TieuChi = TieuChi;
+    this.TenKhachHang = TenKhachHang;
+    this.LoaiPhong = LoaiPhong;
   }
 
-  get MaNCT(): string {
-    return this._MaNCT;
+  // Getters
+  get _MaNCT(): string {
+    return this.MaNCT;
   }
 
-  set MaNCT(value: string) {
-    this._MaNCT = value;
+  get _MaKH_DaiDien(): string {
+    return this.MaKH_DaiDien;
   }
 
-  get MaKH_DaiDien(): string {
-    return this._MaKH_DaiDien;
+  get _NhomThue(): NhomThueBUS {
+    return this.NhomThue;
   }
 
-  set MaKH_DaiDien(value: string) {
-    this._MaKH_DaiDien = value;
+  get _LoaiPhong(): LoaiPhongBUS {
+    return this.LoaiPhong;
   }
 
-  get NhomThue(): NhomThueBUS {
-    return this._NhomThue;
+  get _SoNguoiDuKien(): number {
+    return this.SoNguoiDuKien;
   }
 
-  set NhomThue(value: NhomThueBUS) {
-    this._NhomThue = value;
+  get _HinhThucThue(): string {
+    return this.HinhThucThue;
   }
 
-  get LoaiPhong(): string {
-    return this._LoaiPhong;
+  get _GiaMin(): number {
+    return this.GiaMin;
   }
 
-  set LoaiPhong(value: string) {
-    this._LoaiPhong = value;
+  get _GiaMax(): number {
+    return this.GiaMax;
   }
 
-  get SoNguoiDuKien(): number {
-    return this._SoNguoiDuKien;
+  get _ThoiDiemVao(): Date {
+    return this.ThoiDiemVao;
   }
 
-  set SoNguoiDuKien(value: number) {
-    this._SoNguoiDuKien = value;
+  get _ThoiHanThue(): number {
+    return this.ThoiHanThue;
   }
 
-  get HinhThucThue(): string {
-    return this._HinhThucThue;
+  get _KhuVuc(): string {
+    return this.KhuVuc;
   }
 
-  set HinhThucThue(value: string) {
-    this._HinhThucThue = value;
+  get _TrangThai(): string {
+    return this.TrangThai;
   }
 
-  get GiaMin(): number {
-    return this._GiaMin;
+  get _TieuChi(): TieuChiBUS[] {
+    return this.TieuChi;
   }
 
-  set GiaMin(value: number) {
-    this._GiaMin = value;
+  get _TenKhachHang(): string {
+    return this.TenKhachHang;
   }
 
-  get GiaMax(): number {
-    return this._GiaMax;
+  // Setters
+  set _MaNCT(value: string) {
+    this.MaNCT = value;
   }
 
-  set GiaMax(value: number) {
-    this._GiaMax = value;
+  set _MaKH_DaiDien(value: string) {
+    this.MaKH_DaiDien = value;
   }
 
-  get ThoiDiemVao(): Date {
-    return this._ThoiDiemVao;
+  set _NhomThue(value: NhomThueBUS) {
+    this.NhomThue = value;
   }
 
-  set ThoiDiemVao(value: Date) {
-    this._ThoiDiemVao = value;
+  set _LoaiPhong(value: LoaiPhongBUS) {
+    this.LoaiPhong = value;
   }
 
-  get ThoiHanThue(): number {
-    return this._ThoiHanThue;
+  set _SoNguoiDuKien(value: number) {
+    this.SoNguoiDuKien = value;
   }
 
-  set ThoiHanThue(value: number) {
-    this._ThoiHanThue = value;
+  set _HinhThucThue(value: string) {
+    this.HinhThucThue = value;
   }
 
-  get KhuVuc(): string {
-    return this._KhuVuc;
+  set _GiaMin(value: number) {
+    this.GiaMin = value;
   }
 
-  set KhuVuc(value: string) {
-    this._KhuVuc = value;
+  set _GiaMax(value: number) {
+    this.GiaMax = value;
   }
 
-  get TrangThai(): string {
-    return this._TrangThai;
+  set _ThoiDiemVao(value: Date) {
+    this.ThoiDiemVao = value;
   }
 
-  set TrangThai(value: string) {
-    this._TrangThai = value;
+  set _ThoiHanThue(value: number) {
+    this.ThoiHanThue = value;
   }
 
-  get TieuChi(): string[] {
-    return this._TieuChi;
+  set _KhuVuc(value: string) {
+    this.KhuVuc = value;
   }
 
-  set TieuChi(value: string[]) {
-    this._TieuChi = value;
+  set _TrangThai(value: string) {
+    this.TrangThai = value;
   }
 
-  get TenKhachHang(): string {
-    return this._TenKhachHang;
+  set _TieuChi(value: TieuChiBUS[]) {
+    this.TieuChi = value;
   }
 
-  set TenKhachHang(value: string) {
-    this._TenKhachHang = value;
-  }
-
-  get TenLoaiPhong(): string {
-    return this._TenLoaiPhong;
-  }
-
-  set TenLoaiPhong(value: string) {
-    this._TenLoaiPhong = value;
+  set _TenKhachHang(value: string) {
+    this.TenKhachHang = value;
   }
 
   static KiemTraThongTin(
@@ -183,35 +176,35 @@ export default class NhuCauThueBUS {
 
     if (
       loaiDangKy === "ca-nhan" &&
-      (!NCT.MaKH_DaiDien || NCT.MaKH_DaiDien.trim() === "")
+      (!NCT._MaKH_DaiDien || NCT._MaKH_DaiDien.trim() === "")
     ) {
       errors.push("Phải chọn khách hàng.");
     }
 
     if (loaiDangKy === "nhom") {
-      if (!NCT.MaKH_DaiDien || NCT.MaKH_DaiDien.trim() === "") {
+      if (!NCT._MaKH_DaiDien || NCT._MaKH_DaiDien.trim() === "") {
         errors.push("Phải chọn khách hàng đại diện.");
       }
-      if (NCT.SoNguoiDuKien < 2) {
+      if (NCT._SoNguoiDuKien < 2) {
         errors.push("Nhóm thuê phải có ít nhất 2 thành viên.");
       }
     }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    if (isNaN(NCT.ThoiDiemVao.getTime()) || NCT.ThoiDiemVao <= today) {
+    if (isNaN(NCT._ThoiDiemVao.getTime()) || NCT._ThoiDiemVao <= today) {
       errors.push("Thời điểm vào phải sau ngày hiện tại.");
     }
 
-    if (!NCT.ThoiHanThue || NCT.ThoiHanThue <= 2) {
+    if (!NCT._ThoiHanThue || NCT._ThoiHanThue <= 2) {
       errors.push("Thời hạn thuê phải lớn hơn 2 tháng.");
     }
 
-    if (!NCT.LoaiPhong || NCT.LoaiPhong.trim() === "") {
+    if (!NCT._LoaiPhong || NCT._LoaiPhong._MaLoai.trim() === "") {
       errors.push("Phải chọn loại phòng.");
     }
 
-    if (NCT.GiaMin > NCT.GiaMax) {
+    if (NCT._GiaMin > NCT._GiaMax) {
       errors.push("Giá tối thiểu không được lớn hơn giá tối đa.");
     }
 
@@ -220,20 +213,39 @@ export default class NhuCauThueBUS {
 
   static async ThemNCThue(NCT: NhuCauThueBUS): Promise<void> {
     const MaNhomThue = await NhomThueDAO.ThemNhom(NCT);
-    NCT.NhomThue.MaNhomThue = MaNhomThue;
+    NCT._NhomThue._MaNhomThue = MaNhomThue;
     const MaNCT = await NhuCauThueDAO.ThemNCT(NCT);
-    await TieuChiDAO.ThemTieuChi_NCT(NCT.TieuChi, MaNCT);
+    await TieuChiDAO.ThemTieuChi_NCT(
+      NCT._TieuChi.map((tieuChi) => tieuChi._MaTieuChi),
+      MaNCT,
+    );
   }
 
-  static async LayDSNCT(filters: any) {
-    if (
-      filters.GiaMin &&
-      filters.GiaMax &&
-      Number(filters.GiaMin) > Number(filters.GiaMax)
-    ) {
+  static async LayDSNCT(
+    SoNguoiDuKien?: number,
+    HinhThucThue?: string,
+    GiaMin?: number,
+    GiaMax?: number,
+    ThoiGianDonVao?: Date,
+    ThoiHanThue?: number,
+    KhuVuc?: string,
+    LoaiPhong?: string,
+    TrangThai?: string,
+  ): Promise<NhuCauThueBUS[]> {
+    if (GiaMin && GiaMax && Number(GiaMin) > Number(GiaMax)) {
       throw new Error("Giá tối thiểu không được lớn hơn giá tối đa.");
     }
-    return await NhuCauThueDAO.LayDSNCT(filters);
+    return await NhuCauThueDAO.LayDSNCT(
+      SoNguoiDuKien,
+      HinhThucThue,
+      GiaMin,
+      GiaMax,
+      ThoiGianDonVao,
+      ThoiHanThue,
+      KhuVuc,
+      LoaiPhong,
+      TrangThai,
+    );
   }
 
   static async LayTTNCT(MaNhuCau: string): Promise<NhuCauThueBUS | null> {

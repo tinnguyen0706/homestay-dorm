@@ -27,7 +27,17 @@ import {
 import apiClient from "../apiClient.ts";
 
 interface NCTFilterModalProps {
-  onApplyFilter: (filters: any) => void;
+  onApplyFilter: (
+    SoNguoiDuKien?: number,
+    HinhThucThue?: string,
+    GiaMin?: number,
+    GiaMax?: number,
+    ThoiGianDonVao?: Date,
+    ThoiHanThue?: number,
+    KhuVuc?: string,
+    LoaiPhong?: string,
+    TrangThai?: string,
+  ) => void;
 }
 
 export function NCTFilterModal({ onApplyFilter }: NCTFilterModalProps) {
@@ -65,13 +75,23 @@ export function NCTFilterModal({ onApplyFilter }: NCTFilterModalProps) {
     }
   }, [open]);
 
-  const handleApply = () => {
+  const btn_ApDung_click = () => {
     const finalFilters = { ...filters };
 
     if (finalFilters.HinhThucThue === "all") finalFilters.HinhThucThue = "";
     if (finalFilters.LoaiPhong === "all") finalFilters.LoaiPhong = "";
 
-    onApplyFilter(finalFilters);
+    onApplyFilter(
+      finalFilters.SoNguoiDuKien ? Number(finalFilters.SoNguoiDuKien) : undefined,
+      finalFilters.HinhThucThue as string,
+      finalFilters.GiaMin ? Number(finalFilters.GiaMin) : undefined,
+      finalFilters.GiaMax ? Number(finalFilters.GiaMax) : undefined,
+      finalFilters.ThoiDiemVao ? new Date(finalFilters.ThoiDiemVao) : undefined,
+      finalFilters.ThoiHanThue ? Number(finalFilters.ThoiHanThue) : undefined,
+      finalFilters.KhuVuc as string,
+      finalFilters.LoaiPhong as string,
+      finalFilters.TrangThai as string
+    );
     setOpen(false);
   };
 
@@ -328,7 +348,7 @@ export function NCTFilterModal({ onApplyFilter }: NCTFilterModalProps) {
         {/* Footer Modal */}
         <div className="px-8 py-5 border-t border-gray-100 flex justify-end bg-gray-50/50">
           <Button
-            onClick={handleApply}
+            onClick={btn_ApDung_click}
             className="h-11 px-8 bg-[#0D631B] text-white hover:bg-[#0D631B]/90 rounded-[10px] font-bold text-[15px] transition-all"
           >
             Áp dụng

@@ -3,6 +3,7 @@ import NhuCauThueBUS from "../BUS/NhuCauThueBUS.ts";
 import NhomThueBUS from "../BUS/NhomThueBUS.ts";
 import KhachHangBUS from "../BUS/KhachHangBUS.ts";
 import LoaiPhongBUS from "../BUS/LoaiPhongBUS.ts";
+import TieuChiBUS from "../BUS/TieuChiBUS.ts";
 
 export default class NhuCauThueController {
   static async ThemNCThue(req: Request, res: Response) {
@@ -35,15 +36,16 @@ export default class NhuCauThueController {
               QuocTich: "",
               SDT: "",
               MaNhomThue: "",
-            } as KhachHangBUS),
+            }),
         ),
       );
 
       const NCT = new NhuCauThueBUS(
         "",
         MaKH_DaiDien,
+        "",
         nhomThue,
-        LoaiPhong,
+        new LoaiPhongBUS(LoaiPhong, ""),
         Number(SoNguoiDuKien),
         HinhThucThue,
         Number(GiaMin),
@@ -52,9 +54,7 @@ export default class NhuCauThueController {
         Number(ThoiHanThue),
         KhuVuc,
         TrangThai,
-        TieuChi,
-        "", // TenKhachHang sẽ được lấy từ DB sau khi có MaKH_DaiDien
-        "", // TenLoaiPhong sẽ được lấy từ DB sau khi có LoaiPhong
+        (TieuChi as string[]).map((maTieuChi) => new TieuChiBUS(maTieuChi, "")),
       );
 
       const errors = NhuCauThueBUS.KiemTraThongTin(NCT, LoaiDangKy);
@@ -72,22 +72,29 @@ export default class NhuCauThueController {
 
   static async getDanhSachNhuCauThue(req: Request, res: Response) {
     try {
-      const filters = {
-        SoNguoiDuKien: req.query.SoNguoiDuKien
-          ? Number(req.query.SoNguoiDuKien)
-          : undefined,
-        HinhThucThue: req.query.HinhThucThue,
-        GiaMin: req.query.GiaMin ? Number(req.query.GiaMin) : undefined,
-        GiaMax: req.query.GiaMax ? Number(req.query.GiaMax) : undefined,
-        ThoiHanThue: req.query.ThoiHanThue
-          ? Number(req.query.ThoiHanThue)
-          : undefined,
-        KhuVuc: req.query.KhuVuc,
-        LoaiPhong: req.query.LoaiPhong,
-        TrangThai: req.query.TrangThai,
-      };
+      const {
+        SoNguoiDuKien,
+        HinhThucThue,
+        GiaMin,
+        GiaMax,
+        ThoiGianDonVao,
+        ThoiHanThue,
+        KhuVuc,
+        LoaiPhong,
+        TrangThai,
+      } = req.query;
 
-      const dsNhuCauThue = await NhuCauThueBUS.LayDSNCT(filters);
+      const dsNhuCauThue = await NhuCauThueBUS.LayDSNCT(
+        SoNguoiDuKien ? Number(SoNguoiDuKien) : undefined,
+        HinhThucThue as string, // undefined nếu vắng mặt
+        GiaMin ? Number(GiaMin) : undefined,
+        GiaMax ? Number(GiaMax) : undefined,
+        ThoiGianDonVao ? new Date(ThoiGianDonVao as string) : undefined,
+        ThoiHanThue ? Number(ThoiHanThue) : undefined,
+        KhuVuc as string,
+        LoaiPhong as string,
+        TrangThai as string,
+      );
 
       res.status(200).json({
         success: true,
