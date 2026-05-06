@@ -1,27 +1,27 @@
 import KhachHangBUS from "./KhachHangBUS.ts";
 
 export default class NhomThueBUS {
-  private _MaNhomThue: string;
-  private _KH: KhachHangBUS[];
+  private MaNhomThue: string;
+  private KH: KhachHangBUS[];
 
   constructor(MaNhom: string = "", khachHangs: KhachHangBUS[] = []) {
-    this._MaNhomThue = MaNhom;
-    this._KH = khachHangs;
+    this.MaNhomThue = MaNhom;
+    this.KH = khachHangs;
   }
 
-  get MaNhomThue(): string {
-    return this._MaNhomThue;
+  get _MaNhomThue(): string {
+    return this.MaNhomThue;
   }
 
-  set MaNhomThue(value: string) {
-    this._MaNhomThue = value;
+  set _MaNhomThue(value: string) {
+    this.MaNhomThue = value;
   }
 
-  get KH(): KhachHangBUS[] {
-    return this._KH;
+  get _KH(): KhachHangBUS[] {
+    return this.KH;
   }
 
-  set KH(value: KhachHangBUS[]) {
-    this._KH = value;
+  set _KH(value: KhachHangBUS[]) {
+    this.KH = value;
   }
 }

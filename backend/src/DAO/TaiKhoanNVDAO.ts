@@ -7,7 +7,7 @@ export default class TaiKhoanNVDAO {
   ): Promise<Array<{ username: string }>> {
     const result = await pool.query(
       "SELECT USERNAME FROM TAIKHOAN_NV WHERE USERNAME = $1 AND PASSWORD = CRYPT($2, PASSWORD)",
-      [TaiKhoanNV.Username, TaiKhoanNV.Password],
+      [TaiKhoanNV._Username, TaiKhoanNV._Password],
     );
     return result.rows;
   }

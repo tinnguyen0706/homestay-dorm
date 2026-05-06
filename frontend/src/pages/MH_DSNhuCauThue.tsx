@@ -15,21 +15,20 @@ import { NCTDetailModal } from "@/components/NCTDetailModal.tsx";
 
 // Update Interface chuẩn khớp với backend
 interface INhuCauThue {
-  _MaNCT: string;
-  _MaKH_DaiDien: string;
-  _NhomThue: any;
-  _LoaiPhong: string;
-  _SoNguoiDuKien: number;
-  _HinhThucThue: string;
-  _GiaMin: number;
-  _GiaMax: number;
-  _ThoiDiemVao: Date;
-  _ThoiHanThue: number;
-  _KhuVuc: string;
-  _TrangThai: string;
-  _TieuChi: string[];
-  _TenKhachHang: string;
-  _TenLoaiPhong: string;
+  MaNCT: string;
+  MaKH_DaiDien: string;
+  NhomThue: any;
+  LoaiPhong: { MaLoai: string; TenLoai: string };
+  SoNguoiDuKien: number;
+  HinhThucThue: string;
+  GiaMin: number;
+  GiaMax: number;
+  ThoiDiemVao: Date;
+  ThoiHanThue: number;
+  KhuVuc: string;
+  TrangThai: string;
+  TieuChi: string[];
+  TenKhachHang: string;
 }
 
 // Map màu trạng thái theo đúng DB Check Constraint ('Chờ duyệt', 'Đang tìm', 'Đã khớp', 'Đã hủy', 'Hết hạn')
@@ -84,8 +83,8 @@ export const MH_DSNhuCauThue = () => {
   };
 
   // Hàm xử lý khi nhấn Xem chi tiết
-  const handleOpenDetail = (maNCT: string) => {
-    setSelectedMaNCT(maNCT);
+  const handleOpenDetail = (MaNCT: string) => {
+    setSelectedMaNCT(MaNCT);
     setIsDetailOpen(true);
   };
 
@@ -163,40 +162,40 @@ export const MH_DSNhuCauThue = () => {
                     ) : (
                       currentItems.map((item) => (
                         <TableRow
-                          key={item._MaNCT}
+                          key={item.MaNCT}
                           className="border-b border-[#BFCAba]/10 h-[81px] hover:bg-gray-50/50 transition-colors"
                         >
                           <TableCell className="font-manrope font-bold text-[16px] text-[#00490E] px-6">
-                            {item._MaNCT}
+                            {item.MaNCT}
                           </TableCell>
                           <TableCell className="font-semibold text-[16px] text-[#181C22]">
-                            {item._TenKhachHang || "N/A"}
+                            {item.TenKhachHang || "N/A"}
                           </TableCell>
                           <TableCell className="text-[14px] text-[#40493D]">
-                            {item._TenLoaiPhong || item._LoaiPhong}
+                            {item.LoaiPhong?.TenLoai || "N/A"}
                           </TableCell>
                           <TableCell className="text-[14px] text-[#40493D] text-center font-medium">
-                            {item._SoNguoiDuKien}
+                            {item.SoNguoiDuKien}
                           </TableCell>
                           <TableCell className="text-[14px] text-[#40493D]">
-                            {item._HinhThucThue}
+                            {item.HinhThucThue}
                           </TableCell>
                           <TableCell className="text-[14px] text-[#40493D]">
-                            {item._ThoiHanThue} tháng
+                            {item.ThoiHanThue} tháng
                           </TableCell>
                           <TableCell className="text-[14px] text-[#40493D]">
-                            {item._KhuVuc || "N/A"}
+                            {item.KhuVuc || "N/A"}
                           </TableCell>
                           <TableCell className="text-center">
                             <span
-                              className={`px-4 py-1.5 rounded-full text-[12px] font-bold tracking-wide whitespace-nowrap ${getStatusStyles(item._TrangThai)}`}
+                              className={`px-4 py-1.5 rounded-full text-[12px] font-bold tracking-wide whitespace-nowrap ${getStatusStyles(item.TrangThai)}`}
                             >
-                              {item._TrangThai}
+                              {item.TrangThai}
                             </span>
                           </TableCell>
                           <TableCell className="text-center px-6">
                             <button
-                              onClick={() => handleOpenDetail(item._MaNCT)}
+                              onClick={() => handleOpenDetail(item.MaNCT)}
                               className="text-[14px] font-bold text-[#047857] hover:text-[#0D631B] hover:underline underline-offset-2 transition-colors whitespace-nowrap"
                             >
                               Xem chi tiết
@@ -233,10 +232,11 @@ export const MH_DSNhuCauThue = () => {
                           key={i}
                           variant={currentPage === i + 1 ? "default" : "ghost"}
                           size="icon"
-                          className={`w-8 h-8 rounded-lg text-[14px] font-semibold transition-colors ${currentPage === i + 1
-                            ? "bg-[#0D631B] text-white hover:bg-[#0D631B]/90"
-                            : "text-gray-600 hover:bg-gray-100"
-                            }`}
+                          className={`w-8 h-8 rounded-lg text-[14px] font-semibold transition-colors ${
+                            currentPage === i + 1
+                              ? "bg-[#0D631B] text-white hover:bg-[#0D631B]/90"
+                              : "text-gray-600 hover:bg-gray-100"
+                          }`}
                           onClick={() => setCurrentPage(i + 1)}
                         >
                           {i + 1}
@@ -262,7 +262,7 @@ export const MH_DSNhuCauThue = () => {
         </div>
       </div>
       <NCTDetailModal
-        maNCT={selectedMaNCT}
+        MaNCT={selectedMaNCT}
         open={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
       />

@@ -2,28 +2,30 @@ import jwt from "jsonwebtoken";
 import TaiKhoanNVDAO from "../DAO/TaiKhoanNVDAO.ts";
 
 export default class TaiKhoanNVBUS {
-  private _Username: string;
-  private _Password: string;
+  private Username: string;
+  private Password: string;
 
   constructor(Username: string = "", Password: string = "") {
-    this._Username = Username;
-    this._Password = Password;
+    this.Username = Username;
+    this.Password = Password;
   }
 
-  get Username(): string {
-    return this._Username;
+  // Getters
+  get _Username(): string {
+    return this.Username;
   }
 
-  set Username(value: string) {
-    this._Username = value;
+  get _Password(): string {
+    return this.Password;
   }
 
-  get Password(): string {
-    return this._Password;
+  // Setters
+  set _Username(value: string) {
+    this.Username = value;
   }
 
-  set Password(value: string) {
-    this._Password = value;
+  set _Password(value: string) {
+    this.Password = value;
   }
 
   static async DangNhap(Username: string, Password: string): Promise<{ token: string; username: string } | null> {

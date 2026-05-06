@@ -24,20 +24,13 @@ type Customer = { id: string; name: string; sdt: string };
 type LoaiPhong = { MaLoai: string; TenLoai: string };
 type TieuChi = { MaTieuChi: string; TenTieuChi: string };
 
-
 function getInitials(name: string) {
   const parts = name.trim().split(" ");
   if (parts.length === 1) return parts[0][0]?.toUpperCase() ?? "?";
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-function FieldLabel({
-  icon,
-  label,
-}: {
-  icon: React.ReactNode;
-  label: string;
-}) {
+function FieldLabel({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
     <label
       className="flex items-center gap-1.5 mb-2 text-sm font-semibold text-slate-600"
@@ -70,7 +63,9 @@ export const MH_DKNCThue = () => {
   // Cá nhân
   const [khachHang, setKhachHang] = useState("");
   const [selectedKHId, setSelectedKHId] = useState("");
-  const [khachHangSuggestions, setKhachHangSuggestions] = useState<Customer[]>([]);
+  const [khachHangSuggestions, setKhachHangSuggestions] = useState<Customer[]>(
+    [],
+  );
 
   // Nhóm
   const [members, setMembers] = useState<Customer[]>([]);
@@ -81,43 +76,73 @@ export const MH_DKNCThue = () => {
   const searchRef = useRef<HTMLDivElement>(null);
   const [showKHDropdown, setShowKHDropdown] = useState(false);
   const khachHangRef = useRef<HTMLDivElement>(null);
-  const [searchTypeKH, setSearchTypeKH] = useState<"HoTen" | "MaKH" | "SDT">("HoTen");
-  const [searchTypeNhom, setSearchTypeNhom] = useState<"HoTen" | "MaKH" | "SDT">("HoTen");
+  const [searchTypeKH, setSearchTypeKH] = useState<"HoTen" | "MaKH" | "SDT">(
+    "HoTen",
+  );
+  const [searchTypeNhom, setSearchTypeNhom] = useState<
+    "HoTen" | "MaKH" | "SDT"
+  >("HoTen");
 
   // Load danh sách loại phòng và tiêu chí khi mount
   useEffect(() => {
-    apiClient.get("/LoaiPhong/LayDSLoaiPhong")
+    apiClient
+      .get("/LoaiPhong/LayDSLoaiPhong")
       .then((r) => setDsLoaiPhong(r.data))
       .catch(console.error);
-    apiClient.get("/TieuChi/LayDSTC")
+    apiClient
+      .get("/TieuChi/LayDSTC")
       .then((r) => setDsTieuChi(r.data))
       .catch(console.error);
   }, []);
 
   // Debounce tìm kiếm khách hàng (cá nhân)
   useEffect(() => {
-    if (!khachHang.trim()) { setKhachHangSuggestions([]); return; }
+    if (!khachHang.trim()) {
+      setKhachHangSuggestions([]);
+      return;
+    }
     const t = setTimeout(async () => {
       try {
-        const res = await apiClient.get(`/KhachHang/LayDSKH?${searchTypeKH}=${encodeURIComponent(khachHang)}`);
-        setKhachHangSuggestions(res.data.map((c: { MaKH: string; HoTen: string; SDT: string }) => ({ id: c.MaKH, name: c.HoTen, sdt: c.SDT })));
-      } catch { setKhachHangSuggestions([]); }
+        const res = await apiClient.get(
+          `/KhachHang/LayDSKH?${searchTypeKH}=${encodeURIComponent(khachHang)}`,
+        );
+        setKhachHangSuggestions(
+          res.data.map((c: { MaKH: string; HoTen: string; SDT: string }) => ({
+            id: c.MaKH,
+            name: c.HoTen,
+            sdt: c.SDT,
+          })),
+        );
+      } catch {
+        setKhachHangSuggestions([]);
+      }
     }, 300);
     return () => clearTimeout(t);
   }, [khachHang, searchTypeKH]);
 
   // Debounce tìm kiếm khách hàng (nhóm)
   useEffect(() => {
-    if (!searchQuery.trim()) { setSuggestions([]); return; }
+    if (!searchQuery.trim()) {
+      setSuggestions([]);
+      return;
+    }
     const t = setTimeout(async () => {
       try {
-        const res = await apiClient.get(`/KhachHang/LayDSKH?${searchTypeNhom}=${encodeURIComponent(searchQuery)}`);
+        const res = await apiClient.get(
+          `/KhachHang/LayDSKH?${searchTypeNhom}=${encodeURIComponent(searchQuery)}`,
+        );
         setSuggestions(
           res.data
-            .map((c: { MaKH: string; HoTen: string; SDT: string }) => ({ id: c.MaKH, name: c.HoTen, sdt: c.SDT }))
-            .filter((c: Customer) => !members.find((m) => m.id === c.id))
+            .map((c: { MaKH: string; HoTen: string; SDT: string }) => ({
+              id: c.MaKH,
+              name: c.HoTen,
+              sdt: c.SDT,
+            }))
+            .filter((c: Customer) => !members.find((m) => m.id === c.id)),
         );
-      } catch { setSuggestions([]); }
+      } catch {
+        setSuggestions([]);
+      }
     }, 300);
     return () => clearTimeout(t);
   }, [searchQuery, searchTypeNhom, members]);
@@ -127,7 +152,10 @@ export const MH_DKNCThue = () => {
     const handler = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node))
         setShowDropdown(false);
-      if (khachHangRef.current && !khachHangRef.current.contains(e.target as Node))
+      if (
+        khachHangRef.current &&
+        !khachHangRef.current.contains(e.target as Node)
+      )
         setShowKHDropdown(false);
     };
     document.addEventListener("mousedown", handler);
@@ -156,7 +184,9 @@ export const MH_DKNCThue = () => {
 
   const toggleTieuChi = (maTieuChi: string) => {
     setTieuChi((prev) =>
-      prev.includes(maTieuChi) ? prev.filter((t) => t !== maTieuChi) : [...prev, maTieuChi]
+      prev.includes(maTieuChi)
+        ? prev.filter((t) => t !== maTieuChi)
+        : [...prev, maTieuChi],
     );
   };
 
@@ -164,50 +194,53 @@ export const MH_DKNCThue = () => {
 
   const btn_TaoYeuCauDK_click = async () => {
     try {
-      const body = tab === "ca-nhan"
-        ? {
-          MaKH_DaiDien: selectedKHId,
-          DanhSachKH: [selectedKHId],
-          LoaiPhong: loaiPhong,
-          SoNguoiDuKien: 1,
-          HinhThucThue: hinhThucThue,
-          GiaMin: Number(giaMin),
-          GiaMax: Number(giaMax),
-          ThoiDiemVao: thoiDiemVao,
-          ThoiHanThue: Number(thoiHanThue),
-          KhuVuc: khuVuc,
-          TrangThai: "Chờ duyệt",
-          TieuChi: tieuChi,
-          LoaiDangKy: "ca-nhan",
-        }
-        : {
-          MaKH_DaiDien: representativeId,
-          DanhSachKH: members.map((m) => m.id),
-          LoaiPhong: loaiPhong,
-          SoNguoiDuKien: members.length,
-          HinhThucThue: hinhThucThue,
-          GiaMin: Number(giaMin),
-          GiaMax: Number(giaMax),
-          ThoiDiemVao: thoiDiemVao,
-          ThoiHanThue: Number(thoiHanThue),
-          KhuVuc: khuVuc,
-          TrangThai: "Chờ duyệt",
-          TieuChi: tieuChi,
-          LoaiDangKy: "nhom",
-        };
+      const body =
+        tab === "ca-nhan"
+          ? {
+              MaKH_DaiDien: selectedKHId,
+              DanhSachKH: [selectedKHId],
+              LoaiPhong: loaiPhong,
+              SoNguoiDuKien: 1,
+              HinhThucThue: hinhThucThue,
+              GiaMin: Number(giaMin),
+              GiaMax: Number(giaMax),
+              ThoiDiemVao: thoiDiemVao,
+              ThoiHanThue: Number(thoiHanThue),
+              KhuVuc: khuVuc,
+              TrangThai: "Chờ duyệt",
+              TieuChi: tieuChi,
+              LoaiDangKy: "ca-nhan",
+            }
+          : {
+              MaKH_DaiDien: representativeId,
+              DanhSachKH: members.map((m) => m.id),
+              LoaiPhong: loaiPhong,
+              SoNguoiDuKien: members.length,
+              HinhThucThue: hinhThucThue,
+              GiaMin: Number(giaMin),
+              GiaMax: Number(giaMax),
+              ThoiDiemVao: thoiDiemVao,
+              ThoiHanThue: Number(thoiHanThue),
+              KhuVuc: khuVuc,
+              TrangThai: "Chờ duyệt",
+              TieuChi: tieuChi,
+              LoaiDangKy: "nhom",
+            };
 
       const res = await apiClient.post("/NhuCauThue/ThemNCThue", body);
       if (res.status !== 201) throw new Error("Thêm thất bại");
       toast.success("Đăng ký nhu cầu thuê thành công!");
     } catch (error: any) {
-      if (error.response?.status === 422 && Array.isArray(error.response?.data?.errors)) {
+      if (
+        error.response?.status === 422 &&
+        Array.isArray(error.response?.data?.errors)
+      ) {
         error.response.data.errors.forEach((msg: string) => toast.error(msg));
       } else {
         toast.error("Đăng ký thất bại.");
       }
     }
   };
-
 
   const HienThi = () => (
     <div className="min-h-screen bg-slate-100 flex flex-col" style={inter}>
@@ -249,7 +282,10 @@ export const MH_DKNCThue = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
               {/* Khách hàng */}
               <div className="md:col-span-2">
-                <FieldLabel icon={<CreditCard size={15} strokeWidth={2} />} label="Khách hàng" />
+                <FieldLabel
+                  icon={<CreditCard size={15} strokeWidth={2} />}
+                  label="Khách hàng"
+                />
                 <div className="relative" ref={khachHangRef}>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
@@ -262,13 +298,20 @@ export const MH_DKNCThue = () => {
                         className={inputCls + " pl-9"}
                         style={inter}
                         placeholder={
-                          searchTypeKH === "HoTen" ? "Nhập tên khách hàng..." :
-                            searchTypeKH === "MaKH" ? "Nhập mã khách hàng..." :
-                              "Nhập số điện thoại..."
+                          searchTypeKH === "HoTen"
+                            ? "Nhập tên khách hàng..."
+                            : searchTypeKH === "MaKH"
+                              ? "Nhập mã khách hàng..."
+                              : "Nhập số điện thoại..."
                         }
                         value={khachHang}
-                        onChange={(e) => { setKhachHang(e.target.value); setShowKHDropdown(true); }}
-                        onFocus={() => khachHang.trim() && setShowKHDropdown(true)}
+                        onChange={(e) => {
+                          setKhachHang(e.target.value);
+                          setShowKHDropdown(true);
+                        }}
+                        onFocus={() =>
+                          khachHang.trim() && setShowKHDropdown(true)
+                        }
                       />
                     </div>
                     <div className="relative shrink-0">
@@ -277,7 +320,9 @@ export const MH_DKNCThue = () => {
                         style={inter}
                         value={searchTypeKH}
                         onChange={(e) => {
-                          setSearchTypeKH(e.target.value as "HoTen" | "MaKH" | "SDT");
+                          setSearchTypeKH(
+                            e.target.value as "HoTen" | "MaKH" | "SDT",
+                          );
                           setKhachHang("");
                           setKhachHangSuggestions([]);
                         }}
@@ -286,7 +331,11 @@ export const MH_DKNCThue = () => {
                         <option value="MaKH">Tìm theo mã KH</option>
                         <option value="SDT">Tìm theo SDT</option>
                       </select>
-                      <ChevronDown size={14} strokeWidth={2} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                      <ChevronDown
+                        size={14}
+                        strokeWidth={2}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                      />
                     </div>
                   </div>
                   {showKHDropdown && khachHang.trim() && (
@@ -310,7 +359,10 @@ export const MH_DKNCThue = () => {
                           </button>
                         ))
                       ) : (
-                        <p className="px-4 py-3 text-sm text-slate-400 italic" style={inter}>
+                        <p
+                          className="px-4 py-3 text-sm text-slate-400 italic"
+                          style={inter}
+                        >
                           Không tìm thấy khách hàng
                         </p>
                       )}
@@ -321,7 +373,10 @@ export const MH_DKNCThue = () => {
 
               {/* Khu vực */}
               <div>
-                <FieldLabel icon={<MapPin size={15} strokeWidth={2} />} label="Khu vực mong muốn" />
+                <FieldLabel
+                  icon={<MapPin size={15} strokeWidth={2} />}
+                  label="Khu vực mong muốn"
+                />
                 <input
                   className={inputCls}
                   style={inter}
@@ -333,10 +388,15 @@ export const MH_DKNCThue = () => {
 
               {/* Hình thức thuê */}
               <div>
-                <FieldLabel icon={<Building2 size={15} strokeWidth={2} />} label="Hình thức thuê" />
+                <FieldLabel
+                  icon={<Building2 size={15} strokeWidth={2} />}
+                  label="Hình thức thuê"
+                />
                 <div className="relative">
                   <select
-                    className={inputCls + " appearance-none pr-10 cursor-pointer"}
+                    className={
+                      inputCls + " appearance-none pr-10 cursor-pointer"
+                    }
                     style={inter}
                     value={hinhThucThue}
                     onChange={(e) => setHinhThucThue(e.target.value)}
@@ -354,7 +414,10 @@ export const MH_DKNCThue = () => {
 
               {/* Khoảng giá */}
               <div>
-                <FieldLabel icon={<Banknote size={15} strokeWidth={2} />} label="Khoảng giá mong muốn" />
+                <FieldLabel
+                  icon={<Banknote size={15} strokeWidth={2} />}
+                  label="Khoảng giá mong muốn"
+                />
                 <div className="flex items-center gap-2">
                   <input
                     className={inputCls}
@@ -380,17 +443,24 @@ export const MH_DKNCThue = () => {
 
               {/* Loại phòng */}
               <div>
-                <FieldLabel icon={<Sofa size={15} strokeWidth={2} />} label="Loại phòng" />
+                <FieldLabel
+                  icon={<Sofa size={15} strokeWidth={2} />}
+                  label="Loại phòng"
+                />
                 <div className="relative">
                   <select
-                    className={inputCls + " appearance-none pr-10 cursor-pointer"}
+                    className={
+                      inputCls + " appearance-none pr-10 cursor-pointer"
+                    }
                     style={inter}
                     value={loaiPhong}
                     onChange={(e) => setLoaiPhong(e.target.value)}
                   >
                     <option value="">Chọn loại phòng</option>
                     {dsLoaiPhong.map((lp) => (
-                      <option key={lp.MaLoai} value={lp.MaLoai}>{lp.TenLoai}</option>
+                      <option key={lp.MaLoai} value={lp.MaLoai}>
+                        {lp.TenLoai}
+                      </option>
                     ))}
                   </select>
                   <ChevronDown
@@ -404,7 +474,10 @@ export const MH_DKNCThue = () => {
               {/* Ngày vào ở + Thời hạn */}
               <div className="grid grid-cols-2 gap-3 md:col-span-2">
                 <div>
-                  <FieldLabel icon={<CalendarDays size={15} strokeWidth={2} />} label="Thời điểm vào ở" />
+                  <FieldLabel
+                    icon={<CalendarDays size={15} strokeWidth={2} />}
+                    label="Thời điểm vào ở"
+                  />
                   <input
                     className={inputCls}
                     style={inter}
@@ -414,7 +487,10 @@ export const MH_DKNCThue = () => {
                   />
                 </div>
                 <div>
-                  <FieldLabel icon={<Timer size={15} strokeWidth={2} />} label="Thời hạn thuê (tháng)" />
+                  <FieldLabel
+                    icon={<Timer size={15} strokeWidth={2} />}
+                    label="Thời hạn thuê (tháng)"
+                  />
                   <input
                     className={inputCls}
                     style={inter}
@@ -430,7 +506,10 @@ export const MH_DKNCThue = () => {
 
             {/* Tiêu chí */}
             <div>
-              <FieldLabel icon={<Star size={15} strokeWidth={2} />} label="Tiêu chí ưu tiên" />
+              <FieldLabel
+                icon={<Star size={15} strokeWidth={2} />}
+                label="Tiêu chí ưu tiên"
+              />
               <div className="flex flex-wrap gap-2 mt-1">
                 {dsTieuChi.map(({ MaTieuChi, TenTieuChi }) => {
                   const active = tieuChi.includes(MaTieuChi);
@@ -460,7 +539,10 @@ export const MH_DKNCThue = () => {
           <div className="flex flex-col gap-5">
             {/* Label section */}
             <div>
-              <p className="flex items-center gap-1.5 text-xs font-semibold tracking-widest text-slate-400 uppercase mb-3" style={inter}>
+              <p
+                className="flex items-center gap-1.5 text-xs font-semibold tracking-widest text-slate-400 uppercase mb-3"
+                style={inter}
+              >
                 <Users size={13} strokeWidth={2} />
                 Danh sách thành viên nhóm
               </p>
@@ -477,12 +559,17 @@ export const MH_DKNCThue = () => {
                     className={inputCls + " pl-9"}
                     style={inter}
                     placeholder={
-                      searchTypeNhom === "HoTen" ? "Nhập tên khách hàng..." :
-                        searchTypeNhom === "MaKH" ? "Nhập mã khách hàng..." :
-                          "Nhập số điện thoại..."
+                      searchTypeNhom === "HoTen"
+                        ? "Nhập tên khách hàng..."
+                        : searchTypeNhom === "MaKH"
+                          ? "Nhập mã khách hàng..."
+                          : "Nhập số điện thoại..."
                     }
                     value={searchQuery}
-                    onChange={(e) => { setSearchQuery(e.target.value); setShowDropdown(true); }}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setShowDropdown(true);
+                    }}
                     onFocus={() => searchQuery.trim() && setShowDropdown(true)}
                   />
 
@@ -504,7 +591,10 @@ export const MH_DKNCThue = () => {
                           </button>
                         ))
                       ) : (
-                        <p className="px-4 py-3 text-sm text-slate-400 italic" style={inter}>
+                        <p
+                          className="px-4 py-3 text-sm text-slate-400 italic"
+                          style={inter}
+                        >
                           Không tìm thấy khách hàng
                         </p>
                       )}
@@ -519,7 +609,9 @@ export const MH_DKNCThue = () => {
                     style={inter}
                     value={searchTypeNhom}
                     onChange={(e) => {
-                      setSearchTypeNhom(e.target.value as "HoTen" | "MaKH" | "SDT");
+                      setSearchTypeNhom(
+                        e.target.value as "HoTen" | "MaKH" | "SDT",
+                      );
                       setSearchQuery("");
                       setSuggestions([]);
                     }}
@@ -528,7 +620,11 @@ export const MH_DKNCThue = () => {
                     <option value="MaKH">Tìm theo mã KH</option>
                     <option value="SDT">Tìm theo SDT</option>
                   </select>
-                  <ChevronDown size={14} strokeWidth={2} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <ChevronDown
+                    size={14}
+                    strokeWidth={2}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  />
                 </div>
 
                 {/* Thêm button */}
@@ -550,10 +646,16 @@ export const MH_DKNCThue = () => {
                 <table className="w-full">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="w-20 px-4 py-2.5 text-left text-xs font-semibold tracking-wider text-slate-400 uppercase" style={inter}>
+                      <th
+                        className="w-20 px-4 py-2.5 text-left text-xs font-semibold tracking-wider text-slate-400 uppercase"
+                        style={inter}
+                      >
                         Đại diện
                       </th>
-                      <th className="px-4 py-2.5 text-left text-xs font-semibold tracking-wider text-slate-400 uppercase" style={inter}>
+                      <th
+                        className="px-4 py-2.5 text-left text-xs font-semibold tracking-wider text-slate-400 uppercase"
+                        style={inter}
+                      >
                         Khách hàng
                       </th>
                       <th className="w-12" />
@@ -562,15 +664,24 @@ export const MH_DKNCThue = () => {
                   <tbody>
                     {members.length === 0 ? (
                       <tr>
-                        <td colSpan={3} className="px-4 py-6 text-center text-sm text-slate-400 italic" style={inter}>
-                          Chưa có thành viên. Tìm kiếm và thêm khách hàng bên trên.
+                        <td
+                          colSpan={3}
+                          className="px-4 py-6 text-center text-sm text-slate-400 italic"
+                          style={inter}
+                        >
+                          Chưa có thành viên. Tìm kiếm và thêm khách hàng bên
+                          trên.
                         </td>
                       </tr>
                     ) : (
                       members.map((m, idx) => (
                         <tr
                           key={m.id}
-                          className={idx < members.length - 1 ? "border-b border-slate-100" : ""}
+                          className={
+                            idx < members.length - 1
+                              ? "border-b border-slate-100"
+                              : ""
+                          }
                         >
                           <td className="px-4 py-3 text-center">
                             <input
@@ -586,7 +697,10 @@ export const MH_DKNCThue = () => {
                               <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-semibold text-slate-600 shrink-0">
                                 {getInitials(m.name)}
                               </div>
-                              <span className="text-sm text-slate-700" style={inter}>
+                              <span
+                                className="text-sm text-slate-700"
+                                style={inter}
+                              >
                                 {m.id} - {m.name} - {m.sdt}
                               </span>
                             </div>
@@ -610,7 +724,10 @@ export const MH_DKNCThue = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
               {/* Khu vực */}
               <div>
-                <FieldLabel icon={<MapPin size={15} strokeWidth={2} />} label="Khu vực mong muốn" />
+                <FieldLabel
+                  icon={<MapPin size={15} strokeWidth={2} />}
+                  label="Khu vực mong muốn"
+                />
                 <input
                   className={inputCls}
                   style={inter}
@@ -622,10 +739,15 @@ export const MH_DKNCThue = () => {
 
               {/* Hình thức thuê */}
               <div>
-                <FieldLabel icon={<Building2 size={15} strokeWidth={2} />} label="Hình thức thuê" />
+                <FieldLabel
+                  icon={<Building2 size={15} strokeWidth={2} />}
+                  label="Hình thức thuê"
+                />
                 <div className="relative">
                   <select
-                    className={inputCls + " appearance-none pr-10 cursor-pointer"}
+                    className={
+                      inputCls + " appearance-none pr-10 cursor-pointer"
+                    }
                     style={inter}
                     value={hinhThucThue}
                     onChange={(e) => setHinhThucThue(e.target.value)}
@@ -643,7 +765,10 @@ export const MH_DKNCThue = () => {
 
               {/* Khoảng giá */}
               <div>
-                <FieldLabel icon={<Banknote size={15} strokeWidth={2} />} label="Khoảng giá mong muốn" />
+                <FieldLabel
+                  icon={<Banknote size={15} strokeWidth={2} />}
+                  label="Khoảng giá mong muốn"
+                />
                 <div className="flex items-center gap-2">
                   <input
                     className={inputCls}
@@ -669,17 +794,24 @@ export const MH_DKNCThue = () => {
 
               {/* Loại phòng */}
               <div>
-                <FieldLabel icon={<Sofa size={15} strokeWidth={2} />} label="Loại phòng" />
+                <FieldLabel
+                  icon={<Sofa size={15} strokeWidth={2} />}
+                  label="Loại phòng"
+                />
                 <div className="relative">
                   <select
-                    className={inputCls + " appearance-none pr-10 cursor-pointer"}
+                    className={
+                      inputCls + " appearance-none pr-10 cursor-pointer"
+                    }
                     style={inter}
                     value={loaiPhong}
                     onChange={(e) => setLoaiPhong(e.target.value)}
                   >
                     <option value="">Chọn loại phòng</option>
                     {dsLoaiPhong.map((lp) => (
-                      <option key={lp.MaLoai} value={lp.MaLoai}>{lp.TenLoai}</option>
+                      <option key={lp.MaLoai} value={lp.MaLoai}>
+                        {lp.TenLoai}
+                      </option>
                     ))}
                   </select>
                   <ChevronDown
@@ -693,7 +825,10 @@ export const MH_DKNCThue = () => {
               {/* Ngày + thời hạn */}
               <div className="grid grid-cols-2 gap-3 md:col-span-2">
                 <div>
-                  <FieldLabel icon={<CalendarDays size={15} strokeWidth={2} />} label="Thời điểm vào ở" />
+                  <FieldLabel
+                    icon={<CalendarDays size={15} strokeWidth={2} />}
+                    label="Thời điểm vào ở"
+                  />
                   <input
                     className={inputCls}
                     style={inter}
@@ -703,7 +838,10 @@ export const MH_DKNCThue = () => {
                   />
                 </div>
                 <div>
-                  <FieldLabel icon={<Timer size={15} strokeWidth={2} />} label="Thời hạn thuê (tháng)" />
+                  <FieldLabel
+                    icon={<Timer size={15} strokeWidth={2} />}
+                    label="Thời hạn thuê (tháng)"
+                  />
                   <input
                     className={inputCls}
                     style={inter}
@@ -719,7 +857,10 @@ export const MH_DKNCThue = () => {
 
             {/* Tiêu chí ưu tiên */}
             <div>
-              <FieldLabel icon={<Star size={15} strokeWidth={2} />} label="Tiêu chí ưu tiên" />
+              <FieldLabel
+                icon={<Star size={15} strokeWidth={2} />}
+                label="Tiêu chí ưu tiên"
+              />
               <div className="flex flex-wrap gap-2 mt-1">
                 {dsTieuChi.map(({ MaTieuChi, TenTieuChi }) => {
                   const active = tieuChi.includes(MaTieuChi);
