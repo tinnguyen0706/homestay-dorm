@@ -111,12 +111,12 @@ export function NCTDetailModal({ MaNCT, open, onClose }: NCTDetailModalProps) {
 
                 <InfoItem
                   label="GIÁ TỐI THIỂU"
-                  value={`${(data.GiaMin / 1000000).toFixed(1)} Tr`}
+                  value={`${data.GiaMin.toLocaleString("vi-VN")} VND`}
                   valueClassName="text-[#181C22]"
                 />
                 <InfoItem
                   label="GIÁ TỐI ĐA"
-                  value={`${(data.GiaMax / 1000000).toFixed(1)} Tr`}
+                  value={`${data.GiaMax.toLocaleString("vi-VN")} VND`}
                   valueClassName="text-[#181C22]"
                 />
 
