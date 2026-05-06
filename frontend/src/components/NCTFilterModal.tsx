@@ -75,7 +75,7 @@ export function NCTFilterModal({ onApplyFilter }: NCTFilterModalProps) {
     }
   }, [open]);
 
-  const handleApply = () => {
+  const btn_ApDung_click = () => {
     const finalFilters = { ...filters };
 
     if (finalFilters.HinhThucThue === "all") finalFilters.HinhThucThue = "";
@@ -348,7 +348,7 @@ export function NCTFilterModal({ onApplyFilter }: NCTFilterModalProps) {
         {/* Footer Modal */}
         <div className="px-8 py-5 border-t border-gray-100 flex justify-end bg-gray-50/50">
           <Button
-            onClick={handleApply}
+            onClick={btn_ApDung_click}
             className="h-11 px-8 bg-[#0D631B] text-white hover:bg-[#0D631B]/90 rounded-[10px] font-bold text-[15px] transition-all"
           >
             Áp dụng
