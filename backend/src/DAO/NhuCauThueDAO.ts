@@ -74,6 +74,7 @@ export default class NhuCauThueDAO {
         new NhuCauThueBUS(
           row.manhucau,
           row.makh,
+          row.tenkhachhang,
           new NhomThueBUS(),
           new LoaiPhongBUS(row.maloai, row.tenloaiphong),
           row.songuoidukien,
@@ -84,8 +85,7 @@ export default class NhuCauThueDAO {
           row.thoihanthue,
           row.khuvuc,
           row.trangthai,
-          [], // Cần truy vấn thêm nếu có bảng liên quan
-          row.tenkhachhang,
+          [],
         ),
     );
   }
@@ -124,6 +124,7 @@ export default class NhuCauThueDAO {
     return new NhuCauThueBUS(
       row.manhucau,
       row.makh,
+      row.tenkhachhang,
       new NhomThueBUS(row.manhomthue, []),
       new LoaiPhongBUS(row.maloai, row.tenloaiphong),
       row.songuoidukien,
@@ -135,7 +136,6 @@ export default class NhuCauThueDAO {
       row.khuvuc,
       row.trangthai,
       tieuChi,
-      row.tenkhachhang,
     );
   }
 }

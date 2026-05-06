@@ -43,6 +43,7 @@ export default class NhuCauThueController {
       const NCT = new NhuCauThueBUS(
         "",
         MaKH_DaiDien,
+        "",
         nhomThue,
         new LoaiPhongBUS(LoaiPhong, ""),
         Number(SoNguoiDuKien),
@@ -54,7 +55,6 @@ export default class NhuCauThueController {
         KhuVuc,
         TrangThai,
         (TieuChi as string[]).map((maTieuChi) => new TieuChiBUS(maTieuChi, "")),
-        "", // TenKhachHang sẽ được lấy từ DB sau khi có MaKH_DaiDien
       );
 
       const errors = NhuCauThueBUS.KiemTraThongTin(NCT, LoaiDangKy);
