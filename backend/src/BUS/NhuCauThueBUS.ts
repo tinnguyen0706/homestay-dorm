@@ -8,7 +8,9 @@ import LoaiPhongBUS from "./LoaiPhongBUS.ts";
 export default class NhuCauThueBUS {
   private MaNCT: string;
   private MaKH_DaiDien: string;
+  private TenKhachHang: string;
   private NhomThue: NhomThueBUS;
+  private LoaiPhong: LoaiPhongBUS;
   private SoNguoiDuKien: number;
   private HinhThucThue: string;
   private GiaMin: number;
@@ -19,12 +21,10 @@ export default class NhuCauThueBUS {
   private TrangThai: string;
   private TieuChi: TieuChiBUS[];
 
-  private TenKhachHang: string;
-  private LoaiPhong: LoaiPhongBUS;
-
   constructor(
     MaNCT: string = "",
     MaKH_DaiDien: string = "",
+    TenKhachHang: string = "",
     NhomThue: NhomThueBUS = new NhomThueBUS(),
     LoaiPhong: LoaiPhongBUS = new LoaiPhongBUS(),
     SoNguoiDuKien: number = 0,
@@ -36,7 +36,6 @@ export default class NhuCauThueBUS {
     KhuVuc: string = "",
     TrangThai: string = "",
     TieuChi: TieuChiBUS[] = [],
-    TenKhachHang: string = "",
   ) {
     this.MaNCT = MaNCT;
     this.MaKH_DaiDien = MaKH_DaiDien;
