@@ -14,7 +14,7 @@ interface IDetailNCT {
   MaNCT: string;
   MaKH_DaiDien: string;
   NhomThue: any;
-  LoaiPhong: string;
+  LoaiPhong: { MaLoai: string; TenLoai: string };
   SoNguoiDuKien: number;
   HinhThucThue: string;
   GiaMin: number;
@@ -25,7 +25,6 @@ interface IDetailNCT {
   TrangThai: string;
   TieuChi: Array<{ MaTieuChi: string; TenTieuChi: string }>;
   TenKhachHang: string;
-  TenLoaiPhong: string;
 }
 
 interface NCTDetailModalProps {
@@ -93,7 +92,7 @@ export function NCTDetailModal({ MaNCT, open, onClose }: NCTDetailModalProps) {
               />
               <InfoItem
                 label="LOẠI PHÒNG"
-                value={data.TenLoaiPhong || "Phòng Studio"}
+                value={data.LoaiPhong?.TenLoai || "Phòng Studio"}
               />
               <InfoItem
                 label="SỐ NGƯỜI"

@@ -3,12 +3,12 @@ import NhomThueDAO from "../DAO/NhomThueDAO.ts";
 import NhuCauThueDAO from "../DAO/NhuCauThueDAO.ts";
 import TieuChiDAO from "../DAO/TieuChiDAO.ts";
 import TieuChiBUS from "./TieuChiBUS.ts";
+import LoaiPhongBUS from "./LoaiPhongBUS.ts";
 
 export default class NhuCauThueBUS {
   private MaNCT: string;
   private MaKH_DaiDien: string;
   private NhomThue: NhomThueBUS;
-  private LoaiPhong: string;
   private SoNguoiDuKien: number;
   private HinhThucThue: string;
   private GiaMin: number;
@@ -20,13 +20,13 @@ export default class NhuCauThueBUS {
   private TieuChi: TieuChiBUS[];
 
   private TenKhachHang: string;
-  private TenLoaiPhong: string;
+  private LoaiPhong: LoaiPhongBUS;
 
   constructor(
     MaNCT: string = "",
     MaKH_DaiDien: string = "",
     NhomThue: NhomThueBUS = new NhomThueBUS(),
-    LoaiPhong: string = "",
+    LoaiPhong: LoaiPhongBUS = new LoaiPhongBUS(),
     SoNguoiDuKien: number = 0,
     HinhThucThue: string = "",
     GiaMin: number = 0,
@@ -37,7 +37,6 @@ export default class NhuCauThueBUS {
     TrangThai: string = "",
     TieuChi: TieuChiBUS[] = [],
     TenKhachHang: string = "",
-    TenLoaiPhong: string = "",
   ) {
     this.MaNCT = MaNCT;
     this.MaKH_DaiDien = MaKH_DaiDien;
@@ -53,7 +52,7 @@ export default class NhuCauThueBUS {
     this.TrangThai = TrangThai;
     this.TieuChi = TieuChi;
     this.TenKhachHang = TenKhachHang;
-    this.TenLoaiPhong = TenLoaiPhong;
+    this.LoaiPhong = LoaiPhong;
   }
 
   // Getters
@@ -69,7 +68,7 @@ export default class NhuCauThueBUS {
     return this.NhomThue;
   }
 
-  get _LoaiPhong(): string {
+  get _LoaiPhong(): LoaiPhongBUS {
     return this.LoaiPhong;
   }
 
@@ -113,10 +112,6 @@ export default class NhuCauThueBUS {
     return this.TenKhachHang;
   }
 
-  get _TenLoaiPhong(): string {
-    return this.TenLoaiPhong;
-  }
-
   // Setters
   set _MaNCT(value: string) {
     this.MaNCT = value;
@@ -130,7 +125,7 @@ export default class NhuCauThueBUS {
     this.NhomThue = value;
   }
 
-  set _LoaiPhong(value: string) {
+  set _LoaiPhong(value: LoaiPhongBUS) {
     this.LoaiPhong = value;
   }
 
@@ -174,10 +169,6 @@ export default class NhuCauThueBUS {
     this.TenKhachHang = value;
   }
 
-  set _TenLoaiPhong(value: string) {
-    this.TenLoaiPhong = value;
-  }
-
   static KiemTraThongTin(
     NCT: NhuCauThueBUS,
     loaiDangKy: "ca-nhan" | "nhom",
@@ -210,7 +201,7 @@ export default class NhuCauThueBUS {
       errors.push("Thời hạn thuê phải lớn hơn 2 tháng.");
     }
 
-    if (!NCT._LoaiPhong || NCT._LoaiPhong.trim() === "") {
+    if (!NCT._LoaiPhong || NCT._LoaiPhong._MaLoai.trim() === "") {
       errors.push("Phải chọn loại phòng.");
     }
 

@@ -1,5 +1,6 @@
 import NhomThueBUS from "../BUS/NhomThueBUS.ts";
 import NhuCauThueBUS from "../BUS/NhuCauThueBUS.ts";
+import LoaiPhongBUS from "../BUS/LoaiPhongBUS.ts";
 import TieuChiBUS from "../BUS/TieuChiBUS.ts";
 import pool from "../config/db.ts";
 export default class NhuCauThueDAO {
@@ -17,7 +18,7 @@ export default class NhuCauThueDAO {
         NhuCauThue._TrangThai,
         NhuCauThue._MaKH_DaiDien,
         NhuCauThue._NhomThue._MaNhomThue,
-        NhuCauThue._LoaiPhong,
+        NhuCauThue._LoaiPhong._MaLoai,
       ],
     );
     return result.rows[0].manhucau;
@@ -74,7 +75,7 @@ export default class NhuCauThueDAO {
           row.manhucau,
           row.makh,
           new NhomThueBUS(),
-          row.maloai,
+          new LoaiPhongBUS(row.maloai, row.tenloaiphong),
           row.songuoidukien,
           row.hinhthucthue,
           parseFloat(row.giamin), // Convert từ Numeric
@@ -85,7 +86,6 @@ export default class NhuCauThueDAO {
           row.trangthai,
           [], // Cần truy vấn thêm nếu có bảng liên quan
           row.tenkhachhang,
-          row.tenloaiphong,
         ),
     );
   }
@@ -125,7 +125,7 @@ export default class NhuCauThueDAO {
       row.manhucau,
       row.makh,
       new NhomThueBUS(row.manhomthue, []),
-      row.maloai,
+      new LoaiPhongBUS(row.maloai, row.tenloaiphong),
       row.songuoidukien,
       row.hinhthucthue,
       parseFloat(row.giamin), // Convert từ Numeric
@@ -136,7 +136,6 @@ export default class NhuCauThueDAO {
       row.trangthai,
       tieuChi,
       row.tenkhachhang,
-      row.tenloaiphong,
     );
   }
 }

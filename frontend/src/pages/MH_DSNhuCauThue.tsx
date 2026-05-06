@@ -18,7 +18,7 @@ interface INhuCauThue {
   MaNCT: string;
   MaKH_DaiDien: string;
   NhomThue: any;
-  LoaiPhong: string;
+  LoaiPhong: { MaLoai: string; TenLoai: string };
   SoNguoiDuKien: number;
   HinhThucThue: string;
   GiaMin: number;
@@ -29,7 +29,6 @@ interface INhuCauThue {
   TrangThai: string;
   TieuChi: string[];
   TenKhachHang: string;
-  TenLoaiPhong: string;
 }
 
 // Map màu trạng thái theo đúng DB Check Constraint ('Chờ duyệt', 'Đang tìm', 'Đã khớp', 'Đã hủy', 'Hết hạn')
@@ -173,7 +172,7 @@ export const MH_DSNhuCauThue = () => {
                             {item.TenKhachHang || "N/A"}
                           </TableCell>
                           <TableCell className="text-[14px] text-[#40493D]">
-                            {item.TenLoaiPhong || item.LoaiPhong}
+                            {item.LoaiPhong?.TenLoai || "N/A"}
                           </TableCell>
                           <TableCell className="text-[14px] text-[#40493D] text-center font-medium">
                             {item.SoNguoiDuKien}
