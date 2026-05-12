@@ -212,8 +212,12 @@ export default class NhuCauThueBUS {
   }
 
   static async ThemNCThue(NCT: NhuCauThueBUS): Promise<void> {
-    const MaNhomThue = await NhomThueDAO.ThemNhom(NCT);
-    NCT._NhomThue._MaNhomThue = MaNhomThue;
+    // Chỉ gọi ThemNhom nếu danh sách khách hàng > 1
+    NCT._NhomThue._MaNhomThue = null;
+    if (NCT._NhomThue._KH.length > 1) {
+      const MaNhomThue = await NhomThueDAO.ThemNhom(NCT);
+      NCT._NhomThue._MaNhomThue = MaNhomThue;
+    }
     const MaNCT = await NhuCauThueDAO.ThemNCT(NCT);
     await TieuChiDAO.ThemTieuChi_NCT(
       NCT._TieuChi.map((tieuChi) => tieuChi._MaTieuChi),

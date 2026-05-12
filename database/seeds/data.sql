@@ -194,11 +194,11 @@ VALUES
 INSERT INTO NHUCAUTHUE
     (MaNhuCau, SoNguoiDuKien, HinhThucThue, GiaMin, GiaMax, ThoiDiemVao, ThoiHanThue, KhuVuc, TrangThai, MaKH, MaNhomThue, MaLoai)
 VALUES
-    ('X', 1, 'Thuê phòng', 2000000, 4000000, '2026-05-01', 6, 'Quận 1, TP.HCM', 'Đang tìm', 'KH001', 'NT001', 'LP001'),
-    ('X', 4, 'Thuê giường', 500000, 1500000, '2026-05-15', 3, 'Quận 9, TP.HCM', 'Chờ duyệt', 'KH003', 'NT002', 'LP005'),
-    ('X', 2, 'Thuê phòng', 3000000, 6000000, '2026-06-01', 12, 'Hải Châu, Đà Nẵng', 'Đã khớp', 'KH006', NULL, 'LP002'),
-    ('X', 1, 'Thuê phòng', 1500000, 3000000, '2026-05-20', 6, 'Quận 1, TP.HCM', 'Đang tìm', 'KH007', NULL, 'LP004'),
-    ('X', 3, 'Thuê giường', 600000, 1200000, '2026-07-01', 12, 'Quận 9, TP.HCM', 'Chờ duyệt', 'KH008', NULL, 'LP003');
+    ('X', 1, 'Thuê phòng', 2000000, 4000000, '2026-07-01', 6, 'Quận 1, TP.HCM', 'Đang tìm', 'KH001', 'NT001', 'LP001'),
+    ('X', 4, 'Thuê giường', 500000, 1500000, '2026-07-15', 3, 'Quận 9, TP.HCM', 'Chờ duyệt', 'KH003', 'NT002', 'LP005'),
+    ('X', 2, 'Thuê phòng', 3000000, 6000000, '2026-08-01', 12, 'Hải Châu, Đà Nẵng', 'Đã khớp', 'KH006', NULL, 'LP002'),
+    ('X', 1, 'Thuê phòng', 1500000, 3000000, '2026-07-20', 6, 'Quận 1, TP.HCM', 'Đang tìm', 'KH007', NULL, 'LP004'),
+    ('X', 3, 'Thuê giường', 600000, 1200000, '2026-09-01', 12, 'Quận 9, TP.HCM', 'Chờ duyệt', 'KH008', NULL, 'LP003');
 
 -- =============================================================================
 -- TIER 4: LICHXEMPHONG → LX001..LX003
@@ -208,9 +208,9 @@ VALUES
 INSERT INTO LICHXEMPHONG
     (MaLichHen, ThoiGianHen, TrangThai, MaNhuCau, MaNV, MaPhong)
 VALUES
-    ('X', '2026-05-02 09:00:00', 'Đã xác nhận', 'NC001', 'NV002', 'PH001'),
-    ('X', '2026-05-10 14:00:00', 'Chờ xác nhận', 'NC002', 'NV003', 'PH008'),
-    ('X', '2026-05-20 10:30:00', 'Chờ xác nhận', 'NC004', 'NV004', 'PH004');
+    ('X', '2026-07-02 09:00:00', 'Đã xác nhận', 'NC001', 'NV002', 'PH001'),
+    ('X', '2026-07-10 14:00:00', 'Chờ xác nhận', 'NC002', 'NV003', 'PH008'),
+    ('X', '2026-07-20 10:30:00', 'Chờ xác nhận', 'NC004', 'NV004', 'PH004');
 
 -- =============================================================================
 -- TIER 4: TAISAN → TS001..TS075  (5 tài sản / phòng)
