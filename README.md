@@ -14,9 +14,13 @@ Các bước chạy web:
 
      VITE_API_URL="http://localhost:3000"
 
-2. Chạy `npm install` nếu chưa cài, sau đó chạy `npm run dev` ở cả `backend/` và `frontend/`.
-3. Bấm vào link hiển thị khi chạy `npm run dev` ở `frontend` (Vite) để mở giao diện web.
-4. Login bằng tài khoản mẫu (dữ liệu nằm trong `database/seeds/data.sql`).
+2. Chạy `npm install` nếu chưa cài.
+3. Trong `backend/`, chạy `npm db:init` để tạo tables, `npm db:insert` để thêm records vào tables.
+4. Chạy `npm run dev` ở cả `backend/` và `frontend/`
+5. Bấm vào link hiển thị khi chạy `npm run dev` ở `frontend` (Vite) để mở giao diện web.
+6. Login bằng tài khoản mẫu (dữ liệu nằm trong `database/seeds/data.sql`).
+   - VD: username: `admin`, password: `@Admin123`
+8. Optional: Trong `backend/`, chạy `npm run db:dropRecords` để xóa records, `npm run db:drop` để xóa tables.
 
 ## Đóng góp thành viên
 
